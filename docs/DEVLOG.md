@@ -87,3 +87,72 @@ This log documents what was built, key architectural decisions, and technical pr
 
 ### Phase 2 Outcome
 - Done-when status: float16 `.tflite` `< 10 MB` and within `1 pp` ✅; registry and shared fixture committed and tested ✅; test macro-F1 `>= 0.80` not met, with root causes and ablations documented in `docs/EXPERIMENTS.md` (the accepted fallback).
+
+
+---
+
+## Phase 3 — App Shell & Design System (In Progress, 2026-10-16)
+
+### Built
+- **Expo SDK 52 Android Development Build Setup (`#20`)**:
+  - Configured `app/app.json` for Android package `com.keylorpineda.healthycrop` with camera and storage permissions, New Architecture enabled (`newArchEnabled: true`), and file-based routing rooted at `src/app`.
+  - Installed and pinned Expo SDK 52 (`expo@~52.0.49`, `react@18.3.1`, `react-native@0.76.7`, `expo-router@~4.0.22`, `react-native-reanimated@~3.16.7`, `react-native-gesture-handler@~2.20.2`, `react-native-screens@~4.4.0`, `react-native-safe-area-context@4.12.0`, `expo-haptics@~14.0.1`, `expo-image@~2.0.7`, `expo-localization@~16.0.1`, `zustand@^5.0.15`, `i18next@^24.2.3`, `react-i18next@^15.7.4`).
+  - Documented complete pinned toolchain and SDK matrix in `docs/ARCHITECTURE.md` §6.
+  - Implemented `app/src/i18n/` with Spanish (`es`) as default market language and English (`en`) secondary, featuring symmetric key structure and mandatory agronomic non-replacement disclaimer.
+  - Implemented Zustand preferences store (`app/src/stores/preferences.ts`) for language and theme management.
+  - Configured Jest + React Native Testing Library (`jest-expo@~52.0.6`, `@testing-library/react-native@^13.3.3`) with Windows/pnpm module transformations and comprehensive unit tests.
+- **Agricultural Design Tokens & Light/Dark Theme System (`#21`)**:
+  - Implemented Costa Rican agroecosystem-inspired design token system in `app/src/theme/`: colors (deep leaf greens, soil/coffee browns, coffee/cacao/banana crop accents, semantic status colors), typography scale, spacing, radii, elevation (Android elevations + iOS shadow parameters), and motion tokens (instant, micro, fast, normal, relaxed, spring presets).
+  - Built `ThemeProvider` and `useTheme()` hook reacting dynamically to user preferences and system appearance.
+  - Implemented `useReducedMotion()` accessibility hook querying system-level accessibility settings.
+  - Added unit test suite in `app/src/theme/__tests__/` asserting token integrity and mathematically proving WCAG 2.1 AA relative luminance contrast ratios (>= 4.5:1 for body text, >= 3.0:1 for large text / UI graphical components) across light and dark palettes.
+  - Refactored `app/src/app/index.tsx` to consume theme tokens exclusively with zero inline hex literals.
+- **Reusable UI Component Library with Micro-Interactions (`#22`)**:
+  - Implemented 9 reusable UI primitives in `app/src/components/ui/` with zero one-off inline style overrides, strictly utilizing `app/src/theme/` tokens:
+    - `Button`: Press-in spring scale (`0.97`) with snappy release, light haptic feedback via `expo-haptics`, loading indicator, disabled state, and enforced $\ge 48\text{ dp}$ touch target.
+    - `Card`: Surface container with elevated (`elevation.sm`), outlined, and flat variants, supporting pressable interactions with spring feedback.
+    - `Chip`: Crop selector (`coffee`, `cacao`, `banana`) with spring scale, haptic selection, crop color morphing, and accessible checkbox state.
+    - `Badge`: Status and crop indicator pills using WCAG AA-calibrated palettes (`healthy`, `watch`, `actNow`, `lowConfidence`, crop accents).
+    - `Sheet`: Animated bottom sheet modal with sliding/fading transitions, grab handle, accessible dismiss backdrop, and close button.
+    - `Toast`: In-app notification card with slide-in animation, haptic announcements, auto-dismiss timer, and accessible live regions (`assertive` for errors, `polite` for info/success).
+    - `Skeleton`: Shimmer loading placeholder with repeating pulse animation and static fallback for reduced motion, properly hidden from accessibility screen readers.
+    - `EmptyState`: Centered empty state layout with icon wrapper, title, description, and primary/secondary action buttons.
+    - `ProgressMeter`: Severity-aware progress bar with eased width animation, supporting automatic status mapping (`healthy`, `watch`, `actNow`) and explicit variants.
+  - Authored comprehensive Jest + React Native Testing Library test suite in `app/src/components/ui/__tests__/components.test.tsx` verifying rendering, interactions, accessibility roles/labels, and touch target constraints across all 9 primitives.
+- **Onboarding, Home, and Settings Screens (`#23`)**:
+  - Built `OnboardingScreen` (`app/src/screens/OnboardingScreen.tsx`) featuring 3 educational slides (offline diagnostics, calibrated AI, agronomic decision support), animated paging indicators, and mandatory agronomic disclaimer acceptance required to complete onboarding.
+  - Built `HomeScreen` (`app/src/screens/HomeScreen.tsx`) with camera-first layout, large primary Scan CTA for one-handed operation in the field, coffee/cacao/banana crop selection chips, recent scans section with `EmptyState`, and visible offline/sync status indicator.
+  - Built `SettingsScreen` (`app/src/screens/SettingsScreen.tsx`) providing instant `es`/`en` language switcher, light/dark/system theme toggle, account/local mode placeholder, dataset credits and licenses (RoCoLe CC BY 4.0, BRACOL CC BY-NC 4.0), active Float16 model version display, and onboarding replay option.
+  - Configured Expo Router stack navigation in `app/src/app/` (`_layout.tsx`, `index.tsx`, `settings.tsx`, `onboarding.tsx`) with automatic first-time onboarding dispatching.
+  - Authored full unit test coverage in `app/src/screens/__tests__/screens.test.tsx` and updated `app/src/app/__tests__/index.test.tsx`, testing all user flows in Spanish and English with 100% symmetric key structures.
+- **On-Device TFLite Inference Pipeline & Shared Fixture Parity (`#24`)**:
+  - Installed and pinned native image processing and ML packages (`expo-image-manipulator@~13.0.6`, `jpeg-js@^0.4.4`, `react-native-fast-tflite@1.6.1`, and `@types/node@26.6.5`), updating `docs/ARCHITECTURE.md` §6.
+  - Bundled Coffee model registry (`app/src/ml/models/coffee/registry.json`) and shared preprocessing fixture (`app/src/ml/fixtures/preprocessing_fixture_224.json`).
+  - Implemented core ML pipeline in `app/src/ml/`:
+    - `preprocess.ts`: JPEG decompression via `jpeg-js` (yielding exact 3-channel RGB data), `base64ToUint8Array` binary decoder, and `normalizeRgbTensor` producing normalized float32 tensors in range `[-1.0, 1.0]`.
+    - `inference.ts`: Numerically stable `softmax`, `evaluatePrediction` assessing probabilities against the `0.79` calibrated confidence threshold, disease severity mapping, and high-level `runInference` pipeline.
+  - Authored cross-platform preprocessing parity test (`app/src/ml/__tests__/parity.test.ts`) loading the Phase 2 Python fixture and verifying exact tensor parity across 35 coordinate canvas probes and overall tensor summary statistics (min `-1.0`, max `1.0`, sum `-447.15`) within float32 tolerance (`1e-5`).
+  - Authored unit test suite (`app/src/ml/__tests__/inference.test.ts`) verifying softmax stability, threshold abstention, disease severity mapping, and mock runner execution.
+- **Camera Screen, Photo Tips, Analyzing Animation & Result Screen (`#25`)**:
+  - Installed and pinned `expo-camera@~16.0.18` and `expo-image-picker@~16.0.6`, documented in `docs/ARCHITECTURE.md` §6.
+  - Built `PhotoTipsSheet` (`app/src/components/camera/PhotoTipsSheet.tsx`) providing crop-specific guidance (coffee undersides for rust/miner, whole cacao pods for monilia/black pod, leaf striations for banana sigatoka).
+  - Built `CameraScreen` (`app/src/screens/CameraScreen.tsx`) with real-time viewfinder, pulsing framing guide, shutter flash effect, tactile haptic feedback (`expo-haptics`), and gallery image picker.
+  - Built `AnalyzingOverlay` (`app/src/components/camera/AnalyzingOverlay.tsx`) with continuous sweep scan-line animation, reduced-motion accessibility support, and 100% offline indicator badge.
+  - Built `ResultScreen` (`app/src/screens/ResultScreen.tsx`) displaying the hero photo, severity-colored `ProgressMeter`, pop-in diagnosis status badge (`healthy`, `watch`, `actNow`), tactile haptic feedback (Success/Warning/Error), low-confidence retake guidance (`"Confianza baja — repita la captura"`), probability breakdown by class, recommended next steps, and non-replacement agronomic disclaimer.
+  - Implemented `/scan` route (`app/src/app/scan.tsx`) integrating Camera -> Analyzing -> Result pipeline with fallback error handling, connected to `HomeScreen`'s primary Scan CTA.
+  - Authored comprehensive Jest + RNTL unit and integration test suite (`app/src/screens/__tests__/camera_result.test.tsx`), verifying all user interactions and Spanish/English copy parity.
+- **`expo-sqlite` Persistence, History Screen, Scan Detail & Farms/Plots CRUD (`#26`)**:
+  - Installed and pinned `expo-sqlite@~15.1.2` and `expo-crypto@~14.0.2`, updating `docs/ARCHITECTURE.md` §6.
+  - Implemented offline-first relational database architecture in `app/src/db/`:
+    - DDL schema (`schema.ts`) with WAL mode (`journal_mode = WAL`), foreign keys enabled, tables for `farms`, `plots`, `scans`, and sync queue indices (`farm_id`, `plot_id`, `crop`, `severity`, `scanned_at`, `deleted_at`, `sync_status`).
+    - Standard repositories (`farmsRepository`, `plotsRepository`, `scansRepository`) supporting client-generated UUIDs (RFC 4122 v4 via `expo-crypto`), soft-deletes (`deleted_at`), query filters, and swipe-to-delete undo restoration.
+    - Added unit test suite in `app/src/db/__tests__/repositories.test.ts`.
+  - Built `HistoryScreen` (`app/src/screens/HistoryScreen.tsx`) with crop filter chips (`all`, `coffee`, `cacao`, `banana`), severity filter (`all`, `healthy`, `watch`, `actNow`), farm filter, card list, swipe/tap to delete with undo `Toast`, and pull-to-refresh.
+  - Built `ScanDetailScreen` (`app/src/screens/ScanDetailScreen.tsx`) with full diagnosis breakdown, confidence meter, probability list, farm/plot association bottom sheet (`Sheet`), and deletion option.
+  - Built `FarmsScreen` (`app/src/screens/FarmsScreen.tsx`) allowing farmers to register farms (name, region, altitude) and add plots (name, crop, area in ha) with inline delete.
+  - Wired Expo Router stack routes (`/history`, `/scan-detail`, `/farms`) in `app/src/app/`, connected automatic diagnosis persistence on `/scan`, and exposed History and Farms navigation from `HomeScreen`.
+  - Authored comprehensive Jest + RNTL test suite in `app/src/screens/__tests__/history_farms.test.tsx` verifying screen flows and Spanish/English translations.
+
+### Problems Solved
+- **Jest pnpm / Windows Module Resolution for React Native**:
+  - `pnpm`'s hoisted directory structure places packages inside `.pnpm/<name>@<ver>/node_modules/<name>`, and Windows uses backslashes in paths. Configured `transformIgnorePatterns` in `app/jest.config.js` to match both Windows separators and `.pnpm` paths so `@react-native`, `react-native`, and `expo` are properly transformed through Babel, resolving syntax errors on Flow type annotations in `@react-native/js-polyfills`.

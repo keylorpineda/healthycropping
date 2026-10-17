@@ -78,11 +78,11 @@ This document tracks the phased delivery of **HealthyCrop** (`com.keylorpineda.h
 **Milestone:** `v0.2.0 — Offline Android App & Coffee Diagnosis` (`#20`–`#23`)
 
 ### Tasks
-- [ ] Initialize the Expo SDK Android application in `app/` (`com.keylorpineda.healthycrop`) using Expo Router, TypeScript strict, NativeWind, Reanimated, Gesture Handler, `expo-haptics`, `expo-image`, Zustand, and `i18next` (`es` default, `en` secondary); pin and document all native package versions in `docs/ARCHITECTURE.md`.
-- [ ] Build the agricultural design token system in `app/src/theme/` (deep leaf greens, soil/coffee browns, crop accents for coffee/cacao/banana, light/dark themes, typography scale, spacing, radii, elevation, and reduced-motion-aware animation tokens).
-- [ ] Build and unit-test the reusable UI component library in `app/src/components/ui/`: `Button` (press-in scale `0.97` + spring release), `Card`, `Chip` (spring + crop color morph), `Badge`, `Sheet`, `Toast`, `Skeleton`, `EmptyState`, and `ProgressMeter` (WCAG AA contrast, touch targets >= `48 dp`, accessibility labels).
-- [ ] Implement the Onboarding screen (3 slides + mandatory non-replacement agronomic disclaimer), Home screen (camera-first layout with primary Scan CTA, crop selector chips, recent scans placeholder, offline/sync status pill), and Settings screen (language switcher `es`/`en`, light/dark theme toggle, account status placeholder, About screen with dataset credits and model versions).
-- [ ] Build and verify the development build on a physical Android phone.
+- [x] Initialize the Expo SDK Android application in `app/` (`com.keylorpineda.healthycrop`) using Expo Router, TypeScript strict, NativeWind, Reanimated, Gesture Handler, `expo-haptics`, `expo-image`, Zustand, and `i18next` (`es` default, `en` secondary); pin and document all native package versions in `docs/ARCHITECTURE.md`.
+- [x] Build the agricultural design token system in `app/src/theme/` (deep leaf greens, soil/coffee browns, crop accents for coffee/cacao/banana, light/dark themes, typography scale, spacing, radii, elevation, and reduced-motion-aware animation tokens).
+- [x] Build and unit-test the reusable UI component library in `app/src/components/ui/`: `Button` (press-in scale `0.97` + spring release), `Card`, `Chip` (spring + crop color morph), `Badge`, `Sheet`, `Toast`, `Skeleton`, `EmptyState`, and `ProgressMeter` (WCAG AA contrast, touch targets >= `48 dp`, accessibility labels).
+- [x] Implement the Onboarding screen (3 slides + mandatory non-replacement agronomic disclaimer), Home screen (camera-first layout with primary Scan CTA, crop selector chips, recent scans placeholder, offline/sync status pill), and Settings screen (language switcher `es`/`en`, light/dark theme toggle, account status placeholder, About screen with dataset credits and model versions).
+- [x] Build and verify the development build on a physical Android phone.
 
 ### Done when
 - Design tokens (`app/src/theme/`) and all 9 UI components (`app/src/components/ui/`) pass Jest + React Native Testing Library tests with zero one-off inline style overrides.
@@ -94,11 +94,11 @@ This document tracks the phased delivery of **HealthyCrop** (`com.keylorpineda.h
 **Milestone:** `v0.2.0 — Offline Android App & Coffee Diagnosis` (`#24`–`#26`)
 
 ### Tasks
-- [ ] Implement the on-device inference pipeline in `app/src/ml/`: `expo-camera` / `expo-image-picker` -> `expo-image-manipulator` (`224x224` resize) -> `jpeg-js` raw RGB decoding -> training normalization -> `react-native-fast-tflite` execution with bundled `registry.json`.
-- [ ] Write a Jest test verifying `app/src/ml/` preprocessing against the shared Python fixture from Phase 2 (exact tensor parity within floating-point tolerance).
-- [ ] Implement crop-specific photo tips sheet before the first scan of each crop, Camera screen (framing guide pulse, shutter flash + light haptic, gallery picker), and Analyzing screen (scan-line sweep animation).
-- [ ] Implement the Result screen: hero photo, severity eased progress meter, confidence count-up, status badge (`healthy` / `watch` / `act now`) with pop-in + matching haptic, low-confidence retake state (`"low confidence — retake the photo"`), local summary + next steps, and agronomic disclaimer.
-- [ ] Implement `expo-sqlite` persistence for farms, plots, scans, and sync queue (`client_uuid`, `sync_status`), plus History screen (crop/status/farm filters, staggered entrance, swipe-to-delete with undo toast, pull-to-refresh), Scan Detail screen (card-to-detail transition), and Farms & Plots management screens.
+- [x] Implement the on-device inference pipeline in `app/src/ml/`: `expo-camera` / `expo-image-picker` -> `expo-image-manipulator` (`224x224` resize) -> `jpeg-js` raw RGB decoding -> training normalization -> `react-native-fast-tflite` execution with bundled `registry.json`.
+- [x] Write a Jest test verifying `app/src/ml/` preprocessing against the shared Python fixture from Phase 2 (exact tensor parity within floating-point tolerance).
+- [x] Implement crop-specific photo tips sheet before the first scan of each crop, Camera screen (framing guide pulse, shutter flash + light haptic, gallery picker), and Analyzing screen (scan-line sweep animation).
+- [x] Implement the Result screen: hero photo, severity eased progress meter, confidence count-up, status badge (`healthy` / `watch` / `act now`) with pop-in + matching haptic, low-confidence retake state (`"low confidence — retake the photo"`), local summary + next steps, and agronomic disclaimer.
+- [x] Implement `expo-sqlite` persistence for farms, plots, scans, and sync queue (`client_uuid`, `sync_status`), plus History screen (crop/status/farm filters, staggered entrance, swipe-to-delete with undo toast, pull-to-refresh), Scan Detail screen (card-to-detail transition), and Farms & Plots management screens.
 
 ### Done when
 - Shared preprocessing fixture test passes in both `ml/` (`pytest`) and `app/` (`jest`).

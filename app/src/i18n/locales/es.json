@@ -1,0 +1,192 @@
+{
+  "common": {
+    "appName": "HealthyCrop",
+    "tagline": "Diagnóstico de cultivos fuera de línea",
+    "disclaimer": "HealthyCrop es una herramienta de apoyo a la toma de decisiones y no reemplaza el criterio de un agrónomo certificado. Antes de aplicar agroquímicos o tomar medidas fitosanitarias mayores, consulte con un profesional o el servicio de extensión agrícola de su región.",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "retry": "Reintentar",
+    "continue": "Continuar",
+    "loading": "Cargando...",
+    "analyzing": "Analizando hoja...",
+    "offlineNotice": "Modo fuera de línea activo"
+  },
+  "nav": {
+    "home": "Inicio",
+    "history": "Historial",
+    "farms": "Fincas",
+    "settings": "Ajustes"
+  },
+  "crops": {
+    "coffee": "Café",
+    "cacao": "Cacao",
+    "banana": "Banano"
+  },
+  "status": {
+    "healthy": "Sano",
+    "watch": "Observación",
+    "actNow": "Actuar ahora",
+    "lowConfidence": "Confianza baja — tome otra foto más cerca de la hoja"
+  },
+  "diseases": {
+    "coffee": {
+      "healthy": "Hoja sana",
+      "leaf_rust": "Roya del café (Hemileia vastatrix)",
+      "leaf_miner": "Minador de la hoja (Leucoptera coffeella)",
+      "cercospora": "Mancha de hierro / Cercospora (Cercospora coffeicola)",
+      "brown_leaf_spot": "Mancha parda / Phoma (Phoma / Ascochyta spp.)",
+      "red_spider_mite": "Ácaro rojo (Oligonychus yothersi)"
+    },
+    "cacao": {
+      "healthy": "Mazorca sana",
+      "monilia": "Moniliasis (Moniliophthora roreri)",
+      "black_pod": "Mazorca negra (Phytophthora palmivora)"
+    },
+    "banana": {
+      "healthy": "Hoja sana",
+      "black_sigatoka": "Sigatoka negra (Pseudocercospora fijiensis)",
+      "fusarium_wilt": "Marchitez por Fusarium (Fusarium oxysporum)"
+    }
+  },
+  "onboarding": {
+    "skip": "Omitir",
+    "next": "Siguiente",
+    "getStarted": "Comenzar",
+    "acceptDisclaimer": "Entiendo y acepto el descargo de responsabilidad agronómica",
+    "slide1Title": "Diagnóstico fuera de línea",
+    "slide1Description": "Detecte enfermedades en café, cacao y banano directamente desde su teléfono sin necesidad de conexión a internet.",
+    "slide2Title": "Modelos precisos y calibrados",
+    "slide2Description": "Modelos de aprendizaje profundo ejecutados localmente con evaluación de confianza y umbrales de abstención.",
+    "slide3Title": "Herramienta de apoyo al productor",
+    "slide3Description": "HealthyCrop apoya sus decisiones de manejo integrado pero no reemplaza la inspección de un agrónomo certificado."
+  },
+  "home": {
+    "selectCrop": "Cultivo a diagnosticar",
+    "scanAction": "Escanear cultivo",
+    "scanHint": "Tome una foto clara y enfocada de la hoja",
+    "recentScans": "Diagnósticos recientes",
+    "noScansTitle": "Sin diagnósticos registrados",
+    "noScansDescription": "Presione el botón de escaneo para evaluar el estado fitosanitario de su cultivo.",
+    "offlinePill": "100% Fuera de línea",
+    "syncPill": "Almacenamiento local"
+  },
+  "camera": {
+    "tipsTitle": "Consejos de captura",
+    "tipsUnderstood": "Entendido, tomar foto",
+    "shutter": "Capturar foto",
+    "gallery": "Elegir de galería",
+    "permissionTitle": "Permiso de cámara requerido",
+    "permissionMessage": "HealthyCrop necesita acceso a la cámara para diagnosticar sus plantas directamente en campo.",
+    "grantPermission": "Conceder permiso",
+    "framingHint": "Encuadre la hoja dentro del marco guía"
+  },
+  "photoTips": {
+    "coffee": {
+      "title": "Consejos para Café",
+      "tip1": "Enfoca el envés de la hoja (lado inferior) donde aparecen las pústulas de roya y minador.",
+      "tip2": "Evita reflejos directos de sol; usa la sombra de tu cuerpo si es necesario.",
+      "tip3": "Mantén la hoja a unos 15–20 cm de la cámara, bien enfocada y sin movimiento."
+    },
+    "cacao": {
+      "title": "Consejos para Cacao",
+      "tip1": "Fotografía la mazorca completa o la mancha visible de monilia o mazorca negra.",
+      "tip2": "Asegúrate de que la mazorca ocupe la mayor parte del encuadre.",
+      "tip3": "Limpia la lente del teléfono para evitar empañamiento por humedad tropical."
+    },
+    "banana": {
+      "title": "Consejos para Banano",
+      "tip1": "Captura las estrías y manchas a lo largo de las nervaduras de la hoja.",
+      "tip2": "Encuadra la transición entre tejido sano y tejido afectado por sigatoka.",
+      "tip3": "Sostén la hoja firmemente contra el viento antes de disparar."
+    }
+  },
+  "analyzing": {
+    "title": "Analizando cultivo...",
+    "subtitle": "Ejecutando modelo de red neuronal en el dispositivo...",
+    "offline": "Procesamiento 100% local sin internet"
+  },
+  "result": {
+    "title": "Resultado del diagnóstico",
+    "confidence": "Nivel de confianza",
+    "statusHealthy": "Cultivo sano",
+    "statusWatch": "En observación",
+    "statusActNow": "Acción fitosanitaria requerida",
+    "lowConfidenceTitle": "Confianza baja — repita la captura",
+    "lowConfidenceAdvice": "La imagen no tiene suficiente nitidez o el encuadre no permite una clasificación confiable. Tome otra foto más cerca de la hoja y con buena iluminación.",
+    "retake": "Tomar otra foto",
+    "save": "Guardar en historial",
+    "done": "Finalizar",
+    "nextSteps": "Próximos pasos recomendados",
+    "probabilities": "Distribución de probabilidades",
+    "adviceHealthy": "Mantenga las prácticas culturales habituales y continúe el monitoreo periódico del lote.",
+    "adviceWatch": "Aumente la frecuencia de inspección y evalúe la dispersión de síntomas en plantas vecinas.",
+    "adviceActNow": "Consulte inmediatamente las recomendaciones oficiales de su servicio de extensión o un agrónomo certificado antes de aplicar tratamientos."
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "theme": "Tema de visualización",
+    "themeSystem": "Automático (sistema)",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "accountSection": "Cuenta y sincronización",
+    "accountPlaceholder": "Modo local activo (no requiere cuenta)",
+    "about": "Acerca de HealthyCrop",
+    "version": "Versión",
+    "credits": "Créditos y licencias de datos",
+    "author": "Autor",
+    "modelTitle": "Modelo TFLite activo",
+    "modelDetails": "MobileNetV3-Large Float16 (Café v0.1.0)",
+    "datasetsTitle": "Conjuntos de datos",
+    "datasetsDetails": "RoCoLe (CC BY 4.0) y BRACOL (CC BY-NC 4.0)"
+  },
+  "history": {
+    "title": "Historial de diagnósticos",
+    "filterAll": "Todos",
+    "filterCrops": "Cultivos",
+    "filterSeverity": "Severidad",
+    "filterFarms": "Finca",
+    "allFarms": "Todas las fincas",
+    "noScansTitle": "Sin diagnósticos",
+    "noScansDescription": "No se encontraron diagnósticos para los filtros seleccionados.",
+    "deletedToast": "Diagnóstico eliminado",
+    "undo": "Deshacer",
+    "syncPending": "Pendiente de sincronizar",
+    "syncSynced": "Sincronizado"
+  },
+  "scanDetail": {
+    "title": "Detalle del diagnóstico",
+    "scannedAt": "Fecha de captura",
+    "location": "Ubicación",
+    "farm": "Finca",
+    "plot": "Lote",
+    "noFarmAssigned": "Sin finca asignada",
+    "assignFarm": "Asignar finca y lote",
+    "modelInfo": "Modelo",
+    "inferenceTime": "Tiempo de inferencia",
+    "deleteScan": "Eliminar diagnóstico",
+    "deleteConfirm": "¿Desea eliminar este diagnóstico?"
+  },
+  "farms": {
+    "title": "Fincas y Lotes",
+    "addFarm": "Nueva finca",
+    "editFarm": "Editar finca",
+    "deleteFarm": "Eliminar finca",
+    "farmName": "Nombre de la finca",
+    "region": "Región o cantón",
+    "altitude": "Altitud (m s.n.m.)",
+    "addPlot": "Nuevo lote",
+    "plotName": "Nombre del lote",
+    "areaHa": "Área (ha)",
+    "selectCrop": "Cultivo",
+    "plotsCount": "lotes",
+    "noFarms": "No hay fincas registradas",
+    "noFarmsDescription": "Registre sus fincas y lotes para organizar los diagnósticos de campo.",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "common": {
+    "appName": "HealthyCrop",
+    "tagline": "Offline crop diagnosis",
+    "disclaimer": "HealthyCrop is a decision-support tool and does not replace the judgment of a certified agronomist. Before applying agrochemicals or taking major phytosanitary actions, consult a qualified professional or your regional agricultural extension service.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "retry": "Retry",
+    "continue": "Continue",
+    "loading": "Loading...",
+    "analyzing": "Analyzing leaf...",
+    "offlineNotice": "Offline mode active"
+  },
+  "nav": {
+    "home": "Home",
+    "history": "History",
+    "farms": "Farms",
+    "settings": "Settings"
+  },
+  "crops": {
+    "coffee": "Coffee",
+    "cacao": "Cacao",
+    "banana": "Banana"
+  },
+  "status": {
+    "healthy": "Healthy",
+    "watch": "Watch",
+    "actNow": "Act Now",
+    "lowConfidence": "Low confidence — please take a clearer photo closer to the leaf"
+  },
+  "diseases": {
+    "coffee": {
+      "healthy": "Healthy leaf",
+      "leaf_rust": "Coffee leaf rust (Hemileia vastatrix)",
+      "leaf_miner": "Coffee leaf miner (Leucoptera coffeella)",
+      "cercospora": "Brown eye spot / Cercospora (Cercospora coffeicola)",
+      "brown_leaf_spot": "Brown leaf spot / Phoma (Phoma / Ascochyta spp.)",
+      "red_spider_mite": "Red spider mite (Oligonychus yothersi)"
+    },
+    "cacao": {
+      "healthy": "Healthy pod",
+      "monilia": "Frosty pod rot (Moniliophthora roreri)",
+      "black_pod": "Black pod rot (Phytophthora palmivora)"
+    },
+    "banana": {
+      "healthy": "Healthy leaf",
+      "black_sigatoka": "Black Sigatoka (Pseudocercospora fijiensis)",
+      "fusarium_wilt": "Fusarium wilt (Fusarium oxysporum)"
+    }
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "acceptDisclaimer": "I understand and accept the agronomic disclaimer",
+    "slide1Title": "Offline Crop Diagnosis",
+    "slide1Description": "Detect diseases in coffee, cacao, and banana directly on your phone without requiring an internet connection.",
+    "slide2Title": "Calibrated & Accurate AI",
+    "slide2Description": "Deep learning models running on-device with calibrated confidence thresholds and abstention coverage.",
+    "slide3Title": "Agronomic Decision Support",
+    "slide3Description": "HealthyCrop supports your integrated management decisions but does not replace a certified agronomist."
+  },
+  "home": {
+    "selectCrop": "Select Crop to Diagnose",
+    "scanAction": "Scan Crop",
+    "scanHint": "Take a clear, focused photo of the leaf",
+    "recentScans": "Recent Scans",
+    "noScansTitle": "No scans recorded yet",
+    "noScansDescription": "Tap the scan button to assess the phytosanitary condition of your crop.",
+    "offlinePill": "100% Offline",
+    "syncPill": "Local Storage"
+  },
+  "camera": {
+    "tipsTitle": "Photo Tips",
+    "tipsUnderstood": "Got it, take photo",
+    "shutter": "Capture photo",
+    "gallery": "Pick from gallery",
+    "permissionTitle": "Camera Permission Required",
+    "permissionMessage": "HealthyCrop needs camera access to diagnose your crops directly in the field.",
+    "grantPermission": "Grant Permission",
+    "framingHint": "Frame the leaf inside the guide box"
+  },
+  "photoTips": {
+    "coffee": {
+      "title": "Coffee Photo Tips",
+      "tip1": "Focus on the underside of the leaf where rust pustules and leaf miners appear.",
+      "tip2": "Avoid harsh direct sunlight; cast a gentle shadow with your body if needed.",
+      "tip3": "Hold the leaf 15–20 cm away, sharply focused and steady."
+    },
+    "cacao": {
+      "title": "Cacao Photo Tips",
+      "tip1": "Photograph the entire pod or the visible frosty pod / black pod lesion.",
+      "tip2": "Ensure the pod fills most of the frame.",
+      "tip3": "Wipe the phone lens clean to avoid moisture blur in humid fields."
+    },
+    "banana": {
+      "title": "Banana Photo Tips",
+      "tip1": "Capture the streaks and spots along the leaf veins.",
+      "tip2": "Frame the transition zone between healthy tissue and sigatoka lesions.",
+      "tip3": "Hold the leaf steady against the wind before shooting."
+    }
+  },
+  "analyzing": {
+    "title": "Analyzing crop...",
+    "subtitle": "Running neural network model on-device...",
+    "offline": "100% local on-device processing"
+  },
+  "result": {
+    "title": "Diagnosis Result",
+    "confidence": "Confidence level",
+    "statusHealthy": "Healthy crop",
+    "statusWatch": "Under observation",
+    "statusActNow": "Phytosanitary action required",
+    "lowConfidenceTitle": "Low confidence — retake the photo",
+    "lowConfidenceAdvice": "The image lacks sharpness or framing for reliable classification. Please retake closer to the leaf with good lighting.",
+    "retake": "Retake photo",
+    "save": "Save to history",
+    "done": "Done",
+    "nextSteps": "Recommended Next Steps",
+    "probabilities": "Probability distribution",
+    "adviceHealthy": "Maintain standard agronomic practices and continue periodic plot monitoring.",
+    "adviceWatch": "Increase inspection frequency and evaluate symptom dispersion on neighboring plants.",
+    "adviceActNow": "Consult official extension service guides or a certified agronomist immediately before applying treatments."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "themeSystem": "System default",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "accountSection": "Account & Sync",
+    "accountPlaceholder": "Local mode active (no account required)",
+    "about": "About HealthyCrop",
+    "version": "Version",
+    "credits": "Data credits and licenses",
+    "author": "Author",
+    "modelTitle": "Active TFLite Model",
+    "modelDetails": "MobileNetV3-Large Float16 (Coffee v0.1.0)",
+    "datasetsTitle": "Datasets & Training",
+    "datasetsDetails": "RoCoLe (CC BY 4.0) and BRACOL (CC BY-NC 4.0)"
+  },
+  "history": {
+    "title": "Diagnosis History",
+    "filterAll": "All",
+    "filterCrops": "Crops",
+    "filterSeverity": "Severity",
+    "filterFarms": "Farm",
+    "allFarms": "All farms",
+    "noScansTitle": "No diagnoses found",
+    "noScansDescription": "No diagnoses match the selected filters.",
+    "deletedToast": "Diagnosis deleted",
+    "undo": "Undo",
+    "syncPending": "Pending sync",
+    "syncSynced": "Synced"
+  },
+  "scanDetail": {
+    "title": "Diagnosis Detail",
+    "scannedAt": "Capture Date",
+    "location": "Location",
+    "farm": "Farm",
+    "plot": "Plot",
+    "noFarmAssigned": "No farm assigned",
+    "assignFarm": "Assign Farm & Plot",
+    "modelInfo": "Model",
+    "inferenceTime": "Inference time",
+    "deleteScan": "Delete diagnosis",
+    "deleteConfirm": "Do you want to delete this diagnosis?"
+  },
+  "farms": {
+    "title": "Farms & Plots",
+    "addFarm": "New farm",
+    "editFarm": "Edit farm",
+    "deleteFarm": "Delete farm",
+    "farmName": "Farm name",
+    "region": "Region or canton",
+    "altitude": "Altitude (m a.s.l.)",
+    "addPlot": "New plot",
+    "plotName": "Plot name",
+    "areaHa": "Area (ha)",
+    "selectCrop": "Crop",
+    "plotsCount": "plots",
+    "noFarms": "No farms registered",
+    "noFarmsDescription": "Register your farms and plots to organize field diagnoses.",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+}

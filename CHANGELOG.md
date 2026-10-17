@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-16
+
+### Added
+
+- Offline-first SQLite persistence (`expo-sqlite`, `expo-crypto`), repository layer for farms, plots, and scans with sync queue metadata, History screen with multi-filter and swipe-to-delete with undo, Scan Detail screen with farm/plot location assignment, and Farms/Plots CRUD screens (`#26`).
+- Camera screen with viewfinder framing guide and shutter flash, crop-specific photo tips modal, analyzing sweep-line animation, and result screen with severity progress meter, confidence breakdown, pop-in status badge with haptics, low-confidence retake state, and agronomic disclaimer (`#25`).
+- On-device TFLite inference pipeline (`app/src/ml/`) with `expo-image-manipulator`, `jpeg-js` RGB decoding, training normalization, `react-native-fast-tflite`, threshold calibration, and Jest cross-platform tensor parity test (`#24`).
+- Onboarding (3-slide educational flow with mandatory agronomic disclaimer acceptance), Home (camera-first layout, primary Scan CTA, crop selector chips, offline status pill, and empty state), and Settings screens (instant `es`/`en` language switcher, light/dark theme toggle, model version, dataset licenses) (`#23`).
+- Reusable UI component library in `app/src/components/ui/` (`Button`, `Card`, `Chip`, `Badge`, `Sheet`, `Toast`, `Skeleton`, `EmptyState`, `ProgressMeter`) with spring micro-interactions, haptics, >= 48 dp touch targets, reduced motion support, and RNTL unit tests (`#22`).
+- Agricultural design tokens (`app/src/theme/`) covering colors, typography, spacing, radii, elevation, and motion with dark/light themes and WCAG 2.1 AA mathematical contrast tests (`#21`).
+- `ThemeProvider` and `useTheme()` hook integrating user theme preference with system appearance and reduced motion accessibility (`#21`).
+- Expo SDK 52 Android application setup (`app/app.json`, `app/package.json`) with package `com.keylorpineda.healthycrop`, New Architecture, and Expo Router (`#20`).
+- Internationalization subsystem (`app/src/i18n/`) with Spanish default, English secondary, symmetric translation keys, and mandatory agronomic disclaimer (`#20`).
+- Zustand preferences store (`app/src/stores/preferences.ts`) managing locale, light/dark/system theme, and onboarding state (`#20`).
+- Jest + React Native Testing Library configuration (`jest-expo`) with native module mocks and unit tests (`#20`).
+
 ## [0.1.0] - 2026-10-16
 
 ### Added

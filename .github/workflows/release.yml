@@ -51,7 +51,7 @@ jobs:
             if [ -d "android" ] && [ "${GITHUB_REF_NAME}" = "v1.0.0" ]; then
               cd android
               ./gradlew assembleRelease -x lint -x test --no-daemon
-              cp app/build/outputs/apk/release/*.apk "../../healthycropping-${GITHUB_REF_NAME}.apk"
+              cp app/build/outputs/apk/release/*.apk "../../healthycrop-${GITHUB_REF_NAME}.apk"
             else
               echo "Intermediate pre-1.0 milestone (${GITHUB_REF_NAME}); native prebuild verified."
             fi
@@ -65,7 +65,7 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           awk "/^## \[${VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md > release_notes.md
           if [ ! -s release_notes.md ]; then
-            echo "Release ${GITHUB_REF_NAME} of HealthyCropping." > release_notes.md
+            echo "Release ${GITHUB_REF_NAME} of HealthyCrop." > release_notes.md
           fi
 
       - name: Create GitHub Release with APK and TFLite models
@@ -76,6 +76,6 @@ jobs:
           prerelease: false
           fail_on_unmatched_files: false
           files: |
-            healthycropping-*.apk
+            healthycrop-*.apk
             ml/models/**/*.tflite
             ml/models/**/registry.json

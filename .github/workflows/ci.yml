@@ -101,7 +101,7 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Run Mypy typechecker
-        run: uv run mypy src tests
+        run: uv run mypy src scripts tests
 
       - name: Run Pytest
         run: uv run pytest
