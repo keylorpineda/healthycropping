@@ -1,0 +1,59 @@
+crop: coffee
+image_size: 224
+seed: 42
+phash_hash_size: 8
+phash_max_distance: 2
+min_train_images_per_class: 50
+
+split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+
+classes:
+  - healthy
+  - leaf_rust
+  - leaf_miner
+  - cercospora
+  - brown_leaf_spot
+  - red_spider_mite
+
+sources:
+  rocole:
+    raw_dir: ml/data/raw/rocole
+    annotations_xlsx: Annotations/RoCoLe-classes.xlsx
+    photos_dir: Photos
+    group_id_regex: "^(C\\d+P\\d+)"
+    label_map:
+      healthy:
+        label: healthy
+        severity: "0"
+      rust_level_1:
+        label: leaf_rust
+        severity: "1"
+      rust_level_2:
+        label: leaf_rust
+        severity: "2"
+      rust_level_3:
+        label: leaf_rust
+        severity: "3"
+      rust_level_4:
+        label: leaf_rust
+        severity: "4"
+      red_spider_mite:
+        label: red_spider_mite
+        severity: "0"
+
+  bracol:
+    raw_dir: ml/data/raw/bracol
+    leaf_csv: coffee-datasets/coffee-datasets/leaf/dataset.csv
+    leaf_images_dir: coffee-datasets/coffee-datasets/leaf/images
+    # Predominant stress codes in BRACOL leaf/dataset.csv:
+    # 0 = healthy, 1 = leaf_miner, 2 = leaf_rust, 3 = brown_leaf_spot (phoma),
+    # 4 = cercospora, 5 = undetermined (excluded)
+    predominant_stress_map:
+      0: healthy
+      1: leaf_miner
+      2: leaf_rust
+      3: brown_leaf_spot
+      4: cercospora

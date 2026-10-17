@@ -18,11 +18,11 @@ healthycrop/
 ## Commands
 - **App (`app/`, pnpm only)**: `pnpm install` | `pnpm lint` | `pnpm format:check` | `pnpm typecheck` | `pnpm test`
 - **API (`api/`, uv + Python 3.12)**: `cd api && uv sync --all-extras && uv run ruff check . && uv run ruff format --check . && uv run mypy src tests && uv run pytest`
-- **ML (`ml/`, uv + Python 3.12)**: `cd ml && uv sync --all-extras && uv run ruff check . && uv run ruff format --check . && uv run mypy src tests && uv run pytest`
+- **ML (`ml/`, uv + Python 3.12)**: `cd ml && uv sync --all-extras && uv run ruff check . && uv run ruff format --check . && uv run mypy src scripts tests && uv run pytest`
 
 ## Conventions
-- **Commits**: Conventional Commits referencing issue: `<type>(<scope>): <summary> (#<id>)`.
-- **Branches**: One branch per issue from `main`: `feat/<id>-<slug>`, `fix/...`, `docs/...`, `chore/...`.
+- **Commits**: Conventional Commits (`<type>(<scope>): <imperative summary, lowercase, no period>`).
+- **Branches**: `develop` is default (protected, PR + green CI). Work branches `<type>/<id>-<slug>` cut from `develop`, rebase-merged (`--rebase`) into `develop`. `main` holds completed releases only (`chore(release): vX.Y.Z` PR from `develop`, `--merge`, tagged `vX.Y.Z`).
 - **Python**: Python 3.12, strict `mypy`, `ruff`, `pytest`.
 - **App**: TypeScript `strict`, ESLint, Prettier, Jest + RNTL. Tokens only in `app/src/theme/`; UI primitives only in `app/src/components/ui/`. UI i18n: `es` default, `en` secondary.
 
@@ -34,11 +34,9 @@ healthycrop/
 5. **Identical Preprocessing**: Python training/export and `app/src/ml/` must produce the exact same 224x224 RGB normalized tensor (verified by a shared fixture test).
 6. **Firestore Boundary**: App sends Firebase ID tokens to `api/` and **never** touches Firestore directly; Firestore rules deny all client access.
 7. **No Secrets/Data/Weights in Git**: Never read, print, or commit `.env`, `service-account*.json`, `google-services.json`, `kaggle.json`, keystores, `ml/data/`, or `*.tflite`/`*.keras`/`*.h5`.
-8. **Issue & Branch Flow**: Every task has an approved issue (`[Phase N] Imperative summary`, Context/Scope/Out of scope/Acceptance criteria/Dependencies, 1 `type:`, >=1 `area:`, 1 `priority:`, Milestone, Project board). Move to *In progress* -> branch -> PR with `Closes #N` -> green CI -> squash-merge -> *Done*.
+8. **Issue & Branch Flow**: Every task has an issue (`[Phase N] Imperative summary`, 1 `type:`, >=1 `area:`, 1 `priority:`, Milestone `vX.Y.Z`, Project board). Move to *In progress* -> branch from `develop` -> PR to `develop` (`Closes #N`, Milestone) -> green CI -> rebase-merge -> *Done*.
 
 ## Workflow
 1. One phase at a time, in order (`docs/PLAN.md`).
-2. Before coding, present an implementation plan (files, new dependencies + why, risks, open questions) and wait for approval.
-3. Work issue by issue on its branch; run lint, typecheck, and tests; fix root causes (never disable rules or skip tests).
-4. Verify each "Done when" and explain how; tick `docs/PLAN.md`; update `docs/DEVLOG.md` and `CHANGELOG.md`.
-5. Show proposed commits and PR before pushing; never force-push `main`.
+2. Work issue by issue on its branch from `develop`; run lint, typecheck, and tests; fix root causes (never disable rules or skip tests).
+3. Verify each "Done when"; tick `docs/PLAN.md`; update `docs/DEVLOG.md` and `CHANGELOG.md`; never force-push `develop` or `main`.

@@ -114,9 +114,14 @@ healthycrop/
 
 ## Roadmap & Milestones
 
-- **MVP (`v1.0.0`)**: 3 crop models (Coffee, Cacao, Banana), offline on-device TFLite diagnosis, local SQLite history & farm/plot tracking, optional email/password account + idempotent cloud sync, Gemini RAG explanations citing official manuals, and GitHub Release APK.
-- **`v1.1`**: Google Sign-In, OpenStreetMap plot map with disease hotspots, and conservative rule-based Open-Meteo weather risk alerts (`CC BY 4.0`).
-- **`v1.2`**: Monthly cloud-masked Sentinel-2 NDVI per plot via Google Earth Engine (noncommercial Community tier) and additional crops.
+- **`v0.1.0` — Foundation & Coffee ML** *(Phases 0–2, due `2026-10-30`)*: Monorepo & CI setup, Community Standards, RoCoLe + BRACOL coffee dataset pipeline, and fine-tuned `MobileNetV3-Large` float16 TFLite coffee model (`< 10 MB`) with shared preprocessing fixture.
+- **`v0.2.0` — Offline Android App & Coffee Diagnosis** *(Phases 3–4, due `2026-11-13`)*: Expo Android development build, agricultural design system & UI component library, camera/gallery capture, on-device TFLite inference, Result screen, and `expo-sqlite` offline history & farm/plot tracking.
+- **`v0.3.0` — Multi-Crop Models (Cacao & Banana)** *(Phase 5, due `2026-11-27`)*: Cacao pod (YOLO cropped) and Banana leaf dataset preparation, `MobileNetV3-Large` training & float16 TFLite export, and 3-crop offline diagnosis in the app.
+- **`v0.4.0` — Accounts & Sync** *(Phase 6, due `2026-12-04`)*: FastAPI backend, optional email/password auth, `ownerUid`-isolated Firestore CRUD, signed Cloudinary photo uploads, and idempotent SQLite-to-cloud scan sync.
+- **`v0.5.0` — AI Explanations (Gemini RAG)** *(Phase 7, due `2026-12-14`)*: Local RAG index over official agronomic manuals, `POST /explanations` with Gemini Flash citing sources/sections, response caching, `20/hr` rate limiting, and Android UI integration.
+- **`v1.0.0` — Field Validation & Release** *(Phase 8, due `2026-12-22`)*: Costa Rican field validation across all 3 crops, WCAG AA accessibility audit, final metrics/documentation, and `v1.0.0` GitHub Release with APK + `.tflite` models.
+- **`v1.1.0` — Maps, Hotspots & Weather Alerts** *(due `2027-01-08`)*: Google Sign-In, OpenStreetMap plot map with disease hotspots, and conservative rule-based Open-Meteo weather risk alerts (`CC BY 4.0`).
+- **`v1.2.0` — Earth Engine NDVI & Crop Expansion** *(due `2027-01-25`)*: Monthly cloud-masked Sentinel-2 NDVI per plot via Google Earth Engine (noncommercial Community tier) and additional crops.
 
 See [`docs/PLAN.md`](docs/PLAN.md) for the detailed phase breakdown.
 

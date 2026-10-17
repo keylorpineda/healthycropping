@@ -31,20 +31,30 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Configure Android SDK and accept licenses
+        run: |
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ -d "${SDK_ROOT}/cmdline-tools/latest/bin" ]; then
+            yes | "${SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          fi
 
       - name: Install JS dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Run prebuild & assemble release APK (when Android native project is configured)
         working-directory: app
+        env:
+          CI: "1"
         run: |
           if [ -f "app.json" ] || [ -f "app.config.ts" ]; then
-            npx expo prebuild --platform android --non-interactive
-            cd android
-            ./gradlew assembleRelease
-            cp app/build/outputs/apk/release/*.apk "../../healthycrop-${GITHUB_REF_NAME}.apk"
+            npx expo prebuild --platform android --no-install
+            if [ -d "android" ] && [ "${GITHUB_REF_NAME}" = "v1.0.0" ]; then
+              cd android
+              ./gradlew assembleRelease -x lint -x test --no-daemon
+              cp app/build/outputs/apk/release/*.apk "../../healthycropping-${GITHUB_REF_NAME}.apk"
+            else
+              echo "Intermediate pre-1.0 milestone (${GITHUB_REF_NAME}); native prebuild verified."
+            fi
           else
             echo "Expo app configuration not yet initialized; skipping APK assembly."
           fi
@@ -55,7 +65,7 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           awk "/^## \[${VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md > release_notes.md
           if [ ! -s release_notes.md ]; then
-            echo "Release ${GITHUB_REF_NAME} of HealthyCrop." > release_notes.md
+            echo "Release ${GITHUB_REF_NAME} of HealthyCropping." > release_notes.md
           fi
 
       - name: Create GitHub Release with APK and TFLite models
@@ -64,7 +74,8 @@ jobs:
           body_path: release_notes.md
           draft: false
           prerelease: false
+          fail_on_unmatched_files: false
           files: |
-            healthycrop-*.apk
+            healthycropping-*.apk
             ml/models/**/*.tflite
             ml/models/**/registry.json

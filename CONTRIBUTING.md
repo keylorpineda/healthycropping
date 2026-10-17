@@ -50,27 +50,25 @@ Thank you for your interest in contributing to **HealthyCrop**. This document ou
 
 ## Issue & Branch Workflow
 
-1. **Every change starts with an issue**:
-   - Ensure an approved GitHub Issue exists and belongs to a milestone (`MVP`, `v1.1`, or `v1.2`) and the GitHub Project board.
-   - Move the issue to **In progress** before starting work.
-   - If the scope changes while working, update the issue description first rather than deviating silently.
+1. **Branches**:
+   - **`develop`** (Default branch): Integration of finished work. Protected: PR + green CI required.
+   - **`main`**: Completed versions only (`v0.1.0`, `v0.2.0`, ..., `v1.0.0`, `v1.1.0`, `v1.2.0`). Updated only by release PRs from `develop` (`chore(release): vX.Y.Z`) merged with a merge commit, then tagged `vX.Y.Z`.
+   - **`<type>/<id>-<short-desc>`**: Short-lived work branches cut from `develop`, e.g.:
+     ```text
+     feat/17-coffee-finetune --rebase--> develop --release PR (merge commit)--> main --> tag vX.Y.Z
+     ```
 
-2. **Branch naming**:
-   Create one branch per issue from `main`:
-   - `feat/<issue-number>-<short-slug>` (e.g., `feat/12-coffee-export`)
-   - `fix/<issue-number>-<short-slug>`
-   - `docs/<issue-number>-<short-slug>`
-   - `chore/<issue-number>-<short-slug>`
-   - `test/<issue-number>-<short-slug>`
+2. **Every change starts with an issue**:
+   - Ensure an issue exists with `Context`, `Scope`, `Out of scope`, `Acceptance criteria`, and `Dependencies`, plus `type:*`, `area:*`, and `priority:*` labels, active `vX.Y.Z` Milestone, and GitHub Project board status.
+   - Move the issue to **In progress** before starting work.
 
 3. **Conventional Commits**:
-   Format every commit message using Conventional Commits and reference the issue number:
+   Format every commit message and PR title using Conventional Commits:
    ```text
-   <type>(<scope>): <imperative summary> (#<issue-number>)
+   <type>(<optional scope>): <imperative summary, lowercase, no period>
    ```
-   - Allowed types: `feat`, `fix`, `docs`, `chore`, `test`, `refactor`, `ci`, `build`, `perf`
-   - Common scopes: `ml`, `app`, `api`, `ci`, `docs`, `repo`
-   - Example: `feat(ml): export coffee model to TFLite (#12)`
+   - Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+   - Common scopes: `ml`, `app`, `api`, `ci`, `docs`, `repo`, `release`, `ui`, `i18n`, `auth`
 
 ## Quality Checks Before Opening a PR
 
@@ -98,14 +96,14 @@ All checks must pass locally before pushing. Fix root causes; never disable lint
   cd ml
   uv run ruff check .
   uv run ruff format --check .
-  uv run mypy src tests
+  uv run mypy src scripts tests
   uv run pytest
   ```
 
 ## Pull Request Flow
 
-1. Open a Pull Request targeting `main` and fill out the entire [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md).
-2. Include `Closes #<issue-number>` in the PR description.
-3. Attach screenshots or a screen recording for any UI changes.
-4. Ensure all CI jobs (`app`, `api`, `ml`) are green.
-5. Squash-merge into `main` once approved and green; the linked issue will move to **Done**.
+1. Open a Pull Request targeting `develop`, carry the active `vX.Y.Z` milestone, and include `Closes #<issue-number>` in the body.
+2. Ensure all CI jobs (`app`, `api`, `ml`) are green.
+3. **Rebase-merge (`--rebase`)** work PRs into `develop` so every atomic Conventional Commit is preserved in history; move the issue to **Done** on the Project board.
+4. When a milestone is complete, open a release PR from `develop` to `main` titled `chore(release): vX.Y.Z`, merge with a **merge commit (`--merge`)**, and tag `vX.Y.Z`.
+

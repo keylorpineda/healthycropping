@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "crop": "coffee",
+  "version": "0.1.0",
+  "model_file": "coffee_v0.1.0_fp16.tflite",
+  "model_sha256": "4ea988d4b2780c4ea41dd6f8d0af92de4335528c4c512bc8b39c42263c9d83bf",
+  "model_size_bytes": 6061508,
+  "quantization": "float16",
+  "labels": [
+    "healthy",
+    "leaf_rust",
+    "leaf_miner",
+    "cercospora",
+    "brown_leaf_spot",
+    "red_spider_mite"
+  ],
+  "input": {
+    "width": 224,
+    "height": 224,
+    "channels": 3,
+    "color_order": "RGB",
+    "dtype": "float32",
+    "layout": "NHWC"
+  },
+  "normalization": {
+    "mean": [
+      127.5,
+      127.5,
+      127.5
+    ],
+    "std": [
+      127.5,
+      127.5,
+      127.5
+    ]
+  },
+  "confidence_threshold": 0.79,
+  "metrics": {
+    "threshold_calibration_val": {
+      "threshold": 0.79,
+      "accepted_precision": 0.9088,
+      "coverage": 0.6948,
+      "target_precision": 0.9,
+      "target_met": true
+    },
+    "keras_test_accuracy": 0.8135,
+    "tflite_val_accuracy": 0.8333,
+    "tflite_test_accuracy": 0.8112,
+    "tflite_test_accuracy_drop_pp": 0.2331,
+    "keras_tflite_test_top1_agreement": 0.9977,
+    "threshold_test": {
+      "accepted_precision": 0.877,
+      "coverage": 0.7203
+    },
+    "test_samples": 429,
+    "val_samples": 426
+  }
+}
