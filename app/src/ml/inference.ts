@@ -2,8 +2,8 @@ import { loadTensorflowModel } from 'react-native-fast-tflite';
 
 import { type SupportedCrop } from '@/version';
 import { preprocessImageUri } from './preprocess';
-import { getCropRegistry, getSeverityForClass } from './registry';
-import { type InferencePrediction } from './types';
+import { getCropRegistry, getModelResourceName, getSeverityForClass } from './registry';
+import { type InferencePrediction, type ModelRegistry } from './types';
 
 export interface TfliteRunner {
   run: (inputTensor: Float32Array) => Promise<Float32Array | number[]>;
@@ -104,6 +104,14 @@ export function evaluatePrediction(
 }
 
 /**
+ * Model source for `react-native-fast-tflite`. A value without `://` is resolved on Android
+ * as a raw resource name, which `app/plugins/withTfliteModels.js` bundles at prebuild.
+ */
+export function getModelSource(registry: ModelRegistry): { url: string } {
+  return { url: getModelResourceName(registry) };
+}
+
+/**
  * Runs the complete on-device inference pipeline from image URI to structured prediction.
  */
 export async function runInference(
@@ -127,9 +135,7 @@ export async function runInference(
   if (runner) {
     rawOutput = await runner.run(inputTensor);
   } else {
-    const model = await loadTensorflowModel({
-      url: `file:///android_asset/models/${registry.model_file}`,
-    });
+    const model = await loadTensorflowModel(getModelSource(registry));
 
     const results = await model.run([inputTensor]);
     const firstOutput = results[0];

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "crop": "cacao",
+  "version": "0.1.0",
+  "model_file": "cacao_v0.1.0_fp16.tflite",
+  "model_sha256": "c029ad5be683d98e98f7f73965102da97b7fa8f09b4500a36f743c480a9d4235",
+  "model_size_bytes": 6055744,
+  "quantization": "float16",
+  "labels": ["healthy", "monilia", "black_pod"],
+  "input": {
+    "width": 224,
+    "height": 224,
+    "channels": 3,
+    "color_order": "RGB",
+    "dtype": "float32",
+    "layout": "NHWC"
+  },
+  "normalization": {
+    "mean": [127.5, 127.5, 127.5],
+    "std": [127.5, 127.5, 127.5]
+  },
+  "confidence_threshold": 0.51,
+  "metrics": {
+    "threshold_calibration_val": {
+      "threshold": 0.51,
+      "accepted_precision": 0.9015,
+      "coverage": 0.9802,
+      "target_precision": 0.9,
+      "target_met": true
+    },
+    "keras_test_accuracy": 0.9173,
+    "tflite_val_accuracy": 0.896,
+    "tflite_test_accuracy": 0.9173,
+    "tflite_test_accuracy_drop_pp": 0.0,
+    "keras_tflite_test_top1_agreement": 1.0,
+    "threshold_test": {
+      "accepted_precision": 0.9173,
+      "coverage": 1.0
+    },
+    "test_samples": 399,
+    "val_samples": 404
+  }
+}
