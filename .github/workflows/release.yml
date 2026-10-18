@@ -47,7 +47,11 @@ jobs:
           CI: "1"
         run: |
           if [ -f "app.json" ] || [ -f "app.config.ts" ]; then
-            npx expo prebuild --platform android --no-install
+            if [ "${GITHUB_REF_NAME}" = "v1.0.0" ]; then
+              # Fail prebuild if any registered TFLite model is missing (app/plugins/withTfliteModels.js)
+              export HEALTHYCROPPING_REQUIRE_MODELS=1
+            fi
+            pnpm exec expo prebuild --platform android --no-install
             if [ -d "android" ] && [ "${GITHUB_REF_NAME}" = "v1.0.0" ]; then
               cd android
               ./gradlew assembleRelease -x lint -x test --no-daemon
