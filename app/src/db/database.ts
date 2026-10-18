@@ -15,6 +15,9 @@ export function getDatabase(): SQLite.SQLiteDatabase {
 }
 
 export function initDatabase(db: SQLite.SQLiteDatabase): void {
+  // SQLite disables foreign keys per connection by default; without this pragma the
+  // ON DELETE CASCADE / SET NULL clauses in SCHEMA_SQL never fire.
+  db.execSync('PRAGMA foreign_keys = ON;');
   db.execSync(SCHEMA_SQL);
 }
 

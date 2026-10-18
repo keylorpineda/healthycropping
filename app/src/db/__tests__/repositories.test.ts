@@ -15,6 +15,17 @@ describe('SQLite Repositories (Farms, Plots, Scans)', () => {
     initDatabase(mockSQLite.__mockDb);
   });
 
+  describe('initDatabase', () => {
+    it('enables foreign key enforcement before creating the schema', () => {
+      const execSpy = jest.spyOn(mockSQLite.__mockDb, 'execSync');
+      initDatabase(mockSQLite.__mockDb);
+
+      expect(execSpy.mock.calls[0]?.[0]).toMatch(/PRAGMA foreign_keys = ON/);
+      expect(execSpy.mock.calls[1]?.[0]).toMatch(/CREATE TABLE IF NOT EXISTS scans/);
+      execSpy.mockRestore();
+    });
+  });
+
   describe('FarmsRepository', () => {
     it('creates, retrieves, updates, soft-deletes, and restores a farm', () => {
       // 1. Create farm
