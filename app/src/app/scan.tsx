@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { AnalyzingOverlay } from '@/components/camera';
-import { scansRepository } from '@/db';
+import { persistScanPhoto, scansRepository } from '@/db';
 import { runInference } from '@/ml';
 import { type InferencePrediction } from '@/ml/types';
 import { CameraScreen, ResultScreen } from '@/screens';
@@ -27,6 +27,14 @@ export default function ScanScreen(): React.JSX.Element {
       setPrediction(result);
       setStatus('result');
 
+      // Copy the photo out of the volatile camera cache before persisting the scan
+      let persistentUri = uri;
+      try {
+        persistentUri = await persistScanPhoto(uri);
+      } catch (error) {
+        console.error('Failed to persist scan photo', error);
+      }
+
       // Persist scan to SQLite offline database
       scansRepository.create({
         crop,
@@ -36,7 +44,7 @@ export default function ScanScreen(): React.JSX.Element {
         threshold: result.threshold,
         is_low_confidence: result.isLowConfidence,
         model_version: 'v0.1.0-coffee-mobilenetv3large-float16',
-        local_photo_uri: uri,
+        local_photo_uri: persistentUri,
         explanation_json: JSON.stringify({
           probabilities: result.probabilities,
           inferenceTimeMs: result.inferenceTimeMs,
