@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Scan photos are copied from the volatile camera cache into the app's document directory (`expo-file-system`), and SQLite foreign keys are enforced on every connection (`#101`).
 - Replaced `android-actions/setup-android@v3` in `.github/workflows/release.yml` with preinstalled `$ANDROID_HOME` license acceptance (avoiding removed `sdkmanager tools` failure on Command-Line Tools 16.0), added `scripts/` to `ml` Mypy CI check, and pointed `.github/dependabot.yml` at `develop` and root `pnpm` workspace.
 
 ## [0.2.0] - 2026-10-16
