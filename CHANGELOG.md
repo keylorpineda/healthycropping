@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Scan photos are copied from the volatile camera cache into the app's document directory (`expo-file-system`), and SQLite foreign keys are enforced on every connection (`#101`).
+- On-device model loading: bundle registered TFLite models as Android raw resources via the `app/plugins/withTfliteModels.js` config plugin (SHA-256 verified), load them by resource name, route cacao to its own registry and model, disable banana until its model exists, and surface inference failures (`#100`).
 - Replaced `android-actions/setup-android@v3` in `.github/workflows/release.yml` with preinstalled `$ANDROID_HOME` license acceptance (avoiding removed `sdkmanager tools` failure on Command-Line Tools 16.0), added `scripts/` to `ml` Mypy CI check, and pointed `.github/dependabot.yml` at `develop` and root `pnpm` workspace.
 
 ## [0.2.0] - 2026-10-16
