@@ -5,8 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Badge, Button, Card, Chip, EmptyState, Toast } from '@/components/ui';
 import { type Scan, scansRepository } from '@/db';
+import { isCropAvailable } from '@/ml/registry';
 import { useTheme } from '@/theme';
-import { type SupportedCrop } from '@/version';
+import { SUPPORTED_CROPS, type SupportedCrop } from '@/version';
 
 export interface HomeScreenProps {
   onOpenSettings?: () => void;
@@ -141,29 +142,25 @@ export function HomeScreen({
             {t('home.selectCrop')}
           </Text>
           <View style={styles.cropChipsRow} testID="crop-chips-row">
-            <Chip
-              label={t('crops.coffee')}
-              crop="coffee"
-              selected={selectedCrop === 'coffee'}
-              onPress={() => setSelectedCrop('coffee')}
-              testID="crop-chip-coffee"
-            />
-            <View style={{ width: theme.spacing.sm }} />
-            <Chip
-              label={t('crops.cacao')}
-              crop="cacao"
-              selected={selectedCrop === 'cacao'}
-              onPress={() => setSelectedCrop('cacao')}
-              testID="crop-chip-cacao"
-            />
-            <View style={{ width: theme.spacing.sm }} />
-            <Chip
-              label={t('crops.banana')}
-              crop="banana"
-              selected={selectedCrop === 'banana'}
-              onPress={() => setSelectedCrop('banana')}
-              testID="crop-chip-banana"
-            />
+            {SUPPORTED_CROPS.map((crop, index) => {
+              const available = isCropAvailable(crop);
+              const label = available
+                ? t(`crops.${crop}`)
+                : `${t(`crops.${crop}`)} (${t('home.cropComingSoon')})`;
+              return (
+                <React.Fragment key={crop}>
+                  {index > 0 && <View style={{ width: theme.spacing.sm }} />}
+                  <Chip
+                    label={label}
+                    crop={crop}
+                    selected={selectedCrop === crop}
+                    disabled={!available}
+                    onPress={() => setSelectedCrop(crop)}
+                    testID={`crop-chip-${crop}`}
+                  />
+                </React.Fragment>
+              );
+            })}
           </View>
         </View>
 

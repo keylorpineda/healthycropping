@@ -108,6 +108,13 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       fireEvent.press(scanBtn);
       expect(onScanMock).toHaveBeenCalledWith('cacao');
 
+      // Banana has no bundled model yet, so its chip is disabled
+      const bananaChip = screen.getByTestId('crop-chip-banana');
+      expect(bananaChip.props.accessibilityState.disabled).toBe(true);
+      expect(bananaChip).toHaveTextContent('Banano (Próximamente)');
+      fireEvent.press(bananaChip);
+      expect(cacaoChip.props.accessibilityState.selected).toBe(true);
+
       // Empty State
       expect(screen.getByTestId('home-empty-state')).toBeTruthy();
 

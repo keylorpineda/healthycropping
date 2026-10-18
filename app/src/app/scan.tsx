@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { AnalyzingOverlay } from '@/components/camera';
+import { Toast } from '@/components/ui';
 import { persistScanPhoto, scansRepository } from '@/db';
-import { runInference } from '@/ml';
+import { getModelVersion, runInference } from '@/ml';
 import { type InferencePrediction } from '@/ml/types';
 import { CameraScreen, ResultScreen } from '@/screens';
 import { type SupportedCrop } from '@/version';
 
 export default function ScanScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ crop?: SupportedCrop }>();
   const crop: SupportedCrop = params.crop || 'coffee';
 
   const [status, setStatus] = useState<'camera' | 'analyzing' | 'result'>('camera');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [prediction, setPrediction] = useState<InferencePrediction | null>(null);
+  const [errorVisible, setErrorVisible] = useState<boolean>(false);
 
   const handlePhotoCaptured = async (uri: string) => {
     setImageUri(uri);
@@ -43,15 +47,16 @@ export default function ScanScreen(): React.JSX.Element {
         confidence: result.confidence,
         threshold: result.threshold,
         is_low_confidence: result.isLowConfidence,
-        model_version: 'v0.1.0-coffee-mobilenetv3large-float16',
+        model_version: getModelVersion(crop),
         local_photo_uri: persistentUri,
         explanation_json: JSON.stringify({
           probabilities: result.probabilities,
           inferenceTimeMs: result.inferenceTimeMs,
         }),
       });
-    } catch {
-      // In case of unexpected inference failure, reset to camera
+    } catch (error) {
+      console.error('On-device inference failed', error);
+      setErrorVisible(true);
       setStatus('camera');
     }
   };
@@ -68,6 +73,15 @@ export default function ScanScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
+      <Toast
+        visible={errorVisible}
+        message={t('camera.analysisFailed')}
+        variant="error"
+        durationMs={4000}
+        onDismiss={() => setErrorVisible(false)}
+        testID="scan-error-toast"
+      />
+
       {status === 'camera' && (
         <CameraScreen
           crop={crop}
