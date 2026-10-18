@@ -120,6 +120,13 @@ jest.mock('expo-crypto', () => ({
   }),
 }));
 
+// Mock expo-file-system
+jest.mock('expo-file-system', () => ({
+  documentDirectory: 'file:///mock/documents/',
+  makeDirectoryAsync: jest.fn().mockResolvedValue(undefined),
+  copyAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
 // In-memory SQLite mock for expo-sqlite
 class MockSQLiteDatabase {
   tables: Record<string, any[]> = {};
