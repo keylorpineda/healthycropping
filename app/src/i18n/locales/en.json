@@ -72,7 +72,8 @@
     "noScansTitle": "No scans recorded yet",
     "noScansDescription": "Tap the scan button to assess the phytosanitary condition of your crop.",
     "offlinePill": "100% Offline",
-    "syncPill": "Local Storage"
+    "syncPill": "Local Storage",
+    "cropComingSoon": "Coming soon"
   },
   "camera": {
     "tipsTitle": "Photo Tips",
@@ -82,7 +83,8 @@
     "permissionTitle": "Camera Permission Required",
     "permissionMessage": "HealthyCropping needs camera access to diagnose your crops directly in the field.",
     "grantPermission": "Grant Permission",
-    "framingHint": "Frame the leaf inside the guide box"
+    "framingHint": "Frame the leaf inside the guide box",
+    "analysisFailed": "Analysis failed. Please try again."
   },
   "photoTips": {
     "coffee": {

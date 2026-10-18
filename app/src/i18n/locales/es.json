@@ -72,7 +72,8 @@
     "noScansTitle": "Sin diagnósticos registrados",
     "noScansDescription": "Presione el botón de escaneo para evaluar el estado fitosanitario de su cultivo.",
     "offlinePill": "100% Fuera de línea",
-    "syncPill": "Almacenamiento local"
+    "syncPill": "Almacenamiento local",
+    "cropComingSoon": "Próximamente"
   },
   "camera": {
     "tipsTitle": "Consejos de captura",
@@ -82,7 +83,8 @@
     "permissionTitle": "Permiso de cámara requerido",
     "permissionMessage": "HealthyCropping necesita acceso a la cámara para diagnosticar sus plantas directamente en campo.",
     "grantPermission": "Conceder permiso",
-    "framingHint": "Encuadre la hoja dentro del marco guía"
+    "framingHint": "Encuadre la hoja dentro del marco guía",
+    "analysisFailed": "No se pudo analizar la foto. Intente de nuevo."
   },
   "photoTips": {
     "coffee": {
