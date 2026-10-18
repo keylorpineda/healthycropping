@@ -35,7 +35,8 @@
         {
           "root": "./src/app"
         }
-      ]
+      ],
+      "./plugins/withTfliteModels"
     ],
     "experiments": {
       "typedRoutes": true
