@@ -180,3 +180,8 @@ This log documents what was built, key architectural decisions, and technical pr
   - Implemented `ml/scripts/export_cacao_tflite.py` and exported `ml/models/cacao/cacao_v0.1.0_fp16.tflite` (`6,055,744` bytes = `6.06 MB`, `< 10 MB`).
   - Verified bit-level parity: TFLite test accuracy is **`91.73%`** (`0.00 pp` drop vs. Keras) with **`100.00%`** top-1 agreement (`399/399` test pods).
   - Calibrated confidence threshold `0.51` (`90.15%` validation accepted precision, `91.73%` test accepted precision at `100.0%` coverage), wrote `ml/models/cacao/registry.json`, and populated `docs/MODEL_CARD.md` §3 and `docs/EXPERIMENTS.md` §3.6.
+
+### Problems Solved
+- **Scan Photo Persistence & SQLite Foreign Keys (`#101`)**:
+  - Scans stored the camera/image-picker cache URI, which Android may purge at any time. `persistScanPhoto` (`app/src/db/photoStorage.ts`, `expo-file-system`) now copies each photo into `documentDirectory/scans/<uuid>.<ext>` before the scan is written, falling back to the original URI if the copy fails.
+  - `initDatabase` now runs `PRAGMA foreign_keys = ON` on every connection, so the schema's `ON DELETE CASCADE` (farms -> plots) and `ON DELETE SET NULL` (scans) clauses are enforced.
