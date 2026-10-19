@@ -196,3 +196,10 @@ This log documents what was built, key architectural decisions, and technical pr
 - BananaLSD `AugmentedSet/` is excluded (synthetic copies of `OriginalSet/` photos would leak across splits); `cordana` and `pestalotiopsis` (`335` photos) are outside the taxonomy.
 - NM-AIST publishes no plant IDs, so blocks of 10 consecutive capture numbers share a `group_id`. pHash removed `39` near-duplicates (all within BananaLSD `healthy`). Final dataset: `1,313` images, `770` groups, `913 / 200 / 200` split with zero group overlap.
 - `fusarium_wilt` only exists in NM-AIST; NM-AIST `healthy` and `black_sigatoka` photos are also ingested so the model cannot separate the classes by source alone.
+
+### Banana Training & Export (`#30`, `#71`)
+- Trained `banana-v0.1.0-baseline` (`0.9676` test Macro-F1) and `banana-v0.1.0-finetuned` (`0.9731`) with the cacao recipe on CPU (TensorFlow `2.21.0` has no native Windows GPU support; each run takes about one minute thanks to cached spatial features).
+- Added `breakdown_by_group` (`ml/src/healthycropping_ml/evaluate.py`) and `ml/scripts/evaluate_by_source.py` to check for source shortcuts, since `fusarium_wilt` only comes from NM-AIST: NM-AIST `healthy` (`51/51`) and `fusarium_wilt` (`45/46`) are separated within the same source, so the model is not classifying by photo style alone.
+- Validation precision saturated (`99.5%` at full coverage), so threshold calibration returned `0.30` (chance level for 3 classes) and the app would never ask for a retake. Added `--threshold-floor` to the export pipeline (default `0.30` keeps coffee/cacao unchanged) and exported banana with `0.80`, which rejects `3` of `5` test errors at `97%` coverage.
+- The export wrote `registry.json` and the shared preprocessing fixture with CRLF line endings on Windows, producing spurious diffs; both are now written with `newline="
+"`.
