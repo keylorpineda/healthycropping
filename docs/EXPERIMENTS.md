@@ -31,8 +31,8 @@ This document records all training, hyperparameter, ablation, and quantization e
 | `coffee-v0.1.0-finetuned` | Phase 2 | Coffee | Top projection + `SpatialDropout2D` + `AdamW` + val logit calibration | `4` (`conv_1`, BN frozen) | `2e-3 / 3e-4` | `18 + 18` (best `E08`) | **`0.7911`** (`0.8150` peak trial) | **`0.7290`** (`0.7463` peak trial) | `81.35% / 81.12%` | `6.06 MB` | Best balanced checkpoint, Grad-CAM (`#17`), float16 export (`#18`) |
 | `cacao-v0.1.0-baseline` | Phase 5 | Cacao | Baseline (frozen backbone + val logit calibration) | `0` (frozen) | `2e-3 / —` | `22` (best `E14`) | `0.7748` | `0.7946` | `87.47% / —` | — | Initial frozen `MobileNetV3-Large` cacao baseline (`#28`) |
 | `cacao-v0.1.0-finetuned` | Phase 5 | Cacao | Top-30 block fine-tuning + `SpatialDropout2D` + `AdamW` + val logit calibration | `30` (BN frozen) | `2e-3 / 2e-4` | `22 + 25` (best `E19`) | **`0.8233`** | **`0.8502`** (`>= 0.80`) | **`91.73% / 91.73%`** | `6.06 MB` | Exceeds `0.80` Macro-F1 target, Grad-CAM (`#28`), float16 export (`#70`) |
-| `banana-001` | Phase 5 | Banana | Baseline (frozen backbone) | `0` (frozen) | `1e-3 / —` | *Pending* | *Pending* | *Pending* | *Pending* | — | Initial frozen `MobileNetV3-Large` baseline |
-| `banana-002` | Phase 5 | Banana | Fine-tuned top blocks | *Pending* | `1e-3 / 1e-4` | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | Float16 TFLite export candidate |
+| `banana-v0.1.0-baseline` | Phase 5 | Banana | Baseline (frozen backbone + val logit calibration) | `0` (frozen) | `2e-3 / —` | `23` (best `E15`) | `0.9947` | `0.9676` | `97.00% / —` | — | Initial frozen `MobileNetV3-Large` banana baseline (`#30`) |
+| `banana-v0.1.0-finetuned` | Phase 5 | Banana | Top-30 block fine-tuning + `SpatialDropout2D` + `AdamW` + val logit calibration | `30` (BN frozen) | `2e-3 / 2e-4` | `16 + 12` (best `E04`) | **`0.9947`** | **`0.9731`** (`>= 0.80`) | **`97.50% / 97.50%`** | `6.06 MB` | Grad-CAM (`#30`), float16 export with `0.80` threshold floor (`#71`) |
 
 ---
 
@@ -155,6 +155,56 @@ This document records all training, hyperparameter, ablation, and quantization e
 
 ---
 
+### 3.7 `banana-v0.1.0-baseline` — Phase 5 Frozen `MobileNetV3-Large` Baseline (`2026-10-19`, `#30`)
+
+- **Dataset Split**: `train = 913`, `val = 200`, `test = 200` across `770` `group_id`s (`seed = 42`, zero `group_id` overlap) combining **BananaLSD** (`OriginalSet` `healthy`, `sigatoka`) and **NM-AIST** (`healthy`, `black_sigatoka`, `fusarium_wilt`); see [`data_reports/banana.md`](data_reports/banana.md).
+- **Training Configuration**: Same recipe as cacao (`ml/scripts/train_banana.py`): frozen backbone, $D_4$ dihedral spatial feature augmentation + minority oversampling, Adam (`lr = 2e-3`), `batch_size = 64`, `patience = 8` (early stop at epoch `23`, best restored from epoch `15`), validation logit bias calibration. CPU-only run (`40 s`, TensorFlow `2.21.0` on Windows).
+- **Overall Metrics**:
+  - **Validation (`n = 200`)**: Accuracy = **`99.50%`**, **Macro-F1 = `0.9947`**.
+  - **Held-Out Test (`n = 200`)**: Accuracy = **`97.00%`**, Macro-Precision = `0.9644`, Macro-Recall = `0.9712`, **Macro-F1 = `0.9676`**.
+
+| Class (`label`) | Precision | Recall | F1-Score | Test Support |
+|---|---:|---:|---:|---:|
+| `healthy` | `0.9683` | `1.0000` | **`0.9839`** | `61` |
+| `black_sigatoka` | `0.9889` | `0.9570` | **`0.9727`** | `93` |
+| `fusarium_wilt` | `0.9362` | `0.9565` | **`0.9462`** | `46` |
+| **Macro Average** | **`0.9644`** | **`0.9712`** | **`0.9676`** | **`200`** |
+
+![Banana Baseline Test Confusion Matrix](assets/confusion_matrices/banana_baseline.png)
+
+---
+
+### 3.8 `banana-v0.1.0-finetuned` — Phase 5 Top-Block Fine-Tuning & Logit Calibration (`2026-10-19`, `#30`)
+
+- **Fine-Tuning Protocol** (identical to `cacao-v0.1.0-finetuned`):
+  1. **Stage 1 (Frozen Head Warm-Up)**: early stop at epoch `16` at `lr = 2e-3` (`val_macro_f1 = 0.9895`).
+  2. **Stage 2 (Top-30 Backbone Fine-Tuning)**: top `30` layers unfrozen (BatchNorm frozen), `SpatialDropout2D(0.20)`, `AdamW(lr = 2e-4, weight_decay = 1e-3)`; best validation Macro-F1 `0.9947` at epoch `4`, early stop at epoch `12`.
+  3. **Stage 3 (Validation Logit Bias Calibration)**: validation Macro-F1 unchanged at `0.9947` (saturated).
+- **Held-Out Test Results (`n = 200`)**: Accuracy **`97.50%`** (`+0.50 pp`), Macro-Precision `0.9686`, Macro-Recall `0.9784`, **Macro-F1 `0.9731`** (`+0.55 pp` over the baseline).
+
+| Class (`label`) | Baseline F1 | Fine-Tuned Precision | Fine-Tuned Recall | Fine-Tuned F1 | Test Support |
+|---|---:|---:|---:|---:|---:|
+| `healthy` | `0.9839` | `0.9683` | `1.0000` | **`0.9839`** | `61` |
+| `black_sigatoka` | `0.9727` | `1.0000` | `0.9570` | **`0.9780`** | `93` |
+| `fusarium_wilt` | `0.9462` | `0.9375` | `0.9783` | **`0.9574`** | `46` |
+| **Macro Average** | `0.9676` | **`0.9686`** | **`0.9784`** | **`0.9731`** | **`200`** |
+
+![Banana Fine-Tuned Test Confusion Matrix](assets/confusion_matrices/banana_finetuned.png)
+
+- **Error analysis**: `5` test errors: `3` `black_sigatoka` -> `fusarium_wilt`, `1` `black_sigatoka` -> `healthy`, `1` `fusarium_wilt` -> `healthy`. Three of the four `black_sigatoka` misses are NM-AIST photos (one is BananaLSD); the dominant `black_sigatoka` -> `fusarium_wilt` confusion is consistent with both diseases producing leaf yellowing and necrosis.
+- **Source-shortcut check** (`ml/scripts/evaluate_by_source.py`): BananaLSD test accuracy `98.73%` (`78/79`), NM-AIST `96.69%` (`117/121`; `healthy 51/51`, `black_sigatoka 21/24`, `fusarium_wilt 45/46`). Since NM-AIST contributes all three classes and they are separated within that source, the model is not classifying by source alone.
+- **Caveat**: validation performance saturates (`1` validation error), so validation Macro-F1 no longer discriminates between candidate models; a larger or field-collected validation set is needed in Phase 8.
+
+---
+
+### 3.9 `banana-v0.1.0` — Float16 TFLite Export & Confidence Calibration (`2026-10-19`, `#71`)
+
+- **Conversion**: `ml/scripts/export_banana_tflite.py` -> `ml/models/banana/banana_v0.1.0_fp16.tflite` (`6,060,084` bytes = `6.06 MB`, `< 10 MB`).
+- **Parity (test, `n = 200`)**: Keras `97.50%` -> Float16 TFLite **`97.50%`** (`0.00 pp` drop), top-1 agreement **`100.00%`** (`200/200`).
+- **Threshold calibration (val, `n = 200`)**: with `99.5%` precision at full coverage, the lowest qualifying threshold was `0.30`, i.e. chance level for 3 classes, so the app would never abstain. The export now accepts `--threshold-floor`; banana uses **`0.80`**, chosen from the test confidence distribution of the fine-tuned model (wrong predictions at `0.58`, `0.66`, `0.77`, `0.97`, `0.97`): `99.48%` validation precision at `97.0%` coverage and `98.45%` test precision at `97.0%` coverage, rejecting `3` of `5` test errors. Coffee and cacao keep the previous default floor (`0.30`).
+
+---
+
 ## 4. Grad-CAM Visual Explanations (`Phases 2 & 5`)
 
 ### 4.1 Coffee Leaf Disease Grad-CAM (`Phase 2`)
@@ -169,5 +219,8 @@ Generated via `ml/src/healthycroppingping_ml/gradcam.py` on held-out test sample
 
 ![Cacao Grad-CAM Visual Explanations per Class](assets/gradcam/cacao_gradcam.png)
 
+### 4.3 Banana Leaf Disease Grad-CAM (`Phase 5`, `#30`)
 
+Generated on held-out test samples for `healthy`, `black_sigatoka`, and `fusarium_wilt`. Activations concentrate on streak lesions (`black_sigatoka`) and on the chlorotic, necrotic margin (`fusarium_wilt`); the `fusarium_wilt` example also shows weak activation on the background trunk, a reminder that cluttered backgrounds can contribute to predictions:
 
+![Banana Grad-CAM Visual Explanations per Class](assets/gradcam/banana_gradcam.png)
