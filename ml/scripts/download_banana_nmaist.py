@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import argparse
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import quote
@@ -35,7 +37,8 @@ DEFAULT_TARGET_DIR = REPO_ROOT / "ml" / "data" / "raw" / "banana_nmaist"
 NMAIST_DOI_URL = "https://doi.org/10.5281/zenodo.7670326"
 NMAIST_LICENSE = "CC BY 4.0"
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
-MAX_BATCH_BYTES = 48 * 1024 * 1024
+MAX_BATCH_BYTES = 16 * 1024 * 1024
+MAX_WORKERS = 6
 MIN_REQUEST_INTERVAL_S = 0.5
 MAX_RETRIES = 5
 
@@ -59,15 +62,17 @@ def select_image_entries(entries: list[ZipEntry], max_images: int) -> list[ZipEn
 
 
 def make_range_fetcher(client: httpx.Client, url: str) -> RangeFetcher:
-    """Build a throttled, retrying HTTP Range fetcher for `url`."""
+    """Build a thread-safe, throttled, retrying HTTP Range fetcher for `url`."""
     last_request = [0.0]
+    lock = threading.Lock()
 
     def fetch(start: int, end: int) -> bytes:
         for attempt in range(1, MAX_RETRIES + 1):
-            wait = MIN_REQUEST_INTERVAL_S - (time.monotonic() - last_request[0])
-            if wait > 0:
-                time.sleep(wait)
-            last_request[0] = time.monotonic()
+            with lock:
+                wait = MIN_REQUEST_INTERVAL_S - (time.monotonic() - last_request[0])
+                if wait > 0:
+                    time.sleep(wait)
+                last_request[0] = time.monotonic()
             try:
                 resp = client.get(url, headers={"Range": f"bytes={start}-{end}"})
             except httpx.TransportError:
@@ -91,6 +96,7 @@ def download_archive_subset(
     fetch: RangeFetcher,
     archive: dict[str, Any],
     target_dir: Path,
+    max_workers: int = MAX_WORKERS,
 ) -> dict[str, int]:
     """Extract up to `archive['max_images']` images of one archive into `target_dir/<label>/`."""
     label = str(archive["label"])
@@ -108,12 +114,16 @@ def download_archive_subset(
         )
     ]
 
-    for batch in plan_contiguous_batches(pending, MAX_BATCH_BYTES):
+    def fetch_batch(batch: list[ZipEntry]) -> None:
         start, end = batch_byte_range(batch)
         blob = fetch(start, min(end, int(archive["size_bytes"]) - 1))
         for entry in batch:
             payload = extract_entry(blob, start, entry)
             (out_dir / PurePosixPath(entry.name).name).write_bytes(payload)
+
+    # Zenodo throttles each connection, so batches are fetched over several connections.
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        list(pool.map(fetch_batch, plan_contiguous_batches(pending, MAX_BATCH_BYTES)))
 
     return {"selected": len(selected), "downloaded": len(pending)}
 
@@ -139,7 +149,7 @@ def main(argv: list[str] | None = None) -> int:
         for archive in source["archives"]:
             fetch = make_range_fetcher(client, archive_url(record_id, str(archive["name"])))
             stats = download_archive_subset(fetch, archive, args.target_dir)
-            print(f"  {archive['name']}: {stats}")
+            print(f"  {archive['name']}: {stats}", flush=True)
     return 0
 
 
