@@ -16,7 +16,7 @@ from typing import Any
 import httpx
 
 DEFAULT_TIMEOUT = httpx.Timeout(60.0, connect=30.0)
-USER_AGENT = "HealthyCroppingping-ML/0.1.0 (+https://github.com/keylorpineda/healthycrop)"
+USER_AGENT = "HealthyCropping-ML/0.1.0 (+https://github.com/keylorpineda/healthycropping)"
 ZIP_LOCAL_HEADER_MAGIC = b"PK\x03\x04"
 
 
