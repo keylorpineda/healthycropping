@@ -203,3 +203,8 @@ This log documents what was built, key architectural decisions, and technical pr
 - Validation precision saturated (`99.5%` at full coverage), so threshold calibration returned `0.30` (chance level for 3 classes) and the app would never ask for a retake. Added `--threshold-floor` to the export pipeline (default `0.30` keeps coffee/cacao unchanged) and exported banana with `0.80`, which rejects `3` of `5` test errors at `97%` coverage.
 - The export wrote `registry.json` and the shared preprocessing fixture with CRLF line endings on Windows, producing spurious diffs; both are now written with `newline="
 "`.
+
+### Multi-Crop App Enablement (`#31`)
+- Builds on the model bundling fix (`#100`): the app now ships the coffee, cacao, and banana registries; `app/plugins/withTfliteModels.js` copies each SHA-256-verified `.tflite` from `ml/models/<crop>/` into Android `res/raw` at prebuild, so all three crops load their own model offline.
+- The "coming soon" chip state is kept for future crops and covered by a test that stubs `isCropAvailable`.
+- Pending for the `#31` "Done when": an on-device check (`expo prebuild` + `expo run:android` with all three `.tflite` files present) in airplane mode on a physical Android phone; the coffee and cacao weights were not available on the machine that made this change.
