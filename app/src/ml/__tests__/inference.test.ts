@@ -3,10 +3,12 @@ import jpeg from 'jpeg-js';
 
 import { loadTensorflowModel } from 'react-native-fast-tflite';
 
+import mlBananaRegistry from '../../../../ml/models/banana/registry.json';
 import mlCacaoRegistry from '../../../../ml/models/cacao/registry.json';
 import mlCoffeeRegistry from '../../../../ml/models/coffee/registry.json';
 import {
   AVAILABLE_CROPS,
+  BANANA_REGISTRY,
   CACAO_REGISTRY,
   COFFEE_REGISTRY,
   decodeJpegToRgb,
@@ -85,14 +87,21 @@ describe('Inference & Prediction Pipeline', () => {
     it('keeps app registries identical to the ml/ exported registries', () => {
       expect(COFFEE_REGISTRY).toEqual(mlCoffeeRegistry);
       expect(CACAO_REGISTRY).toEqual(mlCacaoRegistry);
+      expect(BANANA_REGISTRY).toEqual(mlBananaRegistry);
     });
 
-    it('marks banana as unavailable until its model is exported', () => {
+    it('makes all three crops available with their own models', () => {
       expect(isCropAvailable('coffee')).toBe(true);
       expect(isCropAvailable('cacao')).toBe(true);
-      expect(isCropAvailable('banana')).toBe(false);
-      expect(AVAILABLE_CROPS).toEqual(['coffee', 'cacao']);
-      expect(() => getCropRegistry('banana')).toThrow(/No model registry found/);
+      expect(isCropAvailable('banana')).toBe(true);
+      expect(AVAILABLE_CROPS).toEqual(['coffee', 'cacao', 'banana']);
+
+      const banana = getCropRegistry('banana');
+      expect(banana.model_file).toBe('banana_v0.1.0_fp16.tflite');
+      expect(banana.labels).toEqual(['healthy', 'black_sigatoka', 'fusarium_wilt']);
+      expect(banana.confidence_threshold).toBe(0.8);
+      expect(getModelResourceName(banana)).toBe('banana_v0_1_0_fp16');
+      expect(getModelVersion('banana')).toBe('v0.1.0-banana-float16');
     });
 
     it('derives the persisted model version from the crop registry', () => {

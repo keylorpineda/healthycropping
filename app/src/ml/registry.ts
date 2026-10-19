@@ -1,18 +1,21 @@
 import { SUPPORTED_CROPS, type SupportedCrop } from '@/version';
+import bananaRegistryJson from './models/banana/registry.json';
 import cacaoRegistryJson from './models/cacao/registry.json';
 import coffeeRegistryJson from './models/coffee/registry.json';
 import { type DiagnosisSeverity, type ModelRegistry } from './types';
 
 export const COFFEE_REGISTRY: ModelRegistry = coffeeRegistryJson as unknown as ModelRegistry;
 export const CACAO_REGISTRY: ModelRegistry = cacaoRegistryJson as unknown as ModelRegistry;
+export const BANANA_REGISTRY: ModelRegistry = bananaRegistryJson as unknown as ModelRegistry;
 
 /**
- * Registries of crops with an exported model. A crop without an entry (banana until
- * Phase 5 #29-#31) is not selectable in the app.
+ * Registries of crops with an exported model. A crop without an entry is shown as
+ * "coming soon" and cannot be selected in the app.
  */
 export const MODEL_REGISTRIES: Partial<Record<SupportedCrop, ModelRegistry>> = {
   coffee: COFFEE_REGISTRY,
   cacao: CACAO_REGISTRY,
+  banana: BANANA_REGISTRY,
 };
 
 export function isCropAvailable(crop: SupportedCrop): boolean {
