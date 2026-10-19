@@ -1,0 +1,63 @@
+crop: banana
+image_size: 224
+seed: 42
+phash_hash_size: 8
+phash_max_distance: 2
+min_train_images_per_class: 50
+
+split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+
+classes:
+  - healthy
+  - black_sigatoka
+  - fusarium_wilt
+
+sources:
+  bananalsd:
+    raw_dir: ml/data/raw/bananalsd
+    # Only OriginalSet is used; AugmentedSet holds synthetic copies of the same photos.
+    # cordana and pestalotiopsis are outside the taxonomy and counted as skipped_unmapped.
+    label_map:
+      healthy:
+        label: healthy
+        severity: "0"
+      sigatoka:
+        label: black_sigatoka
+        severity: "2"
+
+  nmaist:
+    raw_dir: ml/data/raw/banana_nmaist
+    zenodo_record: "7670326"
+    # Photos are numbered sequentially per capture session; consecutive numbers
+    # (blocks of `group_block_size`) are grouped to keep near-identical shots of the
+    # same plant in a single split.
+    group_block_size: 10
+    archives:
+      - name: HEALTHY-1.zip
+        size_bytes: 1987887676
+        md5: d19fc229988d0e0e9eb26d0ae7c593f8
+        label: healthy
+        max_images: 300
+      - name: BLACK SIGATOKA-2.zip
+        size_bytes: 3323759766
+        md5: 216b72db76bb22229fa48e1acf266100
+        label: black_sigatoka
+        max_images: 300
+      - name: FUSARIUM WILT-1.zip
+        size_bytes: 3110327825
+        md5: 3ef5c0ffd68c22514b904314bfb96924
+        label: fusarium_wilt
+        max_images: 300
+    label_map:
+      healthy:
+        label: healthy
+        severity: "0"
+      black_sigatoka:
+        label: black_sigatoka
+        severity: "2"
+      fusarium_wilt:
+        label: fusarium_wilt
+        severity: "2"

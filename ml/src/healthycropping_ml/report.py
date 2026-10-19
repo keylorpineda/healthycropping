@@ -543,3 +543,152 @@ def format_cacao_report_markdown(
     )
 
     return "\n".join(lines)
+
+
+def format_banana_report_markdown(
+    summary: ManifestSummary,
+    prep_stats: dict[str, Any],
+    grid_rel_path: str = "../assets/data_reports/banana_grid.png",
+) -> str:
+    """Format the complete `docs/data_reports/banana.md` Markdown report."""
+    by_source = prep_stats.get("candidates_by_source", {})
+    phash_dist = prep_stats.get("phash_max_distance", 2)
+    dups_rem = prep_stats.get("duplicates_removed_total", 0)
+    block_size = prep_stats.get("nmaist_group_block_size", 10)
+
+    lines: list[str] = [
+        "# Banana Leaf Disease Dataset Report (`Phase 5`)",
+        "",
+        "## 1. Executive Summary",
+        "",
+        "- **Target Crop**: Banana (*Musa* spp.)",
+        (
+            "- **Sources Combined**: **BananaLSD** (`10.17632/9tb7k297ff.1`, CC BY 4.0, "
+            "`OriginalSet` only) + **NM-AIST Banana Leaves Imagery** "
+            "(`10.5281/zenodo.7670326`, CC BY 4.0, Range-extracted subset)"
+        ),
+        (
+            f"- **Total Candidate Images**: `{prep_stats.get('total_candidates', 0)}` "
+            f"(BananaLSD `{by_source.get('bananalsd', 0)}`, "
+            f"NM-AIST `{by_source.get('nmaist', 0)}`)"
+        ),
+        (
+            "- **Unmapped Classes Excluded** (BananaLSD `cordana`, `pestalotiopsis`): "
+            f"`{prep_stats.get('skipped_unmapped', 0)}`"
+        ),
+        (
+            "- **Unreadable / Corrupt Images Dropped**: "
+            f"`{prep_stats.get('corrupt_or_missing_dropped', 0)}`"
+        ),
+        (
+            "- **Near-Duplicates Removed (`imagehash.phash`, "
+            f"Hamming distance <= `{phash_dist}`)**: `{dups_rem}`"
+        ),
+        (
+            "- **Final Clean Preprocessed Images (`224x224` RGB)**: "
+            f"**`{summary.total_images}`** across **`{summary.total_groups}`** distinct `group_id`s"
+        ),
+        (
+            "- **Zero `group_id` Overlap Across Splits (`train` / `val` / `test`)**: "
+            f"**`{summary.zero_group_leakage}`** (`seed=42`)"
+        ),
+        "",
+        "---",
+        "",
+        "## 2. Per-Class Split & Source Distribution",
+        "",
+        (
+            "| Class (`label`) | Train (`70%`) | Val (`15%`) | Test (`15%`) | Total Images | "
+            "Distinct `group_id`s | BananaLSD | NM-AIST |"
+        ),
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+
+    totals = {"train": 0, "val": 0, "test": 0, "bananalsd": 0, "nmaist": 0}
+    for cls_name in summary.classes:
+        splits = summary.per_class_split_counts.get(
+            cls_name, {"train": 0, "val": 0, "test": 0, "total": 0}
+        )
+        sources = summary.per_class_source_counts.get(cls_name, {})
+        lsd_cnt = sources.get("bananalsd", 0)
+        nm_cnt = sources.get("nmaist", 0)
+        for key in ("train", "val", "test"):
+            totals[key] += splits[key]
+        totals["bananalsd"] += lsd_cnt
+        totals["nmaist"] += nm_cnt
+        lines.append(
+            f"| `{cls_name}` | {splits['train']} | {splits['val']} | {splits['test']} "
+            f"| **{splits['total']}** | {summary.per_class_group_counts.get(cls_name, 0)} "
+            f"| {lsd_cnt} | {nm_cnt} |"
+        )
+
+    if summary.small_classes:
+        small_list_str = ", ".join(f"`{c}`" for c in summary.small_classes)
+    else:
+        small_list_str = (
+            f"None (all {len(summary.classes)} classes exceed "
+            f"{summary.min_train_samples} training images)"
+        )
+
+    lines.extend(
+        [
+            f"| **Total** | **{totals['train']}** | **{totals['val']}** | **{totals['test']}** "
+            f"| **{summary.total_images}** | **{summary.total_groups}** "
+            f"| **{totals['bananalsd']}** | **{totals['nmaist']}** |",
+            "",
+            "---",
+            "",
+            "## 3. Taxonomy Mapping",
+            "",
+            "| Target class | BananaLSD (`OriginalSet`) | NM-AIST archive |",
+            "|---|---|---|",
+            "| `healthy` | `healthy` | `HEALTHY-1.zip` |",
+            "| `black_sigatoka` | `sigatoka` | `BLACK SIGATOKA-2.zip` |",
+            "| `fusarium_wilt` | (not present) | `FUSARIUM WILT-1.zip` |",
+            "",
+            (
+                "- BananaLSD `AugmentedSet` is excluded entirely: it contains synthetic "
+                "augmentations of `OriginalSet` photos and would leak across splits."
+            ),
+            (
+                "- `fusarium_wilt` comes from a single source, so source and class are "
+                "partially confounded; NM-AIST also contributes `healthy` and "
+                "`black_sigatoka` to reduce this shortcut."
+            ),
+            "",
+            "---",
+            "",
+            "## 4. Small-Class Merging Evaluation (`< 50` Training Images Rule)",
+            "",
+            (
+                "- **Minimum Training Image Threshold**: "
+                f"`{summary.min_train_samples}` images in `train`."
+            ),
+            f"- **Classes Below Threshold**: **{small_list_str}**.",
+            "",
+            "---",
+            "",
+            "## 5. Perceptual-Hash Deduplication & Grouped Leakage Prevention",
+            "",
+            (
+                "- Perceptual hashes (`imagehash.phash`, Hamming distance "
+                f"`<= {phash_dist}`) removed **`{dups_rem}` duplicate samples** across sources."
+            ),
+            (
+                "- **NM-AIST Capture Grouping**: NM-AIST does not publish plant IDs; photos are "
+                f"numbered per capture session, so blocks of `{block_size}` consecutive numbers "
+                "share one `group_id` (`nmaist_<label>_b<n // "
+                f"{block_size}>`) to keep near-identical shots of a plant in one split."
+            ),
+            "- **BananaLSD**: no plant metadata is published; each photo is its own group.",
+            "",
+            "---",
+            "",
+            "## 6. Preprocessed Sample Grid (`224x224` RGB)",
+            "",
+            f"![Banana 224x224 Preprocessed Sample Grid]({grid_rel_path})",
+            "",
+        ]
+    )
+
+    return "\n".join(lines)
