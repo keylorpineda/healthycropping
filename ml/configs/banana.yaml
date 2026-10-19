@@ -45,7 +45,8 @@ sources:
         size_bytes: 3323759766
         md5: 216b72db76bb22229fa48e1acf266100
         label: black_sigatoka
-        max_images: 300
+        # BananaLSD already contributes ~470 sigatoka photos.
+        max_images: 150
       - name: FUSARIUM WILT-1.zip
         size_bytes: 3110327825
         md5: 3ef5c0ffd68c22514b904314bfb96924
