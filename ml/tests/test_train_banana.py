@@ -44,3 +44,36 @@ def test_train_banana_cli_defaults(monkeypatch: Any) -> None:
     assert "--config" in captured
     assert "--run-id" in captured
     assert "banana-v0.1.0-baseline" in captured
+
+
+def test_export_banana_tflite_cli_and_registry(monkeypatch: Any) -> None:
+    import json
+    import sys
+
+    scripts_dir = str(Path(__file__).resolve().parents[1] / "scripts")
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
+    import export_banana_tflite
+
+    captured: list[str] = []
+
+    def fake_export_main(argv: list[str] | None = None) -> int:
+        if argv is not None:
+            captured.extend(argv)
+        return 0
+
+    monkeypatch.setattr(export_banana_tflite, "main", fake_export_main)
+    rc = export_banana_tflite.run_export_banana_cli(["--version", "0.1.0"])
+    assert rc == 0
+    assert "--models-dir" in captured
+    assert captured[captured.index("--threshold-floor") + 1] == "0.80"
+
+    repo_root = Path(__file__).resolve().parents[2]
+    reg = json.loads(
+        (repo_root / "ml" / "models" / "banana" / "registry.json").read_text(encoding="utf-8")
+    )
+    assert reg["crop"] == "banana"
+    assert reg["labels"] == ["healthy", "black_sigatoka", "fusarium_wilt"]
+    assert reg["model_size_bytes"] < 10_000_000
+    assert reg["confidence_threshold"] >= 0.80
+    assert reg["metrics"]["tflite_test_accuracy_drop_pp"] <= 1.0
