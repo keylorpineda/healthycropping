@@ -168,3 +168,20 @@ class ScanResponse(BaseModel):
     scanned_at: datetime
     updated_at: datetime
     created_at: datetime
+
+
+class ScanSignatureRequest(RequestModel):
+    scan_id: UUID4
+
+
+class ScanSignatureResponse(BaseModel):
+    """Signed parameters for a direct device-to-Cloudinary upload; never includes the secret."""
+
+    cloud_name: str
+    api_key: str
+    timestamp: int
+    signature: str
+    folder: str
+    public_id: str
+    transformation: str
+    upload_url: str

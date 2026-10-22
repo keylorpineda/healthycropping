@@ -47,7 +47,7 @@ warn_unused_configs = true
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["cloudinary", "cloudinary.*", "firebase_admin"]
+module = ["cloudinary.*", "firebase_admin"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
