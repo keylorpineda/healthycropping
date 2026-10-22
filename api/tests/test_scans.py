@@ -107,6 +107,28 @@ def test_timestamps_compare_as_instants_across_offsets(client: TestClient) -> No
     )
 
     assert statuses(response) == ["updated"]
+    # Stored in UTC, as Firestore returns timestamps.
+    [listed] = list_scans(client)
+    assert listed["updated_at"] == "2026-10-02T13:00:00Z"
+
+
+def test_batch_looks_up_each_farm_and_plot_once(
+    client: TestClient, store: InMemoryDocumentStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    farm = create_farm(client)
+    plot = create_plot(client, farm["id"])
+    reads: list[str] = []
+    original_get = store.get
+
+    def counting_get(collection: str, doc_id: str) -> dict[str, Any] | None:
+        reads.append(collection)
+        return original_get(collection, doc_id)
+
+    monkeypatch.setattr(store, "get", counting_get)
+    response = sync(client, *(scan_body(farm_id=farm["id"], plot_id=plot["id"]) for _ in range(5)))
+
+    assert statuses(response) == ["created"] * 5
+    assert (reads.count("farms"), reads.count("plots"), reads.count("scans")) == (1, 1, 5)
 
 
 def test_tombstone_hides_scan(client: TestClient, store: InMemoryDocumentStore) -> None:
