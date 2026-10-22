@@ -2,11 +2,13 @@
 
 from collections.abc import Callable
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Literal
 
-from healthycropping_api.store import DocumentStore
+from healthycropping_api.store import DocumentAlreadyExistsError, DocumentStore
 
 OWNER_FIELD = "ownerUid"
+
+UpsertOutcome = Literal["created", "updated", "unchanged", "rejected"]
 
 
 def _utc_now() -> datetime:
@@ -59,6 +61,29 @@ class OwnedRepository:
         }
         self._store.create(self._collection, doc_id, document)
         return document
+
+    def upsert(self, owner_uid: str, doc_id: str, data: dict[str, Any]) -> UpsertOutcome:
+        """Write a client-synced document, last write wins on the client's `updated_at`.
+
+        The client owns `updated_at` and `deleted_at` (tombstones are stored as sent), so
+        replaying a batch never changes anything. A document owned by another user is never
+        overwritten.
+        """
+        existing = self._store.get(self._collection, doc_id)
+        if existing is None:
+            document = {**data, "id": doc_id, OWNER_FIELD: owner_uid, "created_at": self._clock()}
+            try:
+                self._store.create(self._collection, doc_id, document)
+            except DocumentAlreadyExistsError:
+                # Lost a race with a concurrent sync of the same ID; compare against the winner.
+                return self.upsert(owner_uid, doc_id, data)
+            return "created"
+        if existing.get(OWNER_FIELD) != owner_uid:
+            return "rejected"
+        if data["updated_at"] <= existing["updated_at"]:
+            return "unchanged"
+        self._store.update(self._collection, doc_id, {**data, "id": doc_id, OWNER_FIELD: owner_uid})
+        return "updated"
 
     def update(self, owner_uid: str, doc_id: str, changes: dict[str, Any]) -> dict[str, Any] | None:
         document = self.get(owner_uid, doc_id)
