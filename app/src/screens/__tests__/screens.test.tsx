@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import i18n from '@/i18n';
+import * as registry from '@/ml/registry';
 import { usePreferencesStore } from '@/stores/preferences';
 import { ThemeProvider } from '@/theme';
 import { HomeScreen, OnboardingScreen, SettingsScreen } from '../index';
@@ -108,12 +109,13 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       fireEvent.press(scanBtn);
       expect(onScanMock).toHaveBeenCalledWith('cacao');
 
-      // Banana has no bundled model yet, so its chip is disabled
+      // Select Banana and scan with it
       const bananaChip = screen.getByTestId('crop-chip-banana');
-      expect(bananaChip.props.accessibilityState.disabled).toBe(true);
-      expect(bananaChip).toHaveTextContent('Banano (Próximamente)');
+      expect(bananaChip.props.accessibilityState.disabled).toBe(false);
       fireEvent.press(bananaChip);
-      expect(cacaoChip.props.accessibilityState.selected).toBe(true);
+      expect(bananaChip.props.accessibilityState.selected).toBe(true);
+      fireEvent.press(scanBtn);
+      expect(onScanMock).toHaveBeenLastCalledWith('banana');
 
       // Empty State
       expect(screen.getByTestId('home-empty-state')).toBeTruthy();
@@ -122,6 +124,22 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       expect(screen.getByTestId('home-disclaimer-box')).toHaveTextContent(
         /no reemplaza el criterio/i,
       );
+    });
+
+    it('disables crops without a bundled model and labels them as coming soon', () => {
+      const spy = jest
+        .spyOn(registry, 'isCropAvailable')
+        .mockImplementation((crop) => crop !== 'banana');
+      try {
+        renderWithTheme(<HomeScreen />);
+        const bananaChip = screen.getByTestId('crop-chip-banana');
+        expect(bananaChip.props.accessibilityState.disabled).toBe(true);
+        expect(bananaChip).toHaveTextContent('Banano (Próximamente)');
+        fireEvent.press(bananaChip);
+        expect(bananaChip.props.accessibilityState.selected).toBe(false);
+      } finally {
+        spy.mockRestore();
+      }
     });
 
     it('displays English text when language is switched', async () => {

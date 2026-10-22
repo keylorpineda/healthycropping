@@ -189,3 +189,22 @@ This log documents what was built, key architectural decisions, and technical pr
   - `react-native-fast-tflite` 1.6.1 treats any `{ url }` containing `://` as a disk path or HTTP URL, so the former `file:///android_asset/models/...` source could never resolve a bundled model. Bundled models are now loaded by Android raw resource name (`getModelResourceName` in `app/src/ml/registry.ts`), which the library resolves with `getIdentifier(name, "raw")`.
   - Added the Expo config plugin `app/plugins/withTfliteModels.js`, which copies every model listed in `app/src/ml/models/<crop>/registry.json` from `ml/models/<crop>/` into `android/app/src/main/res/raw/` during `expo prebuild`, verifies its SHA-256, warns on missing weights, and fails when `HEALTHYCROPPING_REQUIRE_MODELS=1` (set for the `v1.0.0` release APK build).
   - Cacao and banana registries previously spread the coffee registry and pointed at the 6-class coffee model, so every cacao/banana scan failed with an output dimension mismatch. The app now loads the exported cacao registry, keeps banana unselectable until its model exists, persists a registry-derived `model_version`, and shows an error toast when inference fails.
+
+### Banana Datasets (`#29`)
+- Verified both banana licenses through their public APIs: BananaLSD (Mendeley `9tb7k297ff`, CC BY 4.0) and Banana Imagery Dataset - Tanzania (Zenodo `7670326`, `cc-by-4.0`; the NM-AIST DSpace mirror times out).
+- The Zenodo record is nine 2-7 GB ZIP archives (~34 GB). Added `ml/src/healthycropping_ml/remote_zip.py`, which reads only the End Of Central Directory and Central Directory through HTTP `Range` requests and extracts contiguous, CRC-32-verified batches of entries (ZIP64-aware). `ml/scripts/download_banana_nmaist.py` uses it to pull the first 300 `healthy`, 150 `black_sigatoka`, and 300 `fusarium_wilt` images (~2 GB instead of 34 GB). Zenodo throttles single connections, so batches are fetched over 6 parallel, rate-limited connections that retry HTTP 429 after `Retry-After`.
+- BananaLSD `AugmentedSet/` is excluded (synthetic copies of `OriginalSet/` photos would leak across splits); `cordana` and `pestalotiopsis` (`335` photos) are outside the taxonomy.
+- NM-AIST publishes no plant IDs, so blocks of 10 consecutive capture numbers share a `group_id`. pHash removed `39` near-duplicates (all within BananaLSD `healthy`). Final dataset: `1,313` images, `770` groups, `913 / 200 / 200` split with zero group overlap.
+- `fusarium_wilt` only exists in NM-AIST; NM-AIST `healthy` and `black_sigatoka` photos are also ingested so the model cannot separate the classes by source alone.
+
+### Banana Training & Export (`#30`, `#71`)
+- Trained `banana-v0.1.0-baseline` (`0.9676` test Macro-F1) and `banana-v0.1.0-finetuned` (`0.9731`) with the cacao recipe on CPU (TensorFlow `2.21.0` has no native Windows GPU support; each run takes about one minute thanks to cached spatial features).
+- Added `breakdown_by_group` (`ml/src/healthycropping_ml/evaluate.py`) and `ml/scripts/evaluate_by_source.py` to check for source shortcuts, since `fusarium_wilt` only comes from NM-AIST: NM-AIST `healthy` (`51/51`) and `fusarium_wilt` (`45/46`) are separated within the same source, so the model is not classifying by photo style alone.
+- Validation precision saturated (`99.5%` at full coverage), so threshold calibration returned `0.30` (chance level for 3 classes) and the app would never ask for a retake. Added `--threshold-floor` to the export pipeline (default `0.30` keeps coffee/cacao unchanged) and exported banana with `0.80`, which rejects `3` of `5` test errors at `97%` coverage.
+- The export wrote `registry.json` and the shared preprocessing fixture with CRLF line endings on Windows, producing spurious diffs; both are now written with `newline="
+"`.
+
+### Multi-Crop App Enablement (`#31`)
+- Builds on the model bundling fix (`#100`): the app now ships the coffee, cacao, and banana registries; `app/plugins/withTfliteModels.js` copies each SHA-256-verified `.tflite` from `ml/models/<crop>/` into Android `res/raw` at prebuild, so all three crops load their own model offline.
+- The "coming soon" chip state is kept for future crops and covered by a test that stubs `isCropAvailable`.
+- Pending for the `#31` "Done when": an on-device check (`expo prebuild` + `expo run:android` with all three `.tflite` files present) in airplane mode on a physical Android phone; the coffee and cacao weights were not available on the machine that made this change.

@@ -362,6 +362,7 @@ def run_export_pipeline(
     version: str,
     target_precision: float = 0.90,
     max_accuracy_drop_pp: float = 1.0,
+    threshold_floor: float = 0.30,
 ) -> dict[str, Any]:
     """Export a crop checkpoint to float16 TFLite, verify parity, calibrate, and write registry."""
     import keras
@@ -394,8 +395,13 @@ def run_export_pipeline(
         np.mean(np.argmax(keras_test_probs, axis=-1) == np.argmax(tflite_test_probs, axis=-1))
     )
 
+    # The search starts at `threshold_floor`: when validation precision saturates, the lowest
+    # qualifying threshold would otherwise sit near chance level and the app would never abstain.
     calibration = calibrate_confidence_threshold(
-        tflite_val_probs, val_ds.y, target_precision=target_precision
+        tflite_val_probs,
+        val_ds.y,
+        target_precision=target_precision,
+        min_threshold=threshold_floor,
     )
     test_at_threshold = evaluate_threshold(tflite_test_probs, test_ds.y, calibration.threshold)
 
@@ -418,18 +424,19 @@ def run_export_pipeline(
             "tflite_test_accuracy_drop_pp": round(drop_pp, 4),
             "keras_tflite_test_top1_agreement": round(top1_agreement, 4),
             "threshold_test": test_at_threshold,
+            "threshold_floor": threshold_floor,
             "test_samples": int(test_ds.y.shape[0]),
             "val_samples": int(val_ds.y.shape[0]),
         },
     )
     registry_path = models_dir / "registry.json"
-    registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+    registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     fixture = build_preprocessing_fixture(
         image_size=cfg.image_size, seed=cfg.seed, mean=cfg.mean, std=cfg.std
     )
     fixture_out.parent.mkdir(parents=True, exist_ok=True)
-    fixture_out.write_text(json.dumps(fixture, indent=2) + "\n", encoding="utf-8")
+    fixture_out.write_text(json.dumps(fixture, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     print(json.dumps(registry["metrics"], indent=2), flush=True)
     print(f"Wrote {models_dir / model_file} ({len(tflite_model)} bytes)", flush=True)
@@ -457,6 +464,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--version", type=str, default="0.1.0")
     parser.add_argument("--target-precision", type=float, default=0.90)
+    parser.add_argument(
+        "--threshold-floor",
+        type=float,
+        default=0.30,
+        help="Lowest confidence threshold considered during calibration.",
+    )
     args = parser.parse_args(argv)
 
     run_export_pipeline(
@@ -467,6 +480,7 @@ def main(argv: list[str] | None = None) -> int:
         fixture_out=args.fixture_out,
         version=args.version,
         target_precision=args.target_precision,
+        threshold_floor=args.threshold_floor,
     )
     return 0
 

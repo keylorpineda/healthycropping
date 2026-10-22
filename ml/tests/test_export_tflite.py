@@ -63,6 +63,16 @@ def test_calibrate_threshold_picks_lowest_threshold_meeting_target() -> None:
     assert cal.coverage == pytest.approx(0.4)
 
 
+def test_calibrate_threshold_respects_floor_when_precision_saturates() -> None:
+    probs = np.array([[0.95, 0.05], [0.40, 0.60], [0.55, 0.45], [0.10, 0.90]], dtype=np.float32)
+    y_true = np.array([0, 1, 0, 1])
+    # Every prediction is correct, so without a floor the search stops at its first step.
+    assert calibrate_confidence_threshold(probs, y_true).threshold == pytest.approx(0.30)
+    cal = calibrate_confidence_threshold(probs, y_true, min_threshold=0.80)
+    assert cal.threshold == pytest.approx(0.80)
+    assert cal.coverage == pytest.approx(0.5)
+
+
 def test_calibrate_threshold_falls_back_when_target_unreachable() -> None:
     probs = np.array([[0.99, 0.01], [0.98, 0.02]], dtype=np.float32)
     y_true = np.array([0, 1])

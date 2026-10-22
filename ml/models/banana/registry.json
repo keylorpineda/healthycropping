@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "crop": "banana",
+  "version": "0.1.0",
+  "model_file": "banana_v0.1.0_fp16.tflite",
+  "model_sha256": "a7edfd8b60f0e48ceb06076f2ebb853b41f24d9c4065f55163957cbd2d20688f",
+  "model_size_bytes": 6060084,
+  "quantization": "float16",
+  "labels": [
+    "healthy",
+    "black_sigatoka",
+    "fusarium_wilt"
+  ],
+  "input": {
+    "width": 224,
+    "height": 224,
+    "channels": 3,
+    "color_order": "RGB",
+    "dtype": "float32",
+    "layout": "NHWC"
+  },
+  "normalization": {
+    "mean": [
+      127.5,
+      127.5,
+      127.5
+    ],
+    "std": [
+      127.5,
+      127.5,
+      127.5
+    ]
+  },
+  "confidence_threshold": 0.8,
+  "metrics": {
+    "threshold_calibration_val": {
+      "threshold": 0.8,
+      "accepted_precision": 0.9948,
+      "coverage": 0.97,
+      "target_precision": 0.9,
+      "target_met": true
+    },
+    "keras_test_accuracy": 0.975,
+    "tflite_val_accuracy": 0.995,
+    "tflite_test_accuracy": 0.975,
+    "tflite_test_accuracy_drop_pp": 0.0,
+    "keras_tflite_test_top1_agreement": 1.0,
+    "threshold_test": {
+      "accepted_precision": 0.9845,
+      "coverage": 0.97
+    },
+    "threshold_floor": 0.8,
+    "test_samples": 200,
+    "val_samples": 200
+  }
+}

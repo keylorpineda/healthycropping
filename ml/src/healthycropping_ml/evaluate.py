@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 from PIL import Image, ImageDraw
 
 
@@ -205,3 +206,38 @@ def render_confusion_matrix_png(
     output_png.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(output_png, format="PNG", optimize=True)
     return output_png
+
+
+def breakdown_by_group(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    groups: Sequence[str],
+    classes: Sequence[str],
+) -> dict[str, dict[str, Any]]:
+    """Accuracy and per-class recall for each group (e.g. data source) of a split.
+
+    Used to detect source shortcuts: a model that separates classes by photo style instead
+    of symptoms shows a large accuracy gap between sources.
+    """
+    if not (len(y_true) == len(y_pred) == len(groups)):
+        raise ValueError("y_true, y_pred, and groups must have the same length")
+    result: dict[str, dict[str, Any]] = {}
+    for group in sorted(set(groups)):
+        mask = np.asarray([g == group for g in groups])
+        g_true = y_true[mask]
+        g_pred = y_pred[mask]
+        per_class: dict[str, dict[str, int]] = {}
+        for idx, cls_name in enumerate(classes):
+            cls_mask = g_true == idx
+            total = int(np.sum(cls_mask))
+            if total:
+                per_class[cls_name] = {
+                    "correct": int(np.sum(g_pred[cls_mask] == idx)),
+                    "total": total,
+                }
+        result[group] = {
+            "n": int(mask.sum()),
+            "accuracy": round(float(np.mean(g_true == g_pred)), 4),
+            "per_class": per_class,
+        }
+    return result

@@ -127,29 +127,56 @@ This document provides the Model Cards (following Mitchell et al., 2019) for the
 ## 4. Banana Leaf Model (`banana`)
 
 ### 4.1 Overview
-- **Model Identifier**: `banana-v1.0.0` *(populated in Phase 5)*
-- **Registry File**: `ml/models/banana/registry.json`
-- **Target Plant Organ**: Banana leaf (*Musa* spp.).
+- **Target Plant Organ**: Banana leaf (*Musa* spp.), field photographs.
+- **Model Identifier**: `banana-v0.1.0` (`banana_v0.1.0_fp16.tflite`, SHA-256 `a7edfd8b60f0e48ceb06076f2ebb853b41f24d9c4065f55163957cbd2d20688f`)
+- **Registry File**: [`ml/models/banana/registry.json`](../ml/models/banana/registry.json)
 - **Classes**:
   1. `healthy`
   2. `black_sigatoka` (*Pseudocercospora fijiensis* / *Mycosphaerella fijiensis*)
   3. `fusarium_wilt` (*Fusarium oxysporum* f. sp. *cubense*)
 
 ### 4.2 Training & Evaluation Data
-- **Sources**: Banana Leaves Imagery (NM-AIST DSpace `20.500.12479/3003`, DOI `10.1038/s41597-025-04456-4`) and mapped classes from BananaLSD (Mendeley `9tb7k297ff`).
-- **Split**: `70%` train / `15%` validation / `15%` test, grouped by `group_id`, stratified by class (`seed=42`).
+- **Sources**: **BananaLSD** (Mendeley `10.17632/9tb7k297ff.1`, CC BY 4.0, `OriginalSet` `healthy` and `sigatoka` only) and **Banana Imagery Dataset - Tanzania / NM-AIST** (Zenodo `10.5281/zenodo.7670326`, CC BY 4.0, first `300` `healthy`, `150` `black_sigatoka`, and `300` `fusarium_wilt` images extracted via HTTP Range).
+- **Split**: `1,313` deduplicated `224x224` RGB images (`913` train / `200` validation / `200` test) across `770` `group_id`s (`seed=42`, zero `group_id` overlap; full report in [`docs/data_reports/banana.md`](data_reports/banana.md)).
 
-### 4.3 Quantitative Performance *(Populated in Phase 5)*
+### 4.3 Quantitative Performance (`n = 200` Held-Out Test Images)
 
 | Metric | Keras Test Set | Float16 TFLite Test Set | Delta | Target |
 | :--- | :--- | :--- | :--- | :--- |
-| **Macro-F1** | *TBD (Phase 5)* | *TBD (Phase 5)* | *TBD* | `>= 0.80` |
-| **Accuracy** | *TBD (Phase 5)* | *TBD (Phase 5)* | `<= 1.0 pp` | Within `1 pp` |
-| **Model Size** | — | *TBD (Phase 5)* | — | `< 10 MB` |
-| **Confidence Threshold** | — | *TBD (Phase 5)* | — | Validation-calibrated |
+| **Macro-F1** | **`0.9731`** | **`0.9731`** | `0.0000` (`100.0%` top-1 agreement) | `>= 0.80` |
+| **Accuracy** | **`97.50%`** (`195/200`) | **`97.50%`** (`195/200`) | **`0.00 pp`** | Within `<= 1.0 pp` |
+| **Model Size** | `12.7 MB` (`.keras`) | **`6.06 MB`** (`6,060,084` B) | `-52.3%` | `< 10 MB` |
+| **Confidence Threshold** | — | **`0.80`** (`99.48%` val precision at `97.0%` coverage; `98.45%` test precision at `97.0%` coverage) | — | Validation-calibrated with a `0.80` floor |
+
+#### Per-Class Held-Out Test Performance (`banana_v0.1.0_fp16.tflite`)
+
+| Class (`label`) | Precision | Recall | F1-Score | Test Support |
+| :--- | ---: | ---: | ---: | ---: |
+| `healthy` | `0.9683` | `1.0000` | **`0.9839`** | `61` |
+| `black_sigatoka` | `1.0000` | `0.9570` | **`0.9780`** | `93` |
+| `fusarium_wilt` | `0.9375` | `0.9783` | **`0.9574`** | `46` |
+| **Macro Average** | **`0.9686`** | **`0.9784`** | **`0.9731`** | **`200`** |
+
+![Banana Fine-Tuned Test Confusion Matrix](assets/confusion_matrices/banana_finetuned.png)
+
+#### Per-Source Test Accuracy (`ml/scripts/evaluate_by_source.py`)
+
+| Source | Test Images | Accuracy | `healthy` | `black_sigatoka` | `fusarium_wilt` |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| BananaLSD | `79` | `98.73%` | `10/10` | `68/69` | — |
+| NM-AIST | `121` | `96.69%` | `51/51` | `21/24` | `45/46` |
+
+- `fusarium_wilt` only exists in NM-AIST. Because NM-AIST `healthy` and `black_sigatoka` photos are classified correctly as well, the model is not separating classes by source alone; NM-AIST `black_sigatoka` (`87.5%` recall) is the weakest slice.
 
 ### 4.4 Interpretability (Grad-CAM)
-- Representative Grad-CAM heatmaps per class (`docs/assets/gradcam/banana_*.png`) are generated in Phase 5.
+- Held-out test heatmaps localize on streak lesions for `black_sigatoka` and on the chlorotic, necrotic leaf margin for `fusarium_wilt`; for `healthy` leaves activation follows the midrib:
+
+![Banana Grad-CAM Visual Explanations per Class](assets/gradcam/banana_gradcam.png)
+
+### 4.5 Banana-Specific Limitations
+- **Small, saturated validation set**: validation precision reaches `99.5%` at full coverage, so the precision-target calibration would pick a chance-level threshold (`0.30`). A `0.80` floor was applied (`--threshold-floor`), rejecting `3` of the `5` test errors while keeping `97%` coverage.
+- **Single-source class**: `fusarium_wilt` images come from one Tanzanian field campaign; performance on Costa Rican cultivars and Fusarium wilt Tropical Race 4 symptoms is unverified until the Phase 8 field validation.
+- **Leaf-level diagnosis only**: Fusarium wilt is a vascular disease; leaf yellowing is a late, non-specific symptom that can be confused with drought or nutrient stress. Pseudostem cross-section inspection by an agronomist is still required.
 
 ---
 
