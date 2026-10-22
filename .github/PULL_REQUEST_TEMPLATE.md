@@ -85,7 +85,7 @@ Before requesting authorization, verify that all applicable local checks pass:
 ## 🔒 Authorization & Code Review
 
 > [!IMPORTANT]
-> Branch protection requires **at least 1 approving review from `@keylorpineda` (Code Owner)** and all 3 CI workflows (`App`, `API`, `ML`) in green before this PR can be rebase-merged (`--rebase`) into `develop`.
+> Branch protection requires **at least 1 approving review from a Code Owner (`@keylorpineda` or `@JAbarca74`)** and all 3 CI workflows (`App`, `API`, `ML`) in green before this PR can be rebase-merged (`--rebase`) into `develop`.
 
-- [ ] Assigned reviewer: `@keylorpineda`
+- [ ] Assigned reviewer: `@keylorpineda` / `@JAbarca74`
 - [ ] Ready for review

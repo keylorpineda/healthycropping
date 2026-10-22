@@ -34,7 +34,7 @@ healthycropping/
 5. **Identical Preprocessing**: Python training/export and `app/src/ml/` must produce the exact same 224x224 RGB normalized tensor (verified by a shared fixture test).
 6. **Firestore Boundary**: App sends Firebase ID tokens to `api/` and **never** touches Firestore directly; Firestore rules deny all client access.
 7. **No Secrets/Data/Weights in Git**: Never read, print, or commit `.env`, `service-account*.json`, `google-services.json`, `kaggle.json`, keystores, `ml/data/`, or `*.tflite`/`*.keras`/`*.h5`.
-8. **Issue & Branch Flow**: Every task has an issue (`[Phase N] Imperative summary`, 1 `type:`, >=1 `area:`, 1 `priority:`, Milestone `vX.Y.Z`, Project board). Move to *In progress* -> branch from `develop` -> PR to `develop` (`Closes #N`) -> peer review approval (`@keylorpineda`) -> green CI -> rebase-merge -> *Done*.
+8. **Issue & Branch Flow**: Every task has an issue (`[Phase N] Imperative summary`, 1 `type:`, >=1 `area:`, 1 `priority:`, Milestone `vX.Y.Z`, Project board). Move to *In progress* -> branch from `develop` -> PR to `develop` (`Closes #N`) -> peer review approval (`@keylorpineda` / `@JAbarca74`) -> green CI -> rebase-merge -> *Done*.
 
 ## Workflow
 1. One phase at a time, in order (`docs/PLAN.md`).

@@ -105,7 +105,7 @@ All checks must pass locally before pushing. Fix root causes; never disable lint
 1. **Structured Template**: Every PR must fill out the `.github/PULL_REQUEST_TEMPLATE.md` checklist completely (summary, affected area, key decisions, verification proof, and local checks).
 2. **Target Branch**: Open the Pull Request targeting `develop` and include `Closes #<issue-number>` in the body.
 3. **Mandatory Peer Review Authorization**:
-   - Branch protection enforces **at least 1 approving code review from `@keylorpineda` (Code Owner)** before merge.
+   - Branch protection enforces **at least 1 approving code review from a Code Owner (`@keylorpineda` or `@JAbarca74`)** before merge.
    - Any new push dismisses stale reviews and requires re-approval (`require_last_push_approval: true`).
 4. **Automated CI**: Ensure all 3 CI workflows (`App`, `API`, `ML`) are green.
 5. **Rebase-Merge**: Once approved and CI is green, work PRs are merged into `develop` using **rebase (`--rebase`)** to maintain clean, atomic Conventional Commits. Move the issue to **Done** on the Project board.
