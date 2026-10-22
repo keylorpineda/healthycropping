@@ -3,12 +3,12 @@
 from dataclasses import dataclass
 from typing import Annotated, Any, Literal, Protocol
 
-import firebase_admin
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from firebase_admin import auth as firebase_auth
 
 from healthycropping_api.errors import ApiError
+from healthycropping_api.firebase import get_firebase_app
 
 _BEARER_CHALLENGE = {"WWW-Authenticate": "Bearer"}
 
@@ -37,19 +37,14 @@ class FirebaseTokenVerifier:
     """Verifies Firebase ID tokens with the Firebase Admin SDK.
 
     The Firebase app is initialized lazily so the API can start before credentials
-    are loaded; verification uses Application Default Credentials
-    (`GOOGLE_APPLICATION_CREDENTIALS`).
+    are loaded (see `get_firebase_app`).
     """
 
     def __init__(self, project_id: str | None) -> None:
         self._project_id = project_id
 
     def _get_app(self) -> Any:
-        try:
-            return firebase_admin.get_app()
-        except ValueError:
-            options = {"projectId": self._project_id} if self._project_id else None
-            return firebase_admin.initialize_app(options=options)
+        return get_firebase_app(self._project_id)
 
     def verify(self, id_token: str) -> AuthenticatedUser:
         try:
