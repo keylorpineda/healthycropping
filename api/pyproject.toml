@@ -46,7 +46,7 @@ warn_unused_configs = true
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["firebase_admin", "firebase_admin.*"]
+module = ["firebase_admin"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
