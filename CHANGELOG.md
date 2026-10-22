@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cacao `MobileNetV3-Large` frozen baseline (`87.47%` test accuracy, `0.7946` Macro-F1) and top-30 fine-tuned model (`91.73%` test accuracy, `0.8502` Macro-F1, `0.9532` `healthy` F1, `0.8553` `monilia` F1, `0.7419` `black_pod` F1), CLI script (`ml/scripts/train_cacao.py`), confusion matrices (`docs/assets/confusion_matrices/cacao_*.png`), and Grad-CAM visual explanations (`docs/assets/gradcam/cacao_gradcam.png`) in `docs/EXPERIMENTS.md` (`#28`).
 - Cacao pod dataset downloaders (`ml/scripts/download_cocoamonilia.py`, `ml/scripts/download_unab_cacao.py`), configuration (`ml/configs/cacao.yaml`), YOLO bounding-box pod cropper and preparation pipeline (`ml/scripts/prepare_cacao.py`), dataset report (`docs/data_reports/cacao.md`), and `224x224` sample grid (`docs/assets/data_reports/cacao_grid.png`) combining CocoaMoniliaDataSet (CC BY 4.0) and UNAB Cocoa Diseases (ODbL v1.0) into `2,646` deduplicated samples across `1,367` grouped tree/photo IDs (`#27`).
 
+### Changed
+
+- `README.md` and `app/README.md` now match the verified project state: an "in active development, no APK yet" note, measured test Macro-F1 (`0.729` coffee, `0.850` cacao, `0.973` banana) instead of unverified targets, float16-only export, a phase table aligned with `docs/PLAN.md`, and sync, RAG, Render deployment and APK distribution marked as in progress or planned (`#110`).
+
 ### Fixed
 
 - Scan photos are copied from the volatile camera cache into the app's document directory (`expo-file-system`), and SQLite foreign keys are enforced on every connection (`#101`).

@@ -6,11 +6,11 @@ The offline-first Android mobile client for **HealthyCropping** (`com.keylorpine
 
 ## Capabilities
 
-- **On-Device Computer Vision**: Runs quantized float16/int8 TensorFlow Lite models locally via `react-native-fast-tflite` with sub-50ms inference latency.
-- **Multi-Crop Diagnostics**: Dedicated model pipelines for Coffee Leaf (*Hemileia vastatrix*, *Cercospora*, Phoma), Cacao Pod (*Moniliophthora roreri*, *Phytophthora*), and Banana Leaf (*Pseudocercospora fijiensis*, *Cordana*).
-- **Offline Persistence**: Local SQLite storage via `expo-sqlite` storing farms, plots, and scan diagnoses without requiring cellular signal.
+- **On-Device Computer Vision**: Runs float16 TensorFlow Lite models (`MobileNetV3-Large`, `6.06 MB` each) locally via `react-native-fast-tflite`. On-device latency has not been benchmarked yet (Phase 8, `#75`).
+- **Multi-Crop Diagnostics**: One model per crop: coffee leaf (`healthy`, `leaf_rust`, `leaf_miner`, `cercospora`, `brown_leaf_spot`, `red_spider_mite`), cacao pod (`healthy`, `monilia`, `black_pod`) and banana leaf (`healthy`, `black_sigatoka`, `fusarium_wilt`). All three are wired into the app; the on-device check with all three models is pending (`#31`).
+- **Offline Persistence**: Local SQLite storage via `expo-sqlite` for farms, plots, and scan diagnoses, with no cellular signal required.
 - **Verified Tensor Parity**: Decodes and normalizes 224x224 RGB tensors identically to the Python training pipeline, verified by fixture parity tests.
-- **Sync & Grounded RAG Ready**: Idempotent synchronization bridge with the FastAPI backend and Gemini RAG layer when connectivity is present.
+- **Sync & Grounded RAG (in development)**: Account sync with the FastAPI backend (Phase 6) and cited Gemini explanations (Phase 7) are not available in the app yet.
 
 ---
 
@@ -18,19 +18,17 @@ The offline-first Android mobile client for **HealthyCropping** (`com.keylorpine
 
 ```text
 app/
-├── assets/             # Bundled assets, splash screens, and TFLite models
-│   └── models/         # Bundled .tflite weights (coffee, cacao, banana)
+├── assets/             # App icon and splash images
+├── plugins/            # Expo config plugin that copies the .tflite models from ml/models/ into Android res/raw
 ├── src/
+│   ├── app/            # Expo Router screens (home, scan, history, farms, settings, onboarding)
 │   ├── components/     # UI primitives and shared components
 │   ├── db/             # SQLite schema, migrations, and local repositories
-│   ├── hooks/          # React hooks for sensors, camera, and queries
-│   ├── ml/             # TFLite inference runners and tensor preprocessors
-│   ├── navigation/     # React Navigation configuration and routes
-│   ├── screens/        # Screen views (Camera, Diagnosis, Farms, History)
-│   ├── services/       # API clients and background synchronization
-│   ├── theme/          # Design tokens (colors, typography, spacing)
-│   └── types/          # TypeScript domain definitions
-├── App.tsx             # Application entrypoint
+│   ├── i18n/           # Spanish (default) and English translations
+│   ├── ml/             # Model registries, preprocessing and TFLite inference
+│   ├── screens/        # Screen implementations used by the routes
+│   ├── stores/         # Zustand preference store
+│   └── theme/          # Design tokens (colors, typography, spacing)
 ├── app.json            # Expo configuration
 └── package.json        # Dependencies and scripts (pnpm only)
 ```
@@ -77,5 +75,5 @@ pnpm android
 ## Architectural Principles
 
 1. **Strict Offline First**: No user operation (capturing, diagnosing, creating farms, reviewing history) depends on remote API availability.
-2. **Tensor Parity**: The image preprocessing logic (`224x224` RGB normalization) in `src/ml/` must remain bit-for-bit aligned with `ml/src/preprocessing/`.
+2. **Tensor Parity**: The image preprocessing logic (`224x224` RGB normalization) in `src/ml/` must remain bit-for-bit aligned with `ml/src/healthycropping_ml/preprocess.py`.
 3. **Firestore Boundary**: The mobile client interacts exclusively with `api/` via Firebase Auth tokens; it never accesses cloud datastores directly.

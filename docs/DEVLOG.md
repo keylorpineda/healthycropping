@@ -218,3 +218,7 @@ This log documents what was built, key architectural decisions, and technical pr
 - The Firebase Admin app is initialized lazily on the first verification, so the API starts without credentials. The Admin auth client still requires Application Default Credentials (`GOOGLE_APPLICATION_CREDENTIALS`) even though signature checks only use public keys, so the Render deployment (`#48`) must provide the service account.
 - Tests inject a fake verifier through the factory; the Firebase error mapping is tested by stubbing `verify_id_token`, plus one test against the real SDK that rejects a non-JWT token without network access. `firebase_admin` ships no type hints, so mypy ignores its imports.
 - `firestore.rules` denies every read and write (`allow read, write: if false;`), `firebase.json` points the Firebase CLI at it, and a test asserts that this is the only `allow` statement.
+
+### README Accuracy (`#110`)
+- The README advertised an APK on Releases, `> 90%` / `> 92%` Macro-F1, sub-50 ms inference, INT8 export and plot geometries. None of these are measured or shipped yet: releases only contain `.tflite` files, test Macro-F1 is `0.729` (coffee) and `0.850` (cacao), latency is benchmarked in Phase 8 (`#75`), only float16 is exported, and plot polygons are a `v1.1` item (`#41`).
+- Replaced them with the numbers from `docs/EXPERIMENTS.md`, added an "in active development" note, rewrote the phase table to follow `docs/PLAN.md` (Phase 5 stays open until the on-device check for `#31`), and fixed `app/README.md` (classes, directory tree, preprocessing path).
