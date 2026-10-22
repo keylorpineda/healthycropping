@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Annotated, Any, ClassVar, Literal, Self
 
-from pydantic import UUID4, BaseModel, ConfigDict, Field, model_validator
+from pydantic import UUID4, AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
 # Mirrors SUPPORTED_CROPS in app/src/version.ts.
 Crop = Literal["coffee", "cacao", "banana"]
@@ -101,3 +101,70 @@ class PlotResponse(BaseModel):
     area_ha: float | None
     created_at: datetime
     updated_at: datetime
+
+
+# Mirrors DiagnosisSeverity in app/src/ml/types.ts.
+Severity = Literal["healthy", "watch", "actNow"]
+Probability = Annotated[float, Field(ge=0, le=1)]
+Label = Annotated[str, Field(min_length=1, max_length=64)]
+CloudinaryPublicId = Annotated[str, Field(min_length=1, max_length=255)]
+SyncStatus = Literal["created", "updated", "unchanged", "rejected"]
+
+MAX_SYNC_BATCH = 100
+
+
+class ScanIn(RequestModel):
+    """A scan as stored on the device, minus device-only columns (photo URI, sync status)."""
+
+    id: UUID4
+    farm_id: UUID4 | None = None
+    plot_id: UUID4 | None = None
+    crop: Crop
+    predicted_class: Label
+    severity: Severity
+    confidence: Probability
+    threshold: Probability
+    is_low_confidence: bool
+    model_version: Label
+    cloudinary_public_id: CloudinaryPublicId | None = None
+    scanned_at: AwareDatetime
+    updated_at: AwareDatetime
+    deleted_at: AwareDatetime | None = None
+
+
+class ScanSyncRequest(RequestModel):
+    scans: Annotated[list[ScanIn], Field(min_length=1, max_length=MAX_SYNC_BATCH)]
+
+    @model_validator(mode="after")
+    def _reject_duplicate_ids(self) -> Self:
+        ids = [scan.id for scan in self.scans]
+        if len(set(ids)) != len(ids):
+            raise ValueError("scan ids must be unique within a batch")
+        return self
+
+
+class ScanSyncResult(BaseModel):
+    id: str
+    status: SyncStatus
+    code: str | None = None
+
+
+class ScanSyncResponse(BaseModel):
+    results: list[ScanSyncResult]
+
+
+class ScanResponse(BaseModel):
+    id: str
+    farm_id: str | None
+    plot_id: str | None
+    crop: Crop
+    predicted_class: str
+    severity: Severity
+    confidence: float
+    threshold: float
+    is_low_confidence: bool
+    model_version: str
+    cloudinary_public_id: str | None
+    scanned_at: datetime
+    updated_at: datetime
+    created_at: datetime

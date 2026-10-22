@@ -11,7 +11,7 @@ from healthycropping_api.auth import FirebaseTokenVerifier, TokenVerifier
 from healthycropping_api.config import Settings
 from healthycropping_api.errors import register_error_handlers
 from healthycropping_api.firebase import get_firebase_app
-from healthycropping_api.routers import farms, health, me, plots
+from healthycropping_api.routers import farms, health, me, plots, scans
 from healthycropping_api.store import DocumentStore, FirestoreDocumentStore
 
 
@@ -45,6 +45,7 @@ def create_app(
     app.include_router(me.router)
     app.include_router(farms.router)
     app.include_router(plots.router)
+    app.include_router(scans.router)
     return app
 
 
