@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Idempotent batch `POST /scans/sync` (client UUIDs, last write wins on `updated_at`, tombstones, per-item `created`/`updated`/`unchanged`/`rejected` results), `GET /scans` with `farm_id`/`plot_id`/`crop` filters, and `POST /uploads/scan-signature` returning signed Cloudinary upload parameters scoped to `users/{uid}/scans` with a `1280 px` limit, plus User A vs. User B isolation tests (`#46`).
 - `CRUD /farms` and `CRUD /plots` in `api/` with client-generated UUID v4 IDs, `ownerUid` filtering on every Firestore read and write (`OwnedRepository` over a `DocumentStore` protocol), soft deletes with farm-to-plot cascade, `404` for other users' records, `409` for duplicate IDs, and User A vs. User B isolation tests (`#33`).
 - FastAPI core in `api/`: `create_app` factory (`healthycropping_api.main:app`), environment settings, public `GET /health`, Pydantic v2 schemas, structured `{"error": {"code", "message"}}` responses, CORS, a Firebase ID token verification dependency (`firebase-admin`) protecting `GET /me` (`401` for missing, malformed, or expired tokens), and deny-all `firestore.rules` with `firebase.json` (`#32`).
 - Multi-crop offline diagnosis in the app: banana model registry bundled in `app/src/ml/models/banana/`, banana selectable on the Home screen next to coffee and cacao, with tests for registry parity, model resource names, and the coming-soon state for crops without a model (`#31`).
