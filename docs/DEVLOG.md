@@ -219,6 +219,13 @@ This log documents what was built, key architectural decisions, and technical pr
 - Tests inject a fake verifier through the factory; the Firebase error mapping is tested by stubbing `verify_id_token`, plus one test against the real SDK that rejects a non-JWT token without network access. `firebase_admin` ships no type hints, so mypy ignores its imports.
 - `firestore.rules` denies every read and write (`allow read, write: if false;`), `firebase.json` points the Firebase CLI at it, and a test asserts that this is the only `allow` statement.
 
+### Farms & Plots CRUD (`#33`)
+- `GET/POST /farms`, `GET/PATCH/DELETE /farms/{id}`, `GET/POST /plots` (optional `?farm_id=`), and `GET/PATCH/DELETE /plots/{id}`. Fields mirror the app's SQLite `farms` and `plots` tables; `crop` accepts `SUPPORTED_CROPS` (`coffee`, `cacao`, `banana`).
+- IDs are client-generated UUID v4 (the same IDs the app stores offline), so the sync engine (`#47`) can create records without a round trip. A reused ID returns `409`; request bodies forbid unknown fields, so a client cannot set `ownerUid`.
+- Tenant isolation lives in `OwnedRepository` (`repositories.py`): every get, list, update, and delete is filtered by the caller's `ownerUid`. Records owned by someone else are reported as `404`, never `403`, so IDs cannot be probed. Routers never touch the store directly.
+- Deletes are soft (`deleted_at` is set) so offline clients can sync removals later; deleting a farm also soft-deletes its plots, matching the app's `ON DELETE CASCADE`. A plot can only be created in, or moved to, one of the caller's own farms.
+- Storage sits behind a `DocumentStore` protocol (`store.py`). `FirestoreDocumentStore` uses equality filters only (`ownerUid`, `deleted_at == null`, `farm_id`), which Firestore serves from single-field indexes without composite indexes. Tests use an in-memory store, plus a fake Firestore client for the adapter itself. Firestore documents use the API's snake_case fields plus `ownerUid`.
+
 ### README Accuracy (`#110`)
 - The README advertised an APK on Releases, `> 90%` / `> 92%` Macro-F1, sub-50 ms inference, INT8 export and plot geometries. None of these are measured or shipped yet: releases only contain `.tflite` files, test Macro-F1 is `0.729` (coffee) and `0.850` (cacao), latency is benchmarked in Phase 8 (`#75`), only float16 is exported, and plot polygons are a `v1.1` item (`#41`).
 - Replaced them with the numbers from `docs/EXPERIMENTS.md`, added an "in active development" note, rewrote the phase table to follow `docs/PLAN.md` (Phase 5 stays open until the on-device check for `#31`), and fixed `app/README.md` (classes, directory tree, preprocessing path).
