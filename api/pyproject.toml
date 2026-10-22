@@ -8,6 +8,7 @@ authors = [
     { name = "Keylor Pineda", email = "keylorpineda729@gmail.com" },
 ]
 dependencies = [
+    "cloudinary>=1.46.3",
     "fastapi>=0.115.0",
     "firebase-admin>=6.6.0",
     "google-cloud-firestore>=2.19.0",
@@ -46,7 +47,7 @@ warn_unused_configs = true
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["firebase_admin"]
+module = ["cloudinary", "cloudinary.*", "firebase_admin"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
