@@ -208,3 +208,13 @@ This log documents what was built, key architectural decisions, and technical pr
 - Builds on the model bundling fix (`#100`): the app now ships the coffee, cacao, and banana registries; `app/plugins/withTfliteModels.js` copies each SHA-256-verified `.tflite` from `ml/models/<crop>/` into Android `res/raw` at prebuild, so all three crops load their own model offline.
 - The "coming soon" chip state is kept for future crops and covered by a test that stubs `isCropAvailable`.
 - Pending for the `#31` "Done when": an on-device check (`expo prebuild` + `expo run:android` with all three `.tflite` files present) in airplane mode on a physical Android phone; the coffee and cacao weights were not available on the machine that made this change.
+
+## Phase 6 — API, Auth & Sync (`v0.4.0`)
+
+### FastAPI Core & Firestore Rules (`#32`)
+- `api/src/healthycropping_api/main.py` exposes a `create_app(settings, token_verifier)` factory and a module-level `app` for `uvicorn healthycropping_api.main:app`. Settings come from `ENV`, `CORS_ORIGINS`, and `FIREBASE_PROJECT_ID` (`config.py`).
+- Every error, including `404`, `422`, and unhandled exceptions, uses the `ErrorResponse` shape `{"error": {"code", "message", "details?"}}`; unhandled exceptions are logged and return a generic `internal_error` so internals never leak to the client.
+- `get_current_user` (`auth.py`) reads the `Authorization: Bearer` header and verifies it through a `TokenVerifier` protocol. Missing, malformed, and expired tokens return `401` with `WWW-Authenticate: Bearer` and the codes `missing_token`, `invalid_token`, and `expired_token`; a failure to fetch Google's signing keys returns `503 auth_unavailable`. `GET /me` is the first protected route.
+- The Firebase Admin app is initialized lazily on the first verification, so the API starts without credentials. The Admin auth client still requires Application Default Credentials (`GOOGLE_APPLICATION_CREDENTIALS`) even though signature checks only use public keys, so the Render deployment (`#48`) must provide the service account.
+- Tests inject a fake verifier through the factory; the Firebase error mapping is tested by stubbing `verify_id_token`, plus one test against the real SDK that rejects a non-JWT token without network access. `firebase_admin` ships no type hints, so mypy ignores its imports.
+- `firestore.rules` denies every read and write (`allow read, write: if false;`), `firebase.json` points the Firebase CLI at it, and a test asserts that this is the only `allow` statement.

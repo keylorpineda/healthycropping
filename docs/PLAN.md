@@ -128,8 +128,8 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 **Milestone:** `v0.4.0 — Accounts & Sync` (`#32`–`#34`, `#46`–`#48`, `#72` — 7 issues)
 
 ### Tasks
-- [ ] Implement FastAPI application structure in `api/` (`GET /health`, Pydantic v2 schemas, structured error handling, CORS) and deployable Firestore security rules (`firestore.rules`) denying all direct client reads/writes (`#32`).
-- [ ] Implement Firebase ID token verification dependency via `firebase-admin` and `CRUD /farms` + `CRUD /plots` with `ownerUid` multi-tenant isolation and User A vs. User B test (`#33`).
+- [x] Implement FastAPI application structure in `api/` (`GET /health`, Pydantic v2 schemas, structured error handling, CORS), the Firebase ID token verification dependency via `firebase-admin`, and deployable Firestore security rules (`firestore.rules`) denying all direct client reads/writes (`#32`).
+- [ ] Implement `CRUD /farms` + `CRUD /plots` with `ownerUid` multi-tenant isolation and User A vs. User B test (`#33`).
 - [ ] Implement idempotent batch `POST /scans/sync` (by client UUID), `GET /scans`, and signed Cloudinary upload parameter generation (`max 1280 px`, scoped to `users/{uid}/scans`) (`#46`).
 - [ ] Integrate Firebase Auth (email/password sign-up, sign-in, sign-out) and token injection in `app/`, keeping offline diagnosis unrestricted without an account (`#34`).
 - [ ] Implement the Android SQLite sync engine (`app/src/services/sync.ts`), Cloudinary client upload (`<= 1280 px`), and `sync pulse -> checkmark morph` status indicator (`#47`).
