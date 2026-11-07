@@ -65,9 +65,12 @@ export interface ScanPayload {
 }
 
 /** Mirrors `ScanSyncResult`. */
+/** Mirrors `SyncStatus` in the API schemas. */
+export const SCAN_SYNC_STATUSES = ['created', 'updated', 'unchanged', 'rejected'] as const;
+
 export interface ScanSyncResult {
   id: string;
-  status: 'created' | 'updated' | 'unchanged' | 'rejected';
+  status: (typeof SCAN_SYNC_STATUSES)[number];
   code?: string | null;
 }
 
@@ -83,6 +86,13 @@ export function toPlotPayload(plot: Plot): PlotPayload {
     crop: plot.crop,
     area_ha: plot.area_ha,
   };
+}
+
+/** `PATCH` body for a farm or plot: the create payload without its `id`. */
+export function toPatchBody<T extends { id: string }>(payload: T): Omit<T, 'id'> {
+  const changes: Partial<T> = { ...payload };
+  delete changes.id;
+  return changes as Omit<T, 'id'>;
 }
 
 export function toScanPayload(scan: Scan): ScanPayload {
@@ -183,9 +193,11 @@ async function upsertRemote(
     }
   }
   // 409: the record already exists (an earlier run or an edit after sync).
-  const { id, ...changes } = payload;
   try {
-    await api.request(`${collection}/${id}`, { method: 'PATCH', body: changes });
+    await api.request(`${collection}/${payload.id}`, {
+      method: 'PATCH',
+      body: toPatchBody(payload),
+    });
     return 'synced';
   } catch (error) {
     // 404 here means the ID belongs to another account or was deleted remotely.

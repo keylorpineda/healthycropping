@@ -26,6 +26,19 @@ export interface ScanSignature {
   upload_url: string;
 }
 
+/** Every field of `ScanSignature`; the record type makes the compiler flag a missing key. */
+const SIGNATURE_FIELD_MAP: Record<keyof ScanSignature, true> = {
+  cloud_name: true,
+  api_key: true,
+  timestamp: true,
+  signature: true,
+  folder: true,
+  public_id: true,
+  transformation: true,
+  upload_url: true,
+};
+export const SCAN_SIGNATURE_FIELDS = Object.keys(SIGNATURE_FIELD_MAP) as (keyof ScanSignature)[];
+
 export type UploadErrorCode = 'network' | 'unavailable' | 'rejected';
 
 export class UploadError extends Error {
@@ -69,11 +82,16 @@ export async function prepareUploadPhoto(localUri: string): Promise<string> {
   return result.uri;
 }
 
+/** `POST /uploads/scan-signature` body; mirrors `ScanSignatureRequest`. */
+export function toSignatureRequest(scanId: string): { scan_id: string } {
+  return { scan_id: scanId };
+}
+
 async function requestSignature(api: ApiClient, scanId: string): Promise<ScanSignature> {
   try {
     return await api.request<ScanSignature>('/uploads/scan-signature', {
       method: 'POST',
-      body: { scan_id: scanId },
+      body: toSignatureRequest(scanId),
     });
   } catch (error) {
     if (error instanceof ApiError && error.status === 0) {
