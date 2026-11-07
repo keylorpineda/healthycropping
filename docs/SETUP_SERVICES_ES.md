@@ -279,46 +279,61 @@ La API genera parámetros firmados para que la app suba fotos redimensionadas (`
 
 ## 8. Render (Despliegue Gratuito del Backend FastAPI)
 
-Desplegaremos `api/` como un **Web Service** gratuito en Render.
+Desplegaremos `api/` como un **Web Service** gratuito en Render utilizando la especificación de infraestructura como código (*Blueprint*) definida en `render.yaml`.
 
 > [!NOTE]
-> **Comportamiento de arranque en frío (Cold Starts)**: En el plan gratuito (*Free instance*) de Render, el servidor entra en suspensión tras **15 minutos de inactividad**. La primera petición tras ese periodo tardará entre **30 y 50 segundos** mientras el contenedor despierta. Como **HealthyCropping** es *offline-first*, el diagnóstico en el teléfono es instantáneo sin conexión y la sincronización en segundo plano reintenta automáticamente cuando el servidor responde.
+> **Comportamiento de arranque en frío (Cold Starts)**: En el plan gratuito (*Free instance*) de Render, el servidor entra en suspensión tras **15 minutos de inactividad**. La primera petición tras ese periodo tardará entre **30 y 60 segundos** mientras el contenedor despierta. Como **HealthyCropping** es *offline-first*, el diagnóstico y la gestión de fincas/lotes en el teléfono son completamente locales e instantáneos; la sincronización de la app detecta la espera y simplemente reintenta en el próximo disparador de red o reanudación de la app sin bloquear al usuario ni perder datos.
 
-### Pasos
+### 8.1 Despliegue con Blueprint (`render.yaml`)
 1. Entra a [https://dashboard.render.com/](https://dashboard.render.com/) e inicia sesión con tu cuenta de GitHub (`keylorpineda`).
-2. Haz clic en el botón **New +** (arriba a la derecha) -> **Web Service**.
-3. Selecciona **Build and deploy from a Git repository** y conecta el repositorio `keylorpineda/healthycrop`.
-4. Configura el servicio con estos valores exactos:
-   - **Name**: `healthycroppingping-api`
+2. Haz clic en el botón **New +** (arriba a la derecha) -> **Blueprint**.
+3. Conecta el repositorio de GitHub `keylorpineda/healthycropping`.
+4. Render detectará automáticamente el archivo `render.yaml` en la raíz del repositorio, que define:
+   - **Service Name**: `healthycropping-api`
+   - **Type**: `web`
    - **Root Directory**: `api`
-   - **Runtime**: `Python 3`
-   - **Branch**: `main`
-   - **Build Command**: `pip install uv && uv sync --frozen --no-dev`
-   - **Start Command**: `uv run uvicorn healthycroppingping_api.main:app --host 0.0.0.0 --port $PORT`
-   - **Instance Type**: selecciona **Free ($0/month)**.
-5. Baja a la sección **Environment Variables** y agrega las variables de `api/.env`:
-   - `PYTHON_VERSION` = `3.12.0`
-   - `ENV` = `production`
-   - `FIREBASE_PROJECT_ID` = `<tu-project-id>`
-   - `GOOGLE_APPLICATION_CREDENTIALS` = `/etc/secrets/service-account.json`
-   - `GEMINI_API_KEY` = `<tu-gemini-api-key>`
-   - `GEMINI_MODEL` = `gemini-2.5-flash`
-   - `CLOUDINARY_CLOUD_NAME` = `<tu-cloud-name>`
-   - `CLOUDINARY_API_KEY` = `<tu-cloudinary-api-key>`
-   - `CLOUDINARY_API_SECRET` = `<tu-cloudinary-api-secret>`
-6. En la sección **Secret Files** (debajo de Environment Variables), haz clic en **Add Secret File**:
+   - **Runtime**: `Python` (`3.12.7`)
+   - **Plan**: `free`
+   - **Branch**: `main` (despliegues automáticos `autoDeploy: true` únicamente al fusionar en `main`)
+   - **Build Command**: `uv sync --frozen --no-dev`
+   - **Start Command**: `uv run uvicorn healthycropping_api.main:app --host 0.0.0.0 --port $PORT`
+   - **Health Check Path**: `/health`
+
+### 8.2 Configuración del Archivo Secreto (*Secret File*) de Firebase
+Debido a que las credenciales de servicio nunca deben guardarse en el repositorio:
+1. En el Dashboard de Render, ve a tu servicio `healthycropping-api`.
+2. En el menú lateral, abre **Environment** y baja a la sección **Secret Files**.
+3. Haz clic en **Add Secret File**:
    - **Filename**: `service-account.json`
-   - **Contents**: pega el contenido completo de tu archivo `api/service-account.json`.
-7. Haz clic en **Create Web Service**.
-8. Una vez desplegado, copia la URL pública (ej. `https://healthycroppingping-api.onrender.com`) y colócala en `app/.env`:
+   - **Contents**: copia y pega el contenido JSON completo de tu archivo local `api/service-account.json` (generado en Firebase Console según la sección 2.5).
+4. El archivo se montará automáticamente en `/etc/secrets/service-account.json`, coincidiendo con la variable `GOOGLE_APPLICATION_CREDENTIALS` definida en `render.yaml`.
+
+### 8.3 Variables de Entorno en el Dashboard (`sync: false`)
+Las siguientes variables marcadas como `sync: false` en `render.yaml` deben completarse en el Dashboard de Render (**Environment** -> **Environment Variables**):
+- `CORS_ORIGINS`: orígenes permitidos separados por coma (ej. `http://localhost:8081` o la URL de producción).
+- `FIREBASE_PROJECT_ID`: el ID del proyecto en Firebase (ej. `healthycropping-cr`).
+- `CLOUDINARY_CLOUD_NAME`: nombre de la nube de Cloudinary.
+- `CLOUDINARY_API_KEY`: clave de API de Cloudinary.
+- `CLOUDINARY_API_SECRET`: clave secreta de Cloudinary.
+
+Las variables `ENV=production` y `PYTHON_VERSION=3.12.7` se aplican automáticamente desde el Blueprint.
+
+### 8.4 Configuración de la URL de Producción en la App
+1. Una vez completado el despliegue en Render, copia la URL pública generada (ej. `https://healthycropping-api.onrender.com`).
+2. Configúrala en `app/.env`:
    ```env
-   EXPO_PUBLIC_API_URL=https://healthycroppingping-api.onrender.com
+   EXPO_PUBLIC_API_URL=https://healthycropping-api.onrender.com
    ```
-9. **Cómo verificar que funciona**:
-   ```powershell
-   curl https://healthycroppingping-api.onrender.com/health
-   ```
-   Debe devolver `{"status":"ok"}`.
+
+### 8.5 Verificación
+Realiza una petición al endpoint de salud del servicio desplegado:
+```powershell
+curl https://healthycropping-api.onrender.com/health
+```
+Debe devolver código HTTP `200` y el JSON:
+```json
+{"status":"ok","version":"0.1.0"}
+```
 
 ---
 
