@@ -147,7 +147,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 
 ### Tasks
 - [x] Implement `api/scripts/fetch_agronomic_docs.py` and section chunker over official ICAFE coffee technical manuals without committing restricted PDFs (`#35`).
-- [ ] Curate and validate official public technical sources for cacao (CATIE / MAG / INIAP) and banana (CORBANA / MAG / FAO) in `fetch_agronomic_docs.py` (`#73`).
+- [x] Curate and validate official public technical sources for cacao (CATIE / MAG / INIAP) and banana (CORBANA / MAG / FAO) in `fetch_agronomic_docs.py` (`#73`).
 - [ ] Implement `api/scripts/build_rag_index.py` and the local top-k retriever preserving `(source, section)` citation metadata (`#49`).
 - [ ] Implement `POST /explanations` in `api/` using `google-genai` (`GEMINI_MODEL` env var, free-tier Flash model) to generate plain-Spanish/English explanations + next steps citing source and section, and explicitly declining when not covered (`#36`).
 - [ ] Enforce strict privacy (never sending names, emails, or coordinates), response caching by `(crop, class, severity, language)`, and `20 requests/user/hour` rate limiting via `slowapi` (`#50`).
