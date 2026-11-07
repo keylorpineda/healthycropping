@@ -64,7 +64,7 @@ healthycroppingping/
 │       ├── i18n/               # i18next locales (es default, en secondary)
 │       ├── ml/                 # Image resize, jpeg-js decode, tensor normalization, TFLite runner
 │       ├── services/           # API client, Firebase Auth wrapper, Cloudinary uploader
-│       ├── store/              # Zustand state stores
+│       ├── stores/             # Zustand state stores (preferences, auth session)
 │       └── theme/              # Design tokens (colors, typography, spacing, radii, elevation, motion)
 └── docs/                       # Project plans, reports, model cards, devlog, and Spanish setup guide
 ```
@@ -107,6 +107,7 @@ To prevent train/serve skew between Python (`Pillow` / `TensorFlow`) and React N
 
 1. **Zero Direct Firestore Access from the App**:
    - The Android client uses Firebase Auth strictly to obtain an authenticated `idToken`.
+   - `app/src/services/api.ts` attaches `Authorization: Bearer <idToken>` only when a user is signed in; diagnosis, history and local farms never require an account.
    - `firestore.rules` denies all client reads and writes (`allow read, write: if false;`).
    - All data operations go through `api/` using the Firebase Admin SDK, where every Firestore document stores `ownerUid` and every query filters by the verified caller `uid`.
 2. **Signed Cloudinary Uploads**:
