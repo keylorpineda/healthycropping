@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { countPending } from '@/db';
 import { apiClient } from '@/services/api';
 import { SyncInterruptedError, syncAll } from '@/services/sync';
+import { loadLastSyncedAt, saveLastSyncedAt } from '@/services/syncMeta';
 
 import { useAuthStore } from './auth';
 
@@ -22,6 +23,8 @@ export interface SyncState {
   pendingCount: number;
   lastSyncedAt: string | null;
   refreshPending: () => void;
+  /** Load the persisted last sync time. */
+  hydrate: () => Promise<void>;
   setOnline: (online: boolean) => void;
   /** Run a sync now if signed in and online; concurrent calls share one run. */
   requestSync: () => Promise<void>;
@@ -51,7 +54,9 @@ export const useSyncStore = create<SyncState>((set, get) => {
     set({ phase: 'syncing' });
     try {
       await syncAll();
-      set({ phase: 'synced', lastSyncedAt: new Date().toISOString() });
+      const lastSyncedAt = new Date().toISOString();
+      set({ phase: 'synced', lastSyncedAt });
+      await saveLastSyncedAt(lastSyncedAt);
     } catch (error) {
       const offline = error instanceof SyncInterruptedError && error.reason === 'offline';
       set({ phase: offline ? 'offline' : 'error' });
@@ -64,6 +69,13 @@ export const useSyncStore = create<SyncState>((set, get) => {
     ...INITIAL,
 
     refreshPending: () => set({ pendingCount: safeCountPending() }),
+
+    hydrate: async () => {
+      const lastSyncedAt = await loadLastSyncedAt();
+      if (lastSyncedAt && !get().lastSyncedAt) {
+        set({ lastSyncedAt });
+      }
+    },
 
     setOnline: (isOnline) => {
       const { phase } = get();
