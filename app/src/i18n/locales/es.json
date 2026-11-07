@@ -144,7 +144,10 @@
     "modelTitle": "Modelo TFLite activo",
     "modelDetails": "MobileNetV3-Large Float16 (Café v0.1.0)",
     "datasetsTitle": "Conjuntos de datos",
-    "datasetsDetails": "RoCoLe (CC BY 4.0) y BRACOL (CC BY-NC 4.0)"
+    "datasetsDetails": "RoCoLe (CC BY 4.0) y BRACOL (CC BY-NC 4.0)",
+    "accountSignIn": "Iniciar sesión para sincronizar",
+    "accountSignedIn": "Sesión iniciada como {{email}}",
+    "accountManage": "Administrar cuenta"
   },
   "history": {
     "title": "Historial de diagnósticos",
@@ -190,5 +193,41 @@
     "noFarmsDescription": "Registre sus fincas y lotes para organizar los diagnósticos de campo.",
     "save": "Guardar",
     "cancel": "Cancelar"
+  },
+  "auth": {
+    "signInTitle": "Iniciar sesión",
+    "signInSubtitle": "Sincroniza tus fincas y diagnósticos entre dispositivos.",
+    "signUpTitle": "Crear cuenta",
+    "signUpSubtitle": "Una cuenta solo se usa para respaldar y sincronizar tus datos.",
+    "offlineNote": "El diagnóstico funciona sin cuenta y sin conexión. Puedes iniciar sesión cuando quieras.",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "nombre@correo.com",
+    "password": "Contraseña",
+    "passwordHint": "Mínimo 6 caracteres",
+    "confirmPassword": "Confirmar contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Crear cuenta",
+    "signOut": "Cerrar sesión",
+    "skip": "Continuar sin cuenta",
+    "toSignUp": "¿No tienes cuenta? Crea una",
+    "toSignIn": "¿Ya tienes cuenta? Inicia sesión",
+    "accountTitle": "Tu cuenta",
+    "signedInAs": "Sesión iniciada como",
+    "accountNote": "Tus datos locales siguen en este teléfono aunque cierres sesión.",
+    "validation": {
+      "emailInvalid": "Ingresa un correo electrónico válido.",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
+      "passwordMismatch": "Las contraseñas no coinciden."
+    },
+    "errors": {
+      "invalid-email": "El correo electrónico no es válido.",
+      "email-already-in-use": "Ya existe una cuenta con este correo.",
+      "weak-password": "La contraseña es demasiado débil.",
+      "invalid-credential": "Correo o contraseña incorrectos.",
+      "too-many-requests": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
+      "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
+      "not-configured": "Las cuentas no están configuradas en esta versión de la app.",
+      "unknown": "Algo salió mal. Inténtalo de nuevo."
+    }
   }
 }
