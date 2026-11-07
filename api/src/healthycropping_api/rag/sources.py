@@ -24,6 +24,7 @@ class SectionSpec:
     last_page: int
     start: str | None = None
     end: str | None = None
+    exclude: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -79,6 +80,14 @@ def _parse_section(raw: dict[str, Any], crop: str, where: str) -> SectionSpec:
         or pages[1] < pages[0]
     ):
         raise SourceConfigError(f"{where}: 'pages' must be [first, last] with 1 <= first <= last")
+    raw_exclude = raw.get("exclude", [])
+    if not isinstance(raw_exclude, list) or not all(
+        isinstance(pair, list)
+        and len(pair) == 2
+        and all(isinstance(marker, str) and marker.strip() for marker in pair)
+        for pair in raw_exclude
+    ):
+        raise SourceConfigError(f"{where}: 'exclude' must be a list of [from, to] phrases")
     return SectionSpec(
         heading=heading,
         disease_classes=tuple(classes),
@@ -86,6 +95,7 @@ def _parse_section(raw: dict[str, Any], crop: str, where: str) -> SectionSpec:
         last_page=pages[1],
         start=_optional_str(raw, "start", where),
         end=_optional_str(raw, "end", where),
+        exclude=tuple((pair[0], pair[1]) for pair in raw_exclude),
     )
 
 

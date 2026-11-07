@@ -116,6 +116,19 @@ def test_section_text_uses_page_range_and_accent_insensitive_markers() -> None:
     assert section_text(pages, spec, mite) == "La arañita roja es un ácaro."
 
 
+def test_section_text_removes_excluded_blocks() -> None:
+    page = "Combate con deshoje. Azofeifa, D. 2007. Efecto. CORBANA 33. Monitoreo semanal."
+    section = SectionSpec(
+        "Sigatoka", ("black_sigatoka",), 1, 1, exclude=(("azofeifa, d", "Monitoreo"),)
+    )
+    spec = make_source("banana", (section,))
+    assert section_text([page], spec, section) == "Combate con deshoje.\nMonitoreo semanal."
+
+    stale = SectionSpec("Sigatoka", ("black_sigatoka",), 1, 1, exclude=(("Stover", "Monitoreo"),))
+    with pytest.raises(SectionNotFoundError, match="exclude markers"):
+        section_text([page], make_source("banana", (stale,)), stale)
+
+
 def test_section_text_reports_missing_pages_and_markers() -> None:
     missing_page = SectionSpec("Roya", ("leaf_rust",), 5, 6)
     missing_marker = SectionSpec("Roya", ("leaf_rust",), 1, 1, start="hemileia")

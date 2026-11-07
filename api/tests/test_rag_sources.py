@@ -75,6 +75,19 @@ def test_parses_sections_and_derives_the_cache_filename() -> None:
         ({"year": "2020"}, "'year' must be a int"),
         ({"drop_lines": ["("]}, "invalid drop_lines"),
         ({"soft_hyphens": "yes"}, "soft_hyphens"),
+        (
+            {
+                "sections": [
+                    {
+                        "heading": "X",
+                        "disease_classes": ["leaf_rust"],
+                        "pages": [1, 1],
+                        "exclude": [["only one"]],
+                    }
+                ]
+            },
+            "'exclude'",
+        ),
         ({"sections": []}, "at least one"),
         (
             {"sections": [{"heading": "X", "disease_classes": ["monilia"], "pages": [1, 1]}]},
