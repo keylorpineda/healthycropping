@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: healthycropping-api
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: api
+    branch: main
+    autoDeploy: true
+    buildCommand: uv sync --frozen --no-dev
+    startCommand: uv run uvicorn healthycropping_api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ENV
+        value: production
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/secrets/service-account.json
