@@ -254,6 +254,13 @@ This log documents what was built, key architectural decisions, and technical pr
 - `SyncStatusPill` (`app/src/components/sync/`) replaces the Home "100% offline" badge only for signed-in users: a dot pulses while syncing (Reanimated `withRepeat`) and springs into a checkmark when done; pending count, offline and error states use the status colors; reduce motion shows the final state without animation; tapping retries.
 - Pending for the issue's "Done when": an end-to-end run on a device against a deployed API with Cloudinary configured (part of `#48`).
 
+### Account Settings & Local Data Claiming (`#72`)
+- Stacked on `#47`. Records created without an account are already `pending`, so "claiming" them only needs the next sync to run under the new user; `claimLocalData(uid)` (`app/src/services/syncMeta.ts`) runs before that first sync, records the device owner (`hc.sync.ownerUid` in AsyncStorage), and re-queues `failed` records once.
+- A different account signing in on the same phone does not take over data the previous account synced: those IDs belong to the other user on the API (`id_conflict` / `404`), and uploading them would copy someone else's diagnoses into the new account. Anything created while signed out is still `pending` and goes to whoever signs in next. Supporting several accounts on one device would need an owner column per row; it is out of scope for the MVP.
+- The last successful sync time is persisted (`hc.sync.lastSyncedAt`) and loaded when the triggers start, so Settings shows it after a restart. Times are formatted with `toLocaleString` (`es-CR` / `en-US`).
+- Sign-out asks for confirmation (`Alert.alert`, destructive style) in Settings and on the Account screen and explains that local data stays on the phone. Signing out never deletes SQLite data.
+- The Jest SQLite mock now evaluates `col = 'literal'` conditions in `UPDATE ... WHERE`, which the re-queue query uses.
+
 ### README Accuracy (`#110`)
 - The README advertised an APK on Releases, `> 90%` / `> 92%` Macro-F1, sub-50 ms inference, INT8 export and plot geometries. None of these are measured or shipped yet: releases only contain `.tflite` files, test Macro-F1 is `0.729` (coffee) and `0.850` (cacao), latency is benchmarked in Phase 8 (`#75`), only float16 is exported, and plot polygons are a `v1.1` item (`#41`).
 - Replaced them with the numbers from `docs/EXPERIMENTS.md`, added an "in active development" note, rewrote the phase table to follow `docs/PLAN.md` (Phase 5 stays open until the on-device check for `#31`), and fixed `app/README.md` (classes, directory tree, preprocessing path).
