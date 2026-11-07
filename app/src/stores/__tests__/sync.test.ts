@@ -1,4 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import * as syncService from '@/services/sync';
+import { LAST_SYNCED_AT_KEY } from '@/services/syncMeta';
 import { useAuthStore } from '../auth';
 import { useSyncStore } from '../sync';
 
@@ -67,5 +70,16 @@ describe('useSyncStore', () => {
 
     await Promise.all([first, second]);
     expect(syncAll).toHaveBeenCalledTimes(2);
+  });
+
+  it('persists the last sync time and loads it on hydrate', async () => {
+    syncAll.mockResolvedValueOnce(REPORT);
+    await useSyncStore.getState().requestSync();
+    const saved = await AsyncStorage.getItem(LAST_SYNCED_AT_KEY);
+    expect(saved).toBe(useSyncStore.getState().lastSyncedAt);
+
+    useSyncStore.getState().reset();
+    await useSyncStore.getState().hydrate();
+    expect(useSyncStore.getState().lastSyncedAt).toBe(saved);
   });
 });

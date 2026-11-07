@@ -4,6 +4,8 @@ import { AppState } from 'react-native';
 import { useAuthStore } from '@/stores/auth';
 import { useSyncStore } from '@/stores/sync';
 
+import { claimLocalData } from './syncMeta';
+
 /** Treat "unknown" reachability as online; only an explicit `false` means offline. */
 export function isOnline(
   state: Pick<NetInfoState, 'isConnected' | 'isInternetReachable'>,
@@ -12,8 +14,8 @@ export function isOnline(
 }
 
 /**
- * Start automatic sync: on sign-in, when connectivity comes back, and when the
- * app returns to the foreground. Returns a function that removes every listener.
+ * Start automatic sync: on sign-in (after claiming local data), when
+ * connectivity comes back, and when the app returns to the foreground. Returns a function that removes every listener.
  */
 export function startSyncTriggers(): () => void {
   const sync = () => void useSyncStore.getState().requestSync();
@@ -34,14 +36,16 @@ export function startSyncTriggers(): () => void {
   });
 
   const stopAuth = useAuthStore.subscribe((state, previous) => {
-    if (state.status === 'signedIn' && previous.status !== 'signedIn') {
-      sync();
+    if (state.status === 'signedIn' && previous.status !== 'signedIn' && state.user) {
+      // Claim anonymous local data for this account before uploading it.
+      void claimLocalData(state.user.uid).finally(sync);
     }
     if (state.status === 'signedOut' && previous.status === 'signedIn') {
       useSyncStore.getState().reset();
     }
   });
 
+  void useSyncStore.getState().hydrate();
   sync();
 
   return () => {
