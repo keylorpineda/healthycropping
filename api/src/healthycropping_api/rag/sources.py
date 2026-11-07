@@ -38,6 +38,7 @@ class SourceSpec:
     sha256: str | None
     drop_lines: tuple[str, ...]
     sections: tuple[SectionSpec, ...]
+    soft_hyphens: bool = False
 
     @property
     def filename(self) -> str:
@@ -111,6 +112,9 @@ def _parse_source(raw: dict[str, Any], index: int) -> SourceSpec:
             re.compile(pattern)
         except re.error as exc:
             raise SourceConfigError(f"{where}: invalid drop_lines pattern {pattern!r}") from exc
+    soft_hyphens = raw.get("soft_hyphens", False)
+    if not isinstance(soft_hyphens, bool):
+        raise SourceConfigError(f"{where}: 'soft_hyphens' must be true or false")
     raw_sections = raw.get("sections")
     if not isinstance(raw_sections, list) or not raw_sections:
         raise SourceConfigError(f"{where}: at least one [[sources.sections]] is required")
@@ -129,6 +133,7 @@ def _parse_source(raw: dict[str, Any], index: int) -> SourceSpec:
         sha256=sha256,
         drop_lines=tuple(drop_lines),
         sections=sections,
+        soft_hyphens=soft_hyphens,
     )
 
 

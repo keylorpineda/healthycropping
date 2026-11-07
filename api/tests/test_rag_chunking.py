@@ -66,6 +66,29 @@ def test_reflow_joins_wrapped_lines_and_keeps_list_items() -> None:
     ]
 
 
+def test_reflow_removes_soft_hyphens_only_when_enabled() -> None:
+    lines = [
+        "la mazorca negra afecta de manera ge-",
+        "neral y el inver -",
+        "nadero.",
+        "Phillips-",
+        "Mora.",
+    ]
+    assert reflow(lines, soft_hyphens=True) == [
+        "la mazorca negra afecta de manera general y el invernadero.",
+        "Phillips-Mora.",
+    ]
+    assert reflow(lines[:3]) == ["la mazorca negra afecta de manera ge-neral y el inver -nadero."]
+
+
+def test_section_text_removes_spaces_before_punctuation() -> None:
+    section = SectionSpec("Moniliasis", ("monilia",), 1, 1)
+    spec = make_source("cacao", (section,))
+    assert section_text(["Desrosiers y Suárez 1974) . El éxito ,"], spec, section) == (
+        "Desrosiers y Suárez 1974). El éxito,"
+    )
+
+
 def test_section_text_uses_page_range_and_accent_insensitive_markers() -> None:
     pages = [
         "1\nIntroducción general.",
