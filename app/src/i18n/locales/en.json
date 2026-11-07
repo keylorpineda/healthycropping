@@ -229,5 +229,15 @@
       "not-configured": "Accounts are not configured in this build of the app.",
       "unknown": "Something went wrong. Please try again."
     }
+  },
+  "sync": {
+    "ready": "Account connected",
+    "syncing": "Syncing…",
+    "synced": "Synced",
+    "pending_one": "{{count}} pending change",
+    "pending_other": "{{count}} pending changes",
+    "offline": "Offline",
+    "error": "Sync error",
+    "retryHint": "Tap to sync now"
   }
 }
