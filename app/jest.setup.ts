@@ -231,7 +231,11 @@ class MockSQLiteDatabase {
 
       for (const row of rows) {
         let match = false;
-        if (wherePart.includes('id = ?')) {
+        const conditions = wherePart.split(/\s+AND\s+/i).map((c) => c.trim());
+        if (conditions.length > 1 && conditions.every((c) => /^\w+ = \?$/.test(c))) {
+          // e.g. `id = ? AND updated_at = ?`: compare each column with its parameter
+          match = conditions.every((c, i) => row[c.split(' ')[0]!] === whereVals[i]);
+        } else if (wherePart.includes('id = ?')) {
           match = row.id === whereVals[0];
         } else if (wherePart.includes('id=')) {
           const idVal = wherePart.split('id=')[1]!.trim().replace(/['"]/g, '');
