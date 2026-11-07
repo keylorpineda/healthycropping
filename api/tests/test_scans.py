@@ -2,7 +2,7 @@
 
 from typing import Any
 
-import httpx
+import httpx2
 import pytest
 from fastapi.testclient import TestClient
 
@@ -34,20 +34,20 @@ def scan_body(**overrides: Any) -> dict[str, Any]:
     return {**body, **overrides}
 
 
-def sync(client: TestClient, *scans: dict[str, Any], token: str = VALID_TOKEN) -> httpx.Response:
-    response: httpx.Response = client.post(
+def sync(client: TestClient, *scans: dict[str, Any], token: str = VALID_TOKEN) -> httpx2.Response:
+    response: httpx2.Response = client.post(
         "/scans/sync", json={"scans": list(scans)}, headers=bearer(token)
     )
     return response
 
 
-def results(response: httpx.Response) -> list[dict[str, Any]]:
+def results(response: httpx2.Response) -> list[dict[str, Any]]:
     assert response.status_code == 200, response.text
     body: list[dict[str, Any]] = response.json()["results"]
     return body
 
 
-def statuses(response: httpx.Response) -> list[str]:
+def statuses(response: httpx2.Response) -> list[str]:
     return [result["status"] for result in results(response)]
 
 
