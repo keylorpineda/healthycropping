@@ -109,7 +109,9 @@ jest.mock('expo-image-picker', () => ({
     canceled: false,
     assets: [{ uri: 'file:///mock/gallery_photo.jpg', width: 800, height: 600 }],
   }),
-  requestMediaLibraryPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted', granted: true }),
+  requestMediaLibraryPermissionsAsync: jest
+    .fn()
+    .mockResolvedValue({ status: 'granted', granted: true }),
   MediaTypeOptions: {
     Images: 'Images',
   },
@@ -237,9 +239,18 @@ class MockSQLiteDatabase {
       for (const row of rows) {
         let match = false;
         const conditions = wherePart.split(/\s+AND\s+/i).map((c) => c.trim());
-        if (conditions.length > 1 && conditions.every((c) => /^\w+ = \?$/.test(c))) {
-          // e.g. `id = ? AND updated_at = ?`: compare each column with its parameter
-          match = conditions.every((c, i) => row[c.split(' ')[0]!] === whereVals[i]);
+        const simple = /^(\w+) = (\?|'[^']*')$/;
+        if (
+          (conditions.length > 1 || /'/.test(wherePart)) &&
+          conditions.every((c) => simple.test(c))
+        ) {
+          // e.g. `id = ? AND updated_at = ?` or `sync_status = 'failed'`
+          let paramIdx = 0;
+          match = conditions.every((c) => {
+            const [, col, value] = simple.exec(c)!;
+            const expected = value === '?' ? whereVals[paramIdx++] : value!.slice(1, -1);
+            return row[col!] === expected;
+          });
         } else if (wherePart.includes('id = ?')) {
           match = row.id === whereVals[0];
         } else if (wherePart.includes('id=')) {
@@ -295,7 +306,10 @@ class MockSQLiteDatabase {
     const orderIdx = clean.search(/\bORDER BY\b/i);
 
     const tableEnd = whereIdx !== -1 ? whereIdx : orderIdx !== -1 ? orderIdx : clean.length;
-    const table = clean.slice(fromIdx + 5, tableEnd).trim().split(' ')[0]!;
+    const table = clean
+      .slice(fromIdx + 5, tableEnd)
+      .trim()
+      .split(' ')[0]!;
 
     let wherePart = '';
     if (whereIdx !== -1) {
@@ -380,4 +394,3 @@ jest.mock('expo-sqlite', () => ({
   openDatabaseAsync: jest.fn().mockResolvedValue(mockDb),
   __mockDb: mockDb,
 }));
-
