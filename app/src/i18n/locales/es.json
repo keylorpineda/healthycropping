@@ -229,5 +229,15 @@
       "not-configured": "Las cuentas no están configuradas en esta versión de la app.",
       "unknown": "Algo salió mal. Inténtalo de nuevo."
     }
+  },
+  "sync": {
+    "ready": "Cuenta conectada",
+    "syncing": "Sincronizando…",
+    "synced": "Sincronizado",
+    "pending_one": "{{count}} cambio pendiente",
+    "pending_other": "{{count}} cambios pendientes",
+    "offline": "Sin conexión",
+    "error": "Error al sincronizar",
+    "retryHint": "Toca para sincronizar ahora"
   }
 }
