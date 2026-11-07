@@ -147,7 +147,11 @@
     "datasetsDetails": "RoCoLe (CC BY 4.0) y BRACOL (CC BY-NC 4.0)",
     "accountSignIn": "Iniciar sesión para sincronizar",
     "accountSignedIn": "Sesión iniciada como {{email}}",
-    "accountManage": "Administrar cuenta"
+    "accountManage": "Administrar cuenta",
+    "lastSynced": "Última sincronización: {{time}}",
+    "neverSynced": "Aún no se ha sincronizado",
+    "nothingPending": "Todo está sincronizado",
+    "syncNow": "Sincronizar ahora"
   },
   "history": {
     "title": "Historial de diagnósticos",
@@ -228,7 +232,9 @@
       "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
       "not-configured": "Las cuentas no están configuradas en esta versión de la app.",
       "unknown": "Algo salió mal. Inténtalo de nuevo."
-    }
+    },
+    "signOutConfirmTitle": "¿Cerrar sesión?",
+    "signOutConfirmBody": "Tus fincas y diagnósticos se quedan en este teléfono. Los cambios pendientes se sincronizarán cuando vuelvas a iniciar sesión."
   },
   "sync": {
     "ready": "Cuenta conectada",
