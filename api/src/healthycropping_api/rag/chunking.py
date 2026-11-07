@@ -128,7 +128,20 @@ def section_text(pages: list[str], source: SourceSpec, section: SectionSpec) -> 
         found = folded.find(" ".join(fold(section.end).split()), start + 1)
         if found >= 0:
             end = found
-    return text[start:end].strip()
+    text = text[start:end]
+
+    # Remove interleaved blocks such as a bibliography printed mid-column.
+    for skip_from, skip_to in section.exclude:
+        folded = fold(text)
+        begin = folded.find(" ".join(fold(skip_from).split()))
+        stop = folded.find(" ".join(fold(skip_to).split()), begin + 1) if begin >= 0 else -1
+        if begin < 0 or stop < 0:
+            raise SectionNotFoundError(
+                f"{source.id}: exclude markers {skip_from!r}..{skip_to!r} not found "
+                f"for '{section.heading}'"
+            )
+        text = f"{text[:begin].rstrip()}\n{text[stop:]}"
+    return text.strip()
 
 
 def split_text(

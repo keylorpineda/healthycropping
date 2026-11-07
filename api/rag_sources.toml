@@ -10,6 +10,8 @@
 # - `start` / `end` (optional): phrases that mark where the section text starts and
 #   where the next section starts, matched case- and accent-insensitively. Use
 #   them when a page holds more than one section.
+# - `exclude` (optional): `[from, to]` phrase pairs; the text from `from` up to
+#   (not including) `to` is removed, e.g. a bibliography printed mid-column.
 # - `disease_classes`: classes of that crop's on-device model
 #   (`app/src/ml/models/<crop>/registry.json`) the section explains. When the PDF
 #   layout interleaves two sections so their text cannot be separated reliably,
@@ -103,6 +105,9 @@ disease_classes = ["black_sigatoka"]
 pages = [1, 2]
 # Skip the bulletin's masthead and author line.
 start = "Manejo de la Sigatoka negra en el cultivo del banano"
+# The two-column layout prints the reference list in the middle of the text.
+end = "Literatura citada"
+exclude = [["Azofeifa, D; Martínez, I; Furcal", "Monitoreo del clima y de la enfermedad"]]
 
 [[sources]]
 id = "fao-fusarium-tr4-manual-2014"
