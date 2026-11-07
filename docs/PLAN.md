@@ -134,7 +134,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 - [x] Integrate Firebase Auth (email/password sign-up, sign-in, sign-out) and token injection in `app/`, keeping offline diagnosis unrestricted without an account (`#34`).
 - [x] Implement the Android SQLite sync engine (`app/src/services/sync.ts`), Cloudinary client upload (`<= 1280 px`), and `sync pulse -> checkmark morph` status indicator (`#47`).
 - [x] Implement Account Settings profile view and seamless claiming of pre-existing local anonymous SQLite scans/farms upon first sign-in (`#72`).
-- [ ] Verify end-to-end multi-tenant sync contract and Render deployment configuration (`#48`).
+- [x] Verify end-to-end multi-tenant sync contract and Render deployment configuration (`#48`).
 
 ### Done when
 - All `api/` endpoints pass `pytest + httpx`, `ruff`, and `mypy`, including the User A vs. User B isolation test and idempotent re-sync test.
