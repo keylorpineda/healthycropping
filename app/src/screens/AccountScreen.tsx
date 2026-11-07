@@ -8,6 +8,8 @@ import { toAuthError } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth';
 import { useTheme } from '@/theme';
 
+import { confirmSignOut } from './confirmSignOut';
+
 export interface AccountScreenProps {
   onBack?: () => void;
   onSignedOut?: () => void;
@@ -108,7 +110,7 @@ export function AccountScreen({
 
         <Button
           title={t('auth.signOut')}
-          onPress={() => void handleSignOut()}
+          onPress={() => confirmSignOut(t, () => void handleSignOut())}
           variant="danger"
           loading={busy}
           disabled={busy}

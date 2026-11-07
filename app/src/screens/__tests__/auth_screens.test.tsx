@@ -1,4 +1,5 @@
 import React from 'react';
+import { Alert, type AlertButton } from 'react-native';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import i18n from '@/i18n';
@@ -151,8 +152,13 @@ describe('Auth screens', () => {
       const onSignedOut = jest.fn();
       renderWithTheme(<AccountScreen onSignedOut={onSignedOut} />);
 
+      const alert = jest.spyOn(Alert, 'alert').mockImplementation((_t, _m, buttons) => {
+        (buttons as AlertButton[]).find((b) => b.style === 'destructive')?.onPress?.();
+      });
+
       expect(screen.getByTestId('account-email')).toHaveTextContent('ana@finca.cr');
       fireEvent.press(screen.getByTestId('account-sign-out-btn'));
+      expect(alert).toHaveBeenCalledWith('¿Cerrar sesión?', expect.any(String), expect.any(Array));
 
       await waitFor(() => expect(onSignedOut).toHaveBeenCalled());
       expect(useAuthStore.getState().status).toBe('signedOut');

@@ -1,10 +1,12 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { Alert, type AlertButton } from 'react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import i18n from '@/i18n';
 import * as registry from '@/ml/registry';
 import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
+import { useSyncStore } from '@/stores/sync';
 import { ThemeProvider } from '@/theme';
 import { HomeScreen, OnboardingScreen, SettingsScreen } from '../index';
 
@@ -198,6 +200,67 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       expect(screen.queryByTestId('settings-manage-account-btn')).toBeNull();
       fireEvent.press(screen.getByTestId('settings-sign-in-btn'));
       expect(onSignIn).toHaveBeenCalledTimes(1);
+    });
+
+    describe('signed-in account section', () => {
+      const pressAlertButton = (style: AlertButton['style']) =>
+        jest.spyOn(Alert, 'alert').mockImplementationOnce((_t, _m, buttons) => {
+          (buttons as AlertButton[]).find((b) => b.style === style)?.onPress?.();
+        });
+
+      beforeEach(() => {
+        useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'ana@finca.cr' } });
+        useSyncStore.setState({
+          phase: 'synced',
+          pendingCount: 2,
+          lastSyncedAt: '2026-11-07T15:30:00.000Z',
+          refreshPending: jest.fn(),
+        });
+      });
+
+      it('shows the last sync time and pending changes', () => {
+        renderWithTheme(<SettingsScreen />);
+        expect(screen.getByTestId('settings-last-synced')).toHaveTextContent(
+          /Última sincronización: .*2026/,
+        );
+        expect(screen.getByTestId('settings-pending-count')).toHaveTextContent(
+          '2 cambios pendientes',
+        );
+      });
+
+      it('says when nothing was synced yet', () => {
+        useSyncStore.setState({ lastSyncedAt: null, pendingCount: 0 });
+        renderWithTheme(<SettingsScreen />);
+        expect(screen.getByTestId('settings-last-synced')).toHaveTextContent(
+          'Aún no se ha sincronizado',
+        );
+        expect(screen.getByTestId('settings-pending-count')).toHaveTextContent(
+          'Todo está sincronizado',
+        );
+      });
+
+      it('runs a manual sync', () => {
+        const requestSync = jest.fn(() => Promise.resolve());
+        useSyncStore.setState({ requestSync });
+        renderWithTheme(<SettingsScreen />);
+
+        fireEvent.press(screen.getByTestId('settings-sync-now-btn'));
+        expect(requestSync).toHaveBeenCalledTimes(1);
+      });
+
+      it('signs out only after confirmation', async () => {
+        const signOut = jest.fn(() => Promise.resolve());
+        useAuthStore.setState({ signOut });
+        renderWithTheme(<SettingsScreen />);
+
+        pressAlertButton('cancel');
+        fireEvent.press(screen.getByTestId('settings-sign-out-btn'));
+        expect(signOut).not.toHaveBeenCalled();
+
+        pressAlertButton('destructive');
+        fireEvent.press(screen.getByTestId('settings-sign-out-btn'));
+        await waitFor(() => expect(signOut).toHaveBeenCalledTimes(1));
+      });
     });
 
     it('shows the signed-in email and links to account management', () => {
