@@ -132,7 +132,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 - [x] Implement `CRUD /farms` + `CRUD /plots` with `ownerUid` multi-tenant isolation and User A vs. User B test (`#33`).
 - [x] Implement idempotent batch `POST /scans/sync` (by client UUID), `GET /scans`, and signed Cloudinary upload parameter generation (`max 1280 px`, scoped to `users/{uid}/scans`) (`#46`).
 - [x] Integrate Firebase Auth (email/password sign-up, sign-in, sign-out) and token injection in `app/`, keeping offline diagnosis unrestricted without an account (`#34`).
-- [ ] Implement the Android SQLite sync engine (`app/src/services/sync.ts`), Cloudinary client upload (`<= 1280 px`), and `sync pulse -> checkmark morph` status indicator (`#47`).
+- [x] Implement the Android SQLite sync engine (`app/src/services/sync.ts`), Cloudinary client upload (`<= 1280 px`), and `sync pulse -> checkmark morph` status indicator (`#47`).
 - [ ] Implement Account Settings profile view and seamless claiming of pre-existing local anonymous SQLite scans/farms upon first sign-in (`#72`).
 - [ ] Verify end-to-end multi-tenant sync contract and Render deployment configuration (`#48`).
 

@@ -60,10 +60,10 @@ healthycroppingping/
 │   └── src/
 │       ├── app/                # Expo Router file-based navigation screens
 │       ├── components/ui/      # Reusable design system primitives (no one-off styles)
-│       ├── db/                 # expo-sqlite schema, migrations, repositories, sync engine
+│       ├── db/                 # expo-sqlite schema, repositories, local sync queue
 │       ├── i18n/               # i18next locales (es default, en secondary)
 │       ├── ml/                 # Image resize, jpeg-js decode, tensor normalization, TFLite runner
-│       ├── services/           # API client, Firebase Auth wrapper, Cloudinary uploader
+│       ├── services/           # API client, Firebase Auth wrapper, Cloudinary uploader, sync engine and triggers
 │       ├── stores/             # Zustand state stores (preferences, auth session)
 │       └── theme/              # Design tokens (colors, typography, spacing, radii, elevation, motion)
 └── docs/                       # Project plans, reports, model cards, devlog, and Spanish setup guide
