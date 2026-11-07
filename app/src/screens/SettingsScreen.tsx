@@ -5,18 +5,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Badge, Button, Card, Chip } from '@/components/ui';
 import { type SupportedLanguage } from '@/i18n';
+import { useAuthStore } from '@/stores/auth';
 import { type ThemePreference, usePreferencesStore } from '@/stores/preferences';
 import { useTheme } from '@/theme';
 
 export interface SettingsScreenProps {
   onBack?: () => void;
   onReplayOnboarding?: () => void;
+  onSignIn?: () => void;
+  onManageAccount?: () => void;
   testID?: string;
 }
 
 export function SettingsScreen({
   onBack,
   onReplayOnboarding,
+  onSignIn,
+  onManageAccount,
   testID = 'settings-screen',
 }: SettingsScreenProps): React.JSX.Element {
   const { t } = useTranslation();
@@ -27,6 +32,8 @@ export function SettingsScreen({
 
   const currentLang = usePreferencesStore((state) => state.language);
   const setLanguage = usePreferencesStore((state) => state.setLanguage);
+
+  const authUser = useAuthStore((state) => state.user);
 
   const themeOptions: { key: ThemePreference; label: string }[] = [
     { key: 'system', label: t('settings.themeSystem') },
@@ -134,17 +141,46 @@ export function SettingsScreen({
 
           <Card variant="outlined" style={styles.card}>
             <View style={styles.cardRow}>
-              <Badge label="Local" variant="healthy" size="sm" />
+              <Badge
+                label={authUser ? 'Cloud' : 'Local'}
+                variant={authUser ? 'neutral' : 'healthy'}
+                size="sm"
+              />
               <Text
                 style={[
                   theme.typography.subhead,
                   { color: theme.colors.textPrimary, marginLeft: 8, flex: 1 },
                 ]}
-                testID="settings-account-placeholder"
+                testID="settings-account-status"
               >
-                {t('settings.accountPlaceholder')}
+                {authUser
+                  ? t('settings.accountSignedIn', { email: authUser.email ?? '' })
+                  : t('settings.accountPlaceholder')}
               </Text>
             </View>
+
+            {authUser && onManageAccount ? (
+              <Button
+                title={t('settings.accountManage')}
+                onPress={onManageAccount}
+                variant="outline"
+                size="md"
+                fullWidth
+                style={{ marginTop: theme.spacing.md }}
+                testID="settings-manage-account-btn"
+              />
+            ) : null}
+            {!authUser && onSignIn ? (
+              <Button
+                title={t('settings.accountSignIn')}
+                onPress={onSignIn}
+                variant="primary"
+                size="md"
+                fullWidth
+                style={{ marginTop: theme.spacing.md }}
+                testID="settings-sign-in-btn"
+              />
+            ) : null}
           </Card>
         </View>
 

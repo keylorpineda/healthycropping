@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import i18n from '@/i18n';
 import * as registry from '@/ml/registry';
+import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
 import { ThemeProvider } from '@/theme';
 import { HomeScreen, OnboardingScreen, SettingsScreen } from '../index';
@@ -184,6 +185,32 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       expect(screen.getByTestId('settings-disclaimer-box')).toHaveTextContent(
         /does not replace the judgment/i,
       );
+    });
+
+    it('offers sign-in while signed out and keeps local mode', () => {
+      useAuthStore.setState({ status: 'signedOut', user: null });
+      const onSignIn = jest.fn();
+      renderWithTheme(<SettingsScreen onSignIn={onSignIn} onManageAccount={jest.fn()} />);
+
+      expect(screen.getByTestId('settings-account-status')).toHaveTextContent(
+        'Modo local activo (no requiere cuenta)',
+      );
+      expect(screen.queryByTestId('settings-manage-account-btn')).toBeNull();
+      fireEvent.press(screen.getByTestId('settings-sign-in-btn'));
+      expect(onSignIn).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows the signed-in email and links to account management', () => {
+      useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'ana@finca.cr' } });
+      const onManageAccount = jest.fn();
+      renderWithTheme(<SettingsScreen onSignIn={jest.fn()} onManageAccount={onManageAccount} />);
+
+      expect(screen.getByTestId('settings-account-status')).toHaveTextContent(
+        'Sesión iniciada como ana@finca.cr',
+      );
+      expect(screen.queryByTestId('settings-sign-in-btn')).toBeNull();
+      fireEvent.press(screen.getByTestId('settings-manage-account-btn'));
+      expect(onManageAccount).toHaveBeenCalledTimes(1);
     });
   });
 });

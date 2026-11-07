@@ -10,6 +10,8 @@ export default function SettingsRoute(): React.JSX.Element {
     <SettingsScreen
       onBack={() => router.back()}
       onReplayOnboarding={() => router.push('/onboarding')}
+      onSignIn={() => router.push('/sign-in')}
+      onManageAccount={() => router.push('/account')}
     />
   );
 }
