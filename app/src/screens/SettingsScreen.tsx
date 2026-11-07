@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Badge, Button, Card, Chip } from '@/components/ui';
 import { type SupportedLanguage } from '@/i18n';
+import { toAuthError } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth';
 import { type ThemePreference, usePreferencesStore } from '@/stores/preferences';
+import { useSyncStore } from '@/stores/sync';
 import { useTheme } from '@/theme';
+
+import { confirmSignOut } from './confirmSignOut';
 
 export interface SettingsScreenProps {
   onBack?: () => void;
@@ -34,6 +38,34 @@ export function SettingsScreen({
   const setLanguage = usePreferencesStore((state) => state.setLanguage);
 
   const authUser = useAuthStore((state) => state.user);
+  const signOut = useAuthStore((state) => state.signOut);
+  const syncPhase = useSyncStore((state) => state.phase);
+  const pendingCount = useSyncStore((state) => state.pendingCount);
+  const lastSyncedAt = useSyncStore((state) => state.lastSyncedAt);
+  const requestSync = useSyncStore((state) => state.requestSync);
+  const refreshPending = useSyncStore((state) => state.refreshPending);
+  const [signOutError, setSignOutError] = useState<string | null>(null);
+
+  useEffect(() => {
+    refreshPending();
+  }, [refreshPending]);
+
+  const handleSignOut = () =>
+    confirmSignOut(t, () => {
+      setSignOutError(null);
+      signOut().catch((error: unknown) =>
+        setSignOutError(`auth.errors.${toAuthError(error).code}`),
+      );
+    });
+
+  const lastSyncedLabel = lastSyncedAt
+    ? t('settings.lastSynced', {
+        time: new Date(lastSyncedAt).toLocaleString(currentLang === 'en' ? 'en-US' : 'es-CR', {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        }),
+      })
+    : t('settings.neverSynced');
 
   const themeOptions: { key: ThemePreference; label: string }[] = [
     { key: 'system', label: t('settings.themeSystem') },
@@ -159,16 +191,63 @@ export function SettingsScreen({
               </Text>
             </View>
 
-            {authUser && onManageAccount ? (
-              <Button
-                title={t('settings.accountManage')}
-                onPress={onManageAccount}
-                variant="outline"
-                size="md"
-                fullWidth
-                style={{ marginTop: theme.spacing.md }}
-                testID="settings-manage-account-btn"
-              />
+            {authUser ? (
+              <View style={{ marginTop: theme.spacing.md }} testID="settings-sync-details">
+                <Text
+                  style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
+                  testID="settings-last-synced"
+                >
+                  {lastSyncedLabel}
+                </Text>
+                <Text
+                  style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
+                  testID="settings-pending-count"
+                >
+                  {pendingCount > 0
+                    ? t('sync.pending', { count: pendingCount })
+                    : t('settings.nothingPending')}
+                </Text>
+                <Button
+                  title={t('settings.syncNow')}
+                  onPress={() => void requestSync()}
+                  loading={syncPhase === 'syncing'}
+                  disabled={syncPhase === 'syncing'}
+                  variant="primary"
+                  size="md"
+                  fullWidth
+                  style={{ marginTop: theme.spacing.md }}
+                  testID="settings-sync-now-btn"
+                />
+                {onManageAccount ? (
+                  <Button
+                    title={t('settings.accountManage')}
+                    onPress={onManageAccount}
+                    variant="outline"
+                    size="md"
+                    fullWidth
+                    style={{ marginTop: theme.spacing.sm }}
+                    testID="settings-manage-account-btn"
+                  />
+                ) : null}
+                <Button
+                  title={t('auth.signOut')}
+                  onPress={handleSignOut}
+                  variant="ghost"
+                  size="md"
+                  fullWidth
+                  style={{ marginTop: theme.spacing.sm }}
+                  testID="settings-sign-out-btn"
+                />
+                {signOutError ? (
+                  <Text
+                    accessibilityRole="alert"
+                    style={[theme.typography.caption, { color: theme.colors.status.actNow.text }]}
+                    testID="settings-sign-out-error"
+                  >
+                    {t(signOutError)}
+                  </Text>
+                ) : null}
+              </View>
             ) : null}
             {!authUser && onSignIn ? (
               <Button
