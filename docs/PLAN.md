@@ -146,7 +146,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 **Milestone:** `v0.5.0 — AI Explanations (Gemini RAG)` (`#35`–`#37`, `#49`–`#50`, `#73`–`#74` — 7 issues)
 
 ### Tasks
-- [ ] Implement `api/scripts/fetch_agronomic_docs.py` and section chunker over official ICAFE coffee technical manuals without committing restricted PDFs (`#35`).
+- [x] Implement `api/scripts/fetch_agronomic_docs.py` and section chunker over official ICAFE coffee technical manuals without committing restricted PDFs (`#35`).
 - [ ] Curate and validate official public technical sources for cacao (CATIE / MAG / INIAP) and banana (CORBANA / MAG / FAO) in `fetch_agronomic_docs.py` (`#73`).
 - [ ] Implement `api/scripts/build_rag_index.py` and the local top-k retriever preserving `(source, section)` citation metadata (`#49`).
 - [ ] Implement `POST /explanations` in `api/` using `google-genai` (`GEMINI_MODEL` env var, free-tier Flash model) to generate plain-Spanish/English explanations + next steps citing source and section, and explicitly declining when not covered (`#36`).

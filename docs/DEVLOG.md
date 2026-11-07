@@ -272,3 +272,15 @@ This log documents what was built, key architectural decisions, and technical pr
 ### README Accuracy (`#110`)
 - The README advertised an APK on Releases, `> 90%` / `> 92%` Macro-F1, sub-50 ms inference, INT8 export and plot geometries. None of these are measured or shipped yet: releases only contain `.tflite` files, test Macro-F1 is `0.729` (coffee) and `0.850` (cacao), latency is benchmarked in Phase 8 (`#75`), only float16 is exported, and plot polygons are a `v1.1` item (`#41`).
 - Replaced them with the numbers from `docs/EXPERIMENTS.md`, added an "in active development" note, rewrote the phase table to follow `docs/PLAN.md` (Phase 5 stays open until the on-device check for `#31`), and fixed `app/README.md` (classes, directory tree, preprocessing path).
+
+## Phase 7 — Gemini RAG Explanations (`v0.5.0`)
+
+### Agronomic Document Fetcher & Chunker (`#35`)
+- Source: ICAFE-CICAFE *Guía técnica para el cultivo de café* (2020, 94 pages), the current edition of the official coffee guide (the 2011 `GUIA-TECNICA-V10.pdf` is also online but older). It is fetched from `icafe.cr` with a pinned SHA-256 and kept in `api/.cache/rag/` (git-ignored); the PDF and the chunks are never committed.
+- Heading detection does not work on this PDF: its two-column layout makes `pypdf` emit headings out of order (page 50 prints "Minador de la hoja" and "Arañita roja" together before both bodies, and page 61 prints the Chasparria control list before its heading). Sections are therefore configured explicitly in `api/rag_sources.toml` by PDF page range (taken from the guide's table of contents), with optional accent-insensitive `start`/`end` phrases for pages that hold several sections.
+- When two sections are interleaved and cannot be separated reliably, the section is tagged with both classes instead of guessing (page 50: `leaf_miner` and `red_spider_mite`). Chunk metadata uses a `disease_classes` list for this reason.
+- Class mapping (to be confirmed by an agronomist before release): Roya → `leaf_rust`; Chasparria, the Costa Rican name for *Cercospora coffeicola* leaf spot → `cercospora`; Derrite, caused by *Phoma* spp. → `brown_leaf_spot` (BRACOL's "brown leaf spot" is Phoma, see `ml/configs/coffee.yaml`). Ojo de gallo, antracnosis and other diseases in the guide are not model classes and are not indexed.
+- Text pipeline (`healthycropping_api/rag/chunking.py`): drop running headers and printed page numbers (per-source regexes), reflow wrapped lines into paragraphs (list items stay separate), cut at markers, then split on sentence boundaries into chunks of at most `900` characters with up to `150` characters of overlap. Chunk IDs are stable (`<source>:<section-slug>:<index>`).
+- `pypdf` needs `fonttools` to decode this PDF's CFF fonts; both live in a new `rag` extra, imported lazily, so the API server does not need them at runtime. CI installs all extras.
+- Result: `12` chunks covering all five coffee disease classes. The script exits with status `1` if any disease class of a configured crop has no chunks, so the cacao and banana sources (`#73`) must cover `monilia`, `black_pod`, `black_sigatoka` and `fusarium_wilt`.
+

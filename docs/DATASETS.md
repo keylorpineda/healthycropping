@@ -65,3 +65,14 @@ Every `ml/scripts/prepare_<crop>.py` script enforces the following steps:
 - **UNAB Cocoa Diseases**: Heredia Gómez, J. F., & Serrano, S. (2020). *Cocoa Diseases (YOLOv4)* / *Enfermedades Cacao YOLOv4*. Universidad Autónoma de Bucaramanga (UNAB). Kaggle Dataset `serranosebas/enfermedades-cacao-yolov4` (ODbL v1.0 / © Original Authors).
 - **Banana Leaves Imagery**: Mduma, N., & Elinisa, C. (2023). *Banana Imagery Dataset - Tanzania*. Zenodo. `https://doi.org/10.5281/zenodo.7670326` (CC BY 4.0). Data descriptor: *Scientific Data* (2025), `https://doi.org/10.1038/s41597-025-04456-4`.
 - **BananaLSD**: Arman, S. E., Bhuiyan, M. A. B., Abdullah, H. M., Islam, S., Chowdhury, T. T., & Hossain, M. A. (2023). *Banana Leaf Spot Diseases (BananaLSD) Dataset for Classification of Banana Leaf Diseases Using Machine Learning*. Mendeley Data, V1. `https://doi.org/10.17632/9tb7k297ff.1` (CC BY 4.0).
+
+## 5. Agronomic Sources for RAG Explanations
+
+Official technical documents used to ground Gemini explanations (Phase 7). They are listed in `api/rag_sources.toml` with a pinned SHA-256, downloaded at build time by `api/scripts/fetch_agronomic_docs.py` into the git-ignored `api/.cache/rag/`, and never committed or redistributed. Explanations cite the source title, publisher, and section.
+
+| Source ID | Crop | Document | Publisher | URL | Indexed sections → model classes |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `icafe-guia-tecnica-2020` | Coffee | *Guía técnica para el cultivo de café* (2020, 94 pp.) | Instituto del Café de Costa Rica (ICAFE), CICAFE | [icafe.cr](https://www.icafe.cr/wp-content/uploads/cicafe/documentos/GUIA-TECNICA.pdf) | Minador de la hoja and Arañita roja → `leaf_miner`, `red_spider_mite`; Roya del Café → `leaf_rust`; Chasparria (*Cercospora coffeicola*) → `cercospora`; Derrite (*Phoma* spp.) → `brown_leaf_spot` |
+
+Cacao (CATIE / MAG / INIAP) and banana (CORBANA / MAG / FAO) sources are added in `#73`.
+
