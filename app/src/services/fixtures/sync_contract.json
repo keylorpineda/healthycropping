@@ -1,0 +1,77 @@
+{
+  "description": "App-to-API sync contract (#48). Built by app/src/services/__tests__/contract.test.ts from sample SQLite rows and validated by api/tests/test_contract.py against the Pydantic models. Update both sides together.",
+  "farm_create": {
+    "id": "3f1c2a4e-5b6d-4e7f-8a9b-0c1d2e3f4a5b",
+    "name": "Finca La Esperanza",
+    "region": "Tarrazú",
+    "altitude_m": 1650
+  },
+  "farm_update": {
+    "name": "Finca La Esperanza",
+    "region": "Tarrazú",
+    "altitude_m": 1650
+  },
+  "plot_create": {
+    "id": "7a2b3c4d-1e2f-4a5b-9c6d-7e8f9a0b1c2d",
+    "farm_id": "3f1c2a4e-5b6d-4e7f-8a9b-0c1d2e3f4a5b",
+    "name": "Lote Norte",
+    "crop": "coffee",
+    "area_ha": 2.5
+  },
+  "plot_update": {
+    "farm_id": "3f1c2a4e-5b6d-4e7f-8a9b-0c1d2e3f4a5b",
+    "name": "Lote Norte",
+    "crop": "coffee",
+    "area_ha": 2.5
+  },
+  "scan_sync_request": {
+    "scans": [
+      {
+        "id": "c0ffee00-1234-4abc-8def-0123456789ab",
+        "farm_id": "3f1c2a4e-5b6d-4e7f-8a9b-0c1d2e3f4a5b",
+        "plot_id": "7a2b3c4d-1e2f-4a5b-9c6d-7e8f9a0b1c2d",
+        "crop": "coffee",
+        "predicted_class": "leaf_rust",
+        "severity": "watch",
+        "confidence": 0.91,
+        "threshold": 0.6,
+        "is_low_confidence": false,
+        "model_version": "coffee-v0.1.0",
+        "cloudinary_public_id": "users/user-a/scans/c0ffee00-1234-4abc-8def-0123456789ab",
+        "scanned_at": "2026-11-01T14:05:00.000Z",
+        "updated_at": "2026-11-01T14:06:30.000Z",
+        "deleted_at": null
+      },
+      {
+        "id": "ca0ca000-5678-4def-9abc-ba9876543210",
+        "farm_id": null,
+        "plot_id": null,
+        "crop": "cacao",
+        "predicted_class": "monilia",
+        "severity": "actNow",
+        "confidence": 0.42,
+        "threshold": 0.51,
+        "is_low_confidence": true,
+        "model_version": "cacao-v0.1.0",
+        "cloudinary_public_id": null,
+        "scanned_at": "2026-11-02T09:00:00.000Z",
+        "updated_at": "2026-11-03T10:00:00.000Z",
+        "deleted_at": "2026-11-03T10:00:00.000Z"
+      }
+    ]
+  },
+  "scan_sync_statuses": ["created", "updated", "unchanged", "rejected"],
+  "scan_signature_request": {
+    "scan_id": "c0ffee00-1234-4abc-8def-0123456789ab"
+  },
+  "scan_signature_fields": [
+    "cloud_name",
+    "api_key",
+    "timestamp",
+    "signature",
+    "folder",
+    "public_id",
+    "transformation",
+    "upload_url"
+  ]
+}
