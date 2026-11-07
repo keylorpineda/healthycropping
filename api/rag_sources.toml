@@ -1,0 +1,53 @@
+# Official agronomic sources for RAG explanations (#35, #73).
+#
+# Documents are downloaded at build time by `scripts/fetch_agronomic_docs.py` into
+# the git-ignored `api/.cache/rag/` directory and are never committed.
+#
+# Each section is one citable unit:
+# - `heading`: the section title as printed in the document's table of contents
+#   (used in citations).
+# - `pages`: 1-based PDF page range (not the page numbers printed in the document).
+# - `start` / `end` (optional): phrases that mark where the section text starts and
+#   where the next section starts, matched case- and accent-insensitively. Use
+#   them when a page holds more than one section.
+# - `disease_classes`: classes of that crop's on-device model
+#   (`app/src/ml/models/<crop>/registry.json`) the section explains. When the PDF
+#   layout interleaves two sections so their text cannot be separated reliably,
+#   the section is tagged with both classes instead of guessing.
+
+[[sources]]
+id = "icafe-guia-tecnica-2020"
+crop = "coffee"
+title = "Guía técnica para el cultivo de café"
+publisher = "Instituto del Café de Costa Rica (ICAFE), Centro de Investigaciones en Café (CICAFE)"
+year = 2020
+language = "es"
+url = "https://www.icafe.cr/wp-content/uploads/cicafe/documentos/GUIA-TECNICA.pdf"
+sha256 = "3e3ffbfcd5faa848ab63fbf2c1a544c6cb20372b6dd124f4371c7f60201d3872"
+# Running header and printed page number repeated on every page.
+drop_lines = ['^GU[IÍ]A T[EÉ]CNICA PARA EL CULTIVO DE CAF[EÉ]\d*$', '^\d{1,3}$']
+
+[[sources.sections]]
+# Both pests share page 50 and their control paragraphs are interleaved in the
+# two-column layout.
+heading = "Minador de la hoja; Arañita roja"
+disease_classes = ["leaf_miner", "red_spider_mite"]
+pages = [52, 52]
+
+[[sources.sections]]
+heading = "Roya del Café"
+disease_classes = ["leaf_rust"]
+pages = [55, 56]
+
+[[sources.sections]]
+# Chasparria is the Costa Rican name for Cercospora coffeicola leaf spot.
+heading = "Chasparria"
+disease_classes = ["cercospora"]
+pages = [63, 63]
+
+[[sources.sections]]
+# Derrite is caused by Phoma spp.; the BRACOL "brown leaf spot" label maps to
+# Phoma (ml/configs/coffee.yaml).
+heading = "Derrite"
+disease_classes = ["brown_leaf_spot"]
+pages = [65, 65]
