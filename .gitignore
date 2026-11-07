@@ -49,6 +49,8 @@ credentials.json
 
 # ML datasets, checkpoints, runs & model weights
 ml/data/
+# Downloaded agronomic manuals and generated RAG chunks/index (never committed)
+api/.cache/
 ml/checkpoints/
 ml/runs/
 *.h5
