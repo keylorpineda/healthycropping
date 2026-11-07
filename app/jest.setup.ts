@@ -12,6 +12,26 @@ try {
   // Ignore if reanimated is not loaded in node context
 }
 
+// Mock AsyncStorage (used by Firebase Auth session persistence)
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+
+// Mock the Firebase JS SDK (ESM-only); screens never reach Firebase in tests.
+jest.mock('firebase/app', () => ({
+  getApps: jest.fn(() => []),
+  getApp: jest.fn(),
+  initializeApp: jest.fn(() => ({})),
+}));
+jest.mock('firebase/auth', () => ({
+  initializeAuth: jest.fn(() => ({ currentUser: null })),
+  getReactNativePersistence: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+  signInWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  onAuthStateChanged: jest.fn(() => jest.fn()),
+}));
+
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),
