@@ -53,7 +53,7 @@ healthycroppingping/
 │   ├── models/                 # Per-crop registry.json metadata (weights ignored in Git)
 │   └── tests/                  # Pytest unit tests + shared preprocessing fixture generator
 ├── api/                        # Python 3.12 (uv) — FastAPI backend
-│   ├── scripts/                # build_rag_index.py for official agronomic manuals
+│   ├── scripts/                # fetch_agronomic_docs.py and build_rag_index.py (RAG build steps)
 │   ├── src/healthycroppingping_api/    # Routers, Pydantic v2 models, Firebase Admin auth, Firestore, RAG
 │   └── tests/                  # Pytest + httpx suites including multi-tenant isolation tests
 ├── app/                        # Expo React Native (Android, pnpm)
