@@ -147,7 +147,11 @@
     "datasetsDetails": "RoCoLe (CC BY 4.0) and BRACOL (CC BY-NC 4.0)",
     "accountSignIn": "Sign in to sync",
     "accountSignedIn": "Signed in as {{email}}",
-    "accountManage": "Manage account"
+    "accountManage": "Manage account",
+    "lastSynced": "Last synced: {{time}}",
+    "neverSynced": "Not synced yet",
+    "nothingPending": "Everything is synced",
+    "syncNow": "Sync now"
   },
   "history": {
     "title": "Diagnosis History",
@@ -228,7 +232,9 @@
       "network": "No connection. Check your internet and try again.",
       "not-configured": "Accounts are not configured in this build of the app.",
       "unknown": "Something went wrong. Please try again."
-    }
+    },
+    "signOutConfirmTitle": "Sign out?",
+    "signOutConfirmBody": "Your farms and diagnoses stay on this phone. Pending changes will sync the next time you sign in."
   },
   "sync": {
     "ready": "Account connected",
