@@ -14,6 +14,9 @@
 #   (`app/src/ml/models/<crop>/registry.json`) the section explains. When the PDF
 #   layout interleaves two sections so their text cannot be separated reliably,
 #   the section is tagged with both classes instead of guessing.
+#
+# Source options: `drop_lines` (regexes for running headers and page numbers) and
+# `soft_hyphens` (remove line-break hyphens before a lowercase continuation).
 
 [[sources]]
 id = "icafe-guia-tecnica-2020"
@@ -51,3 +54,89 @@ pages = [63, 63]
 heading = "Derrite"
 disease_classes = ["brown_leaf_spot"]
 pages = [65, 65]
+
+[[sources]]
+id = "catie-cacao-enfermedades-2021"
+crop = "cacao"
+title = "Guía para el manejo integrado de enfermedades en el cultivo de cacao (Manual técnico no. 146)"
+publisher = "Centro Agronómico Tropical de Investigación y Enseñanza (CATIE)"
+year = 2021
+language = "es"
+url = "https://repositorio.catie.ac.cr/bitstream/handle/11554/10918/Proyecto_Chocolate4all_Gu%C3%ADa_para_el_manejo_integrado_de_enfermedades_en_el_cultivo_de_cacao.pdf?sequence=1&isAllowed=y"
+sha256 = "7646479b5109ffa154eabbc41288832b5d7d3513285f1ff9e204f6ad8ae6f7a5"
+drop_lines = ['^Gu[ií]a para el manejo integrado de$', '^enfermedades en el cultivo de cacao$', '^\d{1,3}$']
+# Words are split across lines with a hyphen ("ge-" / "neral").
+soft_hyphens = true
+
+[[sources.sections]]
+heading = "Moniliasis: síntomas y ciclo de vida"
+disease_classes = ["monilia"]
+pages = [7, 12]
+start = "Moniliasis Síntomas"
+
+[[sources.sections]]
+heading = "Mazorca negra: síntomas y ciclo de vida"
+disease_classes = ["black_pod"]
+pages = [13, 17]
+# Page 17 continues with a different disease (witches' broom), not a model class.
+end = "Escoba de bruja"
+
+[[sources.sections]]
+# Integrated management written for both fruit diseases together.
+heading = "Manejo integrado de plagas"
+disease_classes = ["monilia", "black_pod"]
+pages = [20, 26]
+
+[[sources]]
+id = "corbana-sigatoka-negra-2011"
+crop = "banana"
+title = "Manejo de la Sigatoka negra en el cultivo del banano (Hoja divulgativa n.º 2-2011)"
+publisher = "Corporación Bananera Nacional (CORBANA), Dirección de Investigaciones"
+year = 2011
+language = "es"
+url = "https://www.corbana.co.cr/wp-content/uploads/HD-n.%C2%B0-2-2011-Manejo-de-la-Sigatoka-negra.pdf"
+sha256 = "330aa1ff2db00bd2c12740205f724193423067f46767e6e99ce3e5f1a6242bc8"
+
+[[sources.sections]]
+heading = "Manejo de la Sigatoka negra en el cultivo del banano"
+disease_classes = ["black_sigatoka"]
+pages = [1, 2]
+# Skip the bulletin's masthead and author line.
+start = "Manejo de la Sigatoka negra en el cultivo del banano"
+
+[[sources]]
+id = "fao-fusarium-tr4-manual-2014"
+crop = "banana"
+title = "Technical Manual: Prevention and diagnostic of Fusarium Wilt (Panama disease) of banana caused by Fusarium oxysporum f. sp. cubense Tropical Race 4 (TR4)"
+publisher = "Food and Agriculture Organization of the United Nations (FAO)"
+year = 2014
+language = "en"
+url = "https://www.fao.org/fileadmin/templates/banana/documents/Docs_Resources_2015/TR4/13ManualFusarium.pdf"
+sha256 = "f90ea55620fb02f3ef31ef40a70e606d88eee4ecaee8e0f4780f5036b6bac13b"
+drop_lines = ['^\d{1,3}$']
+
+[[sources.sections]]
+heading = "Fusarium wilt symptoms and damages"
+disease_classes = ["fusarium_wilt"]
+pages = [7, 8]
+start = "FUSARIUM WILT SYMPTOMS AND DAMAGES"
+
+[[sources.sections]]
+heading = "Dispersal"
+disease_classes = ["fusarium_wilt"]
+pages = [15, 16]
+start = "DISPERSAL Results from epidemiological studies"
+end = "FUSARIUM WILT DAMAGE AND IMPACT"
+
+[[sources.sections]]
+heading = "Phytosanitary risk and risk management"
+disease_classes = ["fusarium_wilt"]
+pages = [18, 18]
+start = "PHYTOSANITARY RISK"
+
+[[sources.sections]]
+heading = "Disease management"
+disease_classes = ["fusarium_wilt"]
+pages = [21, 22]
+# Page 21 starts with the end of the eradication section.
+start = "DISEASE MANAGEMENT"

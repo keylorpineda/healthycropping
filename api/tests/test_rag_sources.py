@@ -43,6 +43,18 @@ def test_repository_source_list_is_valid() -> None:
         assert spec.url.startswith("https://")
 
 
+@pytest.mark.parametrize("crop", sorted(CROP_CLASSES))
+def test_every_disease_class_has_a_configured_section(crop: str) -> None:
+    covered = {
+        name
+        for spec in load_sources(SOURCES_PATH)
+        if spec.crop == crop
+        for section in spec.sections
+        for name in section.disease_classes
+    }
+    assert covered == set(disease_classes(crop))
+
+
 def test_parses_sections_and_derives_the_cache_filename() -> None:
     [spec] = parse_sources({"sources": [source(sha256="a" * 64)]})
     assert spec.filename == "demo-guide.pdf"
@@ -50,6 +62,7 @@ def test_parses_sections_and_derives_the_cache_filename() -> None:
     assert (section.first_page, section.last_page) == (3, 4)
     assert section.disease_classes == ("leaf_rust",)
     assert section.start is None
+    assert spec.soft_hyphens is False
 
 
 @pytest.mark.parametrize(
@@ -61,6 +74,7 @@ def test_parses_sections_and_derives_the_cache_filename() -> None:
         ({"sha256": "ABC"}, "sha256"),
         ({"year": "2020"}, "'year' must be a int"),
         ({"drop_lines": ["("]}, "invalid drop_lines"),
+        ({"soft_hyphens": "yes"}, "soft_hyphens"),
         ({"sections": []}, "at least one"),
         (
             {"sections": [{"heading": "X", "disease_classes": ["monilia"], "pages": [1, 1]}]},
