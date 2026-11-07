@@ -32,6 +32,11 @@ jest.mock('firebase/auth', () => ({
   onAuthStateChanged: jest.fn(() => jest.fn()),
 }));
 
+// Mock NetInfo (native connectivity module)
+jest.mock('@react-native-community/netinfo', () =>
+  require('@react-native-community/netinfo/jest/netinfo-mock.js'),
+);
+
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),
