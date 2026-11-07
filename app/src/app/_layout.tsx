@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import '@/i18n';
+import { startSyncTriggers } from '@/services/syncTriggers';
 import { useAuthStore } from '@/stores/auth';
 import { ThemeProvider, useTheme } from '@/theme';
 
@@ -12,6 +13,8 @@ function NavigationStack(): React.JSX.Element {
 
   // Restore the persisted Firebase session; signed-out users keep full offline access.
   useEffect(() => useAuthStore.getState().start(), []);
+  // Push pending local changes on sign-in, reconnect and foreground.
+  useEffect(() => startSyncTriggers(), []);
 
   return (
     <>

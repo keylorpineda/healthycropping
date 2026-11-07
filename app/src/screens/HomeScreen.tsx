@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { SyncStatusPill } from '@/components/sync';
 import { Badge, Button, Card, Chip, EmptyState, Toast } from '@/components/ui';
 import { type Scan, scansRepository } from '@/db';
 import { isCropAvailable } from '@/ml/registry';
@@ -86,12 +87,7 @@ export function HomeScreen({
           </View>
 
           <View style={styles.headerRight}>
-            <Badge
-              label={t('home.offlinePill')}
-              variant="healthy"
-              size="sm"
-              testID="home-offline-badge"
-            />
+            <SyncStatusPill testID="home-sync-pill" />
             {onOpenFarms && (
               <Pressable
                 onPress={onOpenFarms}
