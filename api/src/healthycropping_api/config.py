@@ -15,6 +15,9 @@ class Settings:
     cloudinary_cloud_name: str | None = None
     cloudinary_api_key: str | None = None
     cloudinary_api_secret: str | None = field(default=None, repr=False)
+    gemini_api_key: str | None = field(default=None, repr=False)
+    gemini_model: str | None = None
+    rag_index_path: str | None = None
 
     @classmethod
     def from_env(cls, environ: Mapping[str, str] | None = None) -> "Settings":
@@ -29,4 +32,7 @@ class Settings:
             cloudinary_cloud_name=source.get("CLOUDINARY_CLOUD_NAME") or None,
             cloudinary_api_key=source.get("CLOUDINARY_API_KEY") or None,
             cloudinary_api_secret=source.get("CLOUDINARY_API_SECRET") or None,
+            gemini_api_key=source.get("GEMINI_API_KEY") or None,
+            gemini_model=source.get("GEMINI_MODEL") or None,
+            rag_index_path=source.get("RAG_INDEX_PATH") or None,
         )

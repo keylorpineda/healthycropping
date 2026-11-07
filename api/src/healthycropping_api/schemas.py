@@ -185,3 +185,38 @@ class ScanSignatureResponse(BaseModel):
     public_id: str
     transformation: str
     upload_url: str
+
+
+ExplanationLanguage = Literal["es", "en"]
+DeclineReason = Literal["healthy", "no_sources", "not_covered"]
+
+
+class ExplanationRequest(RequestModel):
+    """Only the diagnosis: no names, emails, farm data or coordinates can be sent."""
+
+    crop: Crop
+    disease_class: Label
+    severity: Severity
+    language: ExplanationLanguage
+
+
+class Citation(BaseModel):
+    source_title: str
+    publisher: str
+    year: int
+    section: str
+    first_page: int
+    last_page: int
+    url: str
+
+
+class ExplanationResponse(BaseModel):
+    crop: Crop
+    disease_class: str
+    severity: Severity
+    language: ExplanationLanguage
+    covered: bool
+    summary: str | None
+    next_steps: list[str]
+    citations: list[Citation]
+    declined_reason: DeclineReason | None = None
