@@ -16,6 +16,7 @@ DEFAULT_OVERLAP_CHARS = 150
 # Numbered items ("1.", "2)"), lettered items ("a)"), and bullet, middle dot, en dash, hyphen.
 _BULLETS = "".join(chr(code) for code in (0x2022, 0x00B7, 0x2013)) + "-"
 _LIST_ITEM = re.compile(r"^(?:\d{1,2}[.)]|[a-z]\)|[" + _BULLETS + r"])\s")
+_SPACE_BEFORE_PUNCTUATION = re.compile(r"[ \t]+([.,;:])(?=\s|$)")
 _SENTENCE_END = re.compile(r"[.:!?;]$")
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?:;])\s+")
 
@@ -69,11 +70,13 @@ def clean_lines(page_text: str, drop_patterns: tuple[str, ...]) -> list[str]:
     return lines
 
 
-def reflow(lines: list[str]) -> list[str]:
+def reflow(lines: list[str], soft_hyphens: bool = False) -> list[str]:
     """Join wrapped PDF lines into paragraphs.
 
     A paragraph ends after a line that closes a sentence; list items always start
-    a new paragraph. A line ending in a hyphen is joined without a space.
+    a new paragraph. A line ending in a hyphen is joined without a space; with
+    `soft_hyphens`, a hyphen before a lowercase continuation is a word break and
+    is removed ("ge-" + "neral" -> "general").
     """
     paragraphs: list[str] = []
     current = ""
@@ -84,7 +87,10 @@ def reflow(lines: list[str]) -> list[str]:
         if not current:
             current = line
         elif current.endswith("-"):
-            current += line
+            if soft_hyphens and line[:1].islower():
+                current = current[:-1].rstrip() + line
+            else:
+                current += line
         else:
             current = f"{current} {line}"
         if _SENTENCE_END.search(current):
@@ -105,7 +111,9 @@ def section_text(pages: list[str], source: SourceSpec, section: SectionSpec) -> 
     lines: list[str] = []
     for page in pages[section.first_page - 1 : section.last_page]:
         lines.extend(clean_lines(page, source.drop_lines))
-    text = "\n".join(reflow(lines))
+    text = "\n".join(reflow(lines, source.soft_hyphens))
+    # Some layouts put a space before punctuation ("(Smith 1974) .").
+    text = _SPACE_BEFORE_PUNCTUATION.sub(r"\1", text)
 
     folded = fold(text)
     start = 0
