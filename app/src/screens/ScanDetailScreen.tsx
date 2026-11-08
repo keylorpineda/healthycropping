@@ -3,6 +3,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ExplanationCard } from '@/components/explanations';
 import { Badge, Button, Card, Chip, ProgressMeter, Sheet } from '@/components/ui';
 import {
   farmsRepository,
@@ -12,6 +13,8 @@ import {
   type Plot,
   type Scan,
 } from '@/db';
+import { explanationKeyFor } from '@/services/explanations';
+import { usePreferencesStore } from '@/stores/preferences';
 import { useTheme } from '@/theme';
 
 export interface ScanDetailScreenProps {
@@ -29,6 +32,7 @@ export function ScanDetailScreen({
 }: ScanDetailScreenProps): React.JSX.Element {
   const { t } = useTranslation();
   const theme = useTheme();
+  const language = usePreferencesStore((state) => state.language);
 
   const [scan, setScan] = useState<Scan | null>(null);
   const [farm, setFarm] = useState<Farm | null>(null);
@@ -393,6 +397,19 @@ export function ScanDetailScreen({
             </View>
           )}
         </Card>
+
+        <ExplanationCard
+          explanationKey={explanationKeyFor(
+            {
+              crop: scan.crop,
+              predictedClass: scan.predicted_class,
+              severity: scan.severity,
+              isLowConfidence: Boolean(scan.is_low_confidence),
+            },
+            language,
+          )}
+          testID="scan-detail-explanation"
+        />
 
         {/* Location Assignment Card */}
         <Card variant="outlined" style={styles.card} testID="scan-detail-location-card">

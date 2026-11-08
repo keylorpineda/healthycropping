@@ -245,5 +245,26 @@
     "offline": "Offline",
     "error": "Sync error",
     "retryHint": "Tap to sync now"
+  },
+  "explanation": {
+    "title": "Explanation from official sources",
+    "loading": "Loading the explanation",
+    "nextSteps": "What to do now",
+    "sources": "Sources",
+    "citation": "{{source}}, section \"{{section}}\" ({{publisher}}, {{year}}, p. {{pages}})",
+    "disclaimer": "AI-generated text based only on official technical manuals. Consult an agronomist before applying agrochemicals.",
+    "savedOffline": "Saved on this phone to read offline.",
+    "errors": {
+      "notConfigured": "Explanations are not available in this version of the app.",
+      "signedOut": "Sign in to see an explanation from official sources.",
+      "offline": "You are offline. Connect to the internet to load the explanation; it will then be saved on this phone.",
+      "rateLimited": "You reached the hourly limit of explanations. Try again later.",
+      "unavailable": "The explanation is not available right now. Try again later."
+    },
+    "declined": {
+      "healthy": "The plant looks healthy; no explanation is needed.",
+      "no_sources": "The available official manuals do not describe this problem. Consult an agronomist.",
+      "not_covered": "We did not find enough information in the official manuals to explain this diagnosis. Consult an agronomist."
+    }
   }
 }
