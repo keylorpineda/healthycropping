@@ -403,3 +403,33 @@ Debido a que **HealthyCropping** ejecuta modelos nativos TensorFlow Lite en C++/
   adb install -r healthycropping-v1.0.0.apk
   ```
   - **Cómo verificar que funciona**: Pon tu teléfono en **Modo Avión**, abre **HealthyCropping**, completa las 3 pantallas de introducción con el aviso agronómico, selecciona **Café**, y realiza un escaneo sin conexión.
+
+### 10.5 Firma del APK de Release (Keystore en GitHub Secrets)
+El flujo `.github/workflows/release.yml` firma el APK con tu *upload keystore* propio. El keystore **nunca** se guarda en Git (`*.jks` y `*.keystore` están en `.gitignore`): vive solo como *secret* de GitHub y se borra del runner al terminar.
+
+> [!WARNING]
+> Guarda una copia del keystore y de sus contraseñas fuera del repositorio (por ejemplo, en un gestor de contraseñas). Si lo pierdes, los teléfonos que ya instalaron la app no podrán actualizarla: tendrán que desinstalarla (y perder sus datos locales) para instalar un APK firmado con otra llave.
+
+1. **Genera el keystore una sola vez** (requiere JDK 17, que incluye `keytool`):
+   ```powershell
+   keytool -genkeypair -v -storetype PKCS12 -keystore healthycropping-upload.jks -alias healthycropping-upload -keyalg RSA -keysize 2048 -validity 10000
+   ```
+   `keytool` te pedirá la contraseña y tus datos (nombre, organización, país `CR`). Usa la misma contraseña para el keystore y para la llave si te la pide dos veces.
+2. **Conviértelo a base64** para poder guardarlo como texto:
+   ```powershell
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("healthycropping-upload.jks")) | Set-Content -NoNewline healthycropping-upload.b64
+   ```
+3. En GitHub, ve a **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret** y crea estos 4 *secrets*:
+   - `ANDROID_KEYSTORE_BASE64`: el contenido completo de `healthycropping-upload.b64`.
+   - `ANDROID_KEYSTORE_PASSWORD`: la contraseña del keystore.
+   - `ANDROID_KEY_ALIAS`: `healthycropping-upload` (el alias del paso 1).
+   - `ANDROID_KEY_PASSWORD`: la contraseña de la llave.
+4. Borra `healthycropping-upload.b64` de tu computadora y guarda el `.jks` en un lugar seguro fuera del repositorio.
+5. **Prueba el flujo sin publicar nada**: en GitHub, abre **Actions** -> **Release** -> **Run workflow**. Al terminar, descarga el artefacto `healthycropping-apk` y revisa el resumen del job: la sección *APK signature* muestra el certificado (`Signer #1 certificate SHA-256`). Compáralo con el tuyo:
+   ```powershell
+   keytool -list -v -keystore healthycropping-upload.jks -alias healthycropping-upload
+   ```
+
+Si los *secrets* no existen, el flujo usa la llave de depuración (*debug*), avisa con una advertencia y nombra el archivo `healthycropping-vX.Y.Z-debug-signed.apk`. Ese APK sirve para pruebas, pero no para publicar `v1.0.0`.
+
+**`versionCode`**: el plugin `app/plugins/withReleaseSigning.js` lo calcula a partir de la versión (`0.5.0` -> `500`, `1.0.0` -> `10000`), así cada APK nuevo se puede instalar encima del anterior sin desinstalar.

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Release APK signing (`#76`, CI part): the `withReleaseSigning` config plugin makes release builds sign with an upload keystore whose path and passwords come from environment variables at Gradle time (debug key as fallback) and derives `versionCode` from the version (`0.5.0` -> `500`). `release.yml` decodes the `ANDROID_KEYSTORE_BASE64` secret into the runner's temp directory, verifies the APK certificate with `apksigner` (shown in the job summary), deletes the keystore afterwards, warns and renames the file when it falls back to the debug key, builds the APK for every tag from `v1.0.0` on, and can be run manually to build and download the APK without publishing a release. `docs/SETUP_SERVICES_ES.md` §10.5 explains creating the keystore and the four secrets.
+
 ## [0.5.0] - 2026-11-08
 
 First release since `0.2.0`: it also delivers the `v0.3.0` (Multi-Crop Models) and `v0.4.0` (Accounts & Sync) milestones, which were not released separately. `#31` (multi-crop diagnosis) is code-complete but stays open until it is checked on a device.
