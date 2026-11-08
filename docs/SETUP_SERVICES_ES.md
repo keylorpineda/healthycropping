@@ -295,7 +295,7 @@ Desplegaremos `api/` como un **Web Service** gratuito en Render utilizando la es
    - **Runtime**: `Python` (`3.12.7`)
    - **Plan**: `free`
    - **Branch**: `main` (despliegues automáticos `autoDeploy: true` únicamente al fusionar en `main`)
-   - **Build Command**: `uv sync --frozen --no-dev`
+   - **Build Command**: `uv sync --frozen --no-dev --extra rag && uv run python scripts/fetch_agronomic_docs.py && uv run python scripts/build_rag_index.py --check` (descarga los manuales oficiales con checksum fijo y construye el índice RAG, que no se guarda en Git; el build falla si alguna enfermedad queda sin pasajes)
    - **Start Command**: `uv run uvicorn healthycropping_api.main:app --host 0.0.0.0 --port $PORT`
    - **Health Check Path**: `/health`
 
@@ -315,6 +315,8 @@ Las siguientes variables marcadas como `sync: false` en `render.yaml` deben comp
 - `CLOUDINARY_CLOUD_NAME`: nombre de la nube de Cloudinary.
 - `CLOUDINARY_API_KEY`: clave de API de Cloudinary.
 - `CLOUDINARY_API_SECRET`: clave secreta de Cloudinary.
+- `GEMINI_API_KEY`: clave de API de Gemini (sección 3). Sin ella, `POST /explanations` responde `503`.
+- `GEMINI_MODEL`: modelo de Gemini (ej. `gemini-2.5-flash`).
 
 Las variables `ENV=production` y `PYTHON_VERSION=3.12.7` se aplican automáticamente desde el Blueprint.
 
