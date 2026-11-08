@@ -73,4 +73,13 @@ CREATE TABLE IF NOT EXISTS explanations (
   response_json TEXT NOT NULL,
   fetched_at TEXT NOT NULL
 );
+
+-- The explanation a scan was shown, copied per scan so Scan Detail can show it
+-- offline even after the app language changes. id is the scan id.
+CREATE TABLE IF NOT EXISTS scan_explanations (
+  id TEXT PRIMARY KEY NOT NULL,
+  explanation_id TEXT NOT NULL,
+  response_json TEXT NOT NULL,
+  fetched_at TEXT NOT NULL
+);
 `;
