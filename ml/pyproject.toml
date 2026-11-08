@@ -1,6 +1,6 @@
 [project]
 name = "healthycropping-ml"
-version = "0.1.0"
+version = "0.5.0"
 description = "Machine learning data preparation, training, evaluation, and TFLite export pipeline for HealthyCropping."
 requires-python = ">=3.12,<3.13"
 license = { text = "MIT" }
