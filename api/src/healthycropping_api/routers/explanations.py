@@ -11,7 +11,7 @@ from healthycropping_api.errors import ApiError
 from healthycropping_api.rag.explain import (
     ExplanationService,
     ExplanationUnavailableError,
-    is_supported,
+    UnsupportedClassError,
 )
 from healthycropping_api.rag.index import IndexFormatError, RagIndex
 from healthycropping_api.schemas import ErrorResponse, ExplanationRequest, ExplanationResponse
@@ -66,12 +66,12 @@ def _service(request: Request) -> ExplanationService:
 def create_explanation(
     body: ExplanationRequest, user: CurrentUser, request: Request
 ) -> ExplanationResponse:
-    if not is_supported(body.crop, body.disease_class):
-        raise ApiError(
-            422, "unsupported_class", f"'{body.disease_class}' is not a {body.crop} model class."
-        )
     try:
         return _service(request).explain(body)
+    except UnsupportedClassError as exc:
+        raise ApiError(
+            422, "unsupported_class", f"'{body.disease_class}' is not a {body.crop} model class."
+        ) from exc
     except ExplanationUnavailableError as exc:
         logger.warning("Explanation failed: %s", exc)
         raise UNAVAILABLE from exc

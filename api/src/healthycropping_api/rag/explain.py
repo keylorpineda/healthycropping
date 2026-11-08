@@ -1,10 +1,11 @@
 """Grounded explanations: retrieve passages, ask the LLM, keep only cited answers.
 
 The prompt carries only `(crop, disease_class, severity, language)` and passages
-from official manuals. The model must answer from those passages, cite them by
-id, and set `covered` to false when they do not answer the question. Answers
-without a valid citation are treated as declined, so nothing ungrounded reaches
-the farmer.
+from official manuals. The service refuses classes outside the model taxonomy, so
+free text (names, emails, coordinates) can never reach the prompt. The model
+must answer from those passages, cite them by id, and set `covered` to false
+when they do not answer the question. Answers without a valid citation are
+treated as declined, so nothing ungrounded reaches the farmer.
 """
 
 import json
@@ -12,6 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Final, Protocol
 
+from healthycropping_api.rag.cache import ExplanationCache, cache_key
 from healthycropping_api.rag.index import RagIndex, RetrievedChunk
 from healthycropping_api.rag.queries import build_query
 from healthycropping_api.rag.taxonomy import CROP_CLASSES, HEALTHY_CLASS
@@ -71,6 +73,10 @@ class ExplanationModel(Protocol):
 
 class ExplanationUnavailableError(RuntimeError):
     """The model failed or returned something that is not valid JSON."""
+
+
+class UnsupportedClassError(ValueError):
+    """The class is not one of the crop's model classes."""
 
 
 @dataclass(frozen=True)
@@ -144,12 +150,30 @@ def is_supported(crop: str, disease_class: str) -> bool:
     return disease_class in CROP_CLASSES.get(crop, ())
 
 
+def _is_shareable(response: ExplanationResponse) -> bool:
+    """Cache every answer except a model refusal, which a later call may answer."""
+    return response.declined_reason != "not_covered"
+
+
 class ExplanationService:
-    def __init__(self, index_loader: Callable[[], RagIndex], model: ExplanationModel) -> None:
+    def __init__(
+        self,
+        index_loader: Callable[[], RagIndex],
+        model: ExplanationModel,
+        cache: ExplanationCache | None = None,
+    ) -> None:
         self._index_loader = index_loader
         self._model = model
+        self._cache = cache if cache is not None else ExplanationCache()
 
     def explain(self, request: ExplanationRequest) -> ExplanationResponse:
+        if not is_supported(request.crop, request.disease_class):
+            raise UnsupportedClassError(request.disease_class)
+        return self._cache.get_or_create(
+            cache_key(request), lambda: self._explain(request), _is_shareable
+        )
+
+    def _explain(self, request: ExplanationRequest) -> ExplanationResponse:
         if request.disease_class == HEALTHY_CLASS or request.severity == "healthy":
             return _declined(request, "healthy")
 
