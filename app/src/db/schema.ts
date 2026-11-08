@@ -61,4 +61,16 @@ CREATE INDEX IF NOT EXISTS idx_scans_severity ON scans (severity);
 CREATE INDEX IF NOT EXISTS idx_scans_scanned_at ON scans (scanned_at);
 CREATE INDEX IF NOT EXISTS idx_scans_deleted_at ON scans (deleted_at);
 CREATE INDEX IF NOT EXISTS idx_scans_sync_status ON scans (sync_status);
+
+-- AI explanations from POST /explanations, keyed by the diagnosis only
+-- ('crop:disease_class:severity:language'), so they can be re-read offline.
+CREATE TABLE IF NOT EXISTS explanations (
+  id TEXT PRIMARY KEY NOT NULL,
+  crop TEXT NOT NULL,
+  disease_class TEXT NOT NULL,
+  severity TEXT NOT NULL,
+  language TEXT NOT NULL,
+  response_json TEXT NOT NULL,
+  fetched_at TEXT NOT NULL
+);
 `;
