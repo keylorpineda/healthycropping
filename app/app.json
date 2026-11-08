@@ -36,7 +36,8 @@
           "root": "./src/app"
         }
       ],
-      "./plugins/withTfliteModels"
+      "./plugins/withTfliteModels",
+      "./plugins/withReleaseSigning"
     ],
     "experiments": {
       "typedRoutes": true
