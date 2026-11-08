@@ -13,7 +13,17 @@ from healthycropping_api.errors import register_error_handlers
 from healthycropping_api.firebase import get_firebase_app
 from healthycropping_api.rag.explain import ExplanationService
 from healthycropping_api.rate_limit import register_rate_limiting
-from healthycropping_api.routers import explanations, farms, health, me, plots, scans, uploads
+from healthycropping_api.routers import (
+    explanations,
+    farms,
+    health,
+    me,
+    plots,
+    scans,
+    uploads,
+    weather,
+)
+from healthycropping_api.services.weather import WeatherService
 from healthycropping_api.store import DocumentStore, FirestoreDocumentStore
 
 
@@ -41,6 +51,7 @@ def create_app(
     token_verifier: TokenVerifier | None = None,
     document_store: DocumentStore | None = None,
     explanation_service: ExplanationService | None = None,
+    weather_service: WeatherService | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     app = FastAPI(title="HealthyCropping API", version=__version__)
@@ -48,6 +59,7 @@ def create_app(
     app.state.token_verifier = token_verifier or FirebaseTokenVerifier(settings.firebase_project_id)
     app.state.document_store = document_store or _firestore_store(settings.firebase_project_id)
     app.state.explanation_service = explanation_service or _explanation_service(settings)
+    app.state.weather_service = weather_service or WeatherService()
 
     app.add_middleware(
         CORSMiddleware,
@@ -65,6 +77,7 @@ def create_app(
     app.include_router(scans.router)
     app.include_router(uploads.router)
     app.include_router(explanations.router)
+    app.include_router(weather.router)
     return app
 
 
