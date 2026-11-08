@@ -67,6 +67,9 @@ jobs:
         env:
           CI: "1"
           ASSEMBLE: ${{ steps.plan.outputs.assemble }}
+          # In this monorepo Expo would make the repo root Metro's server root, and the
+          # release bundle then resolves the app entry one level too high; use app/.
+          EXPO_NO_METRO_WORKSPACE_ROOT: "1"
           HEALTHYCROPPING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           HEALTHYCROPPING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           HEALTHYCROPPING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
