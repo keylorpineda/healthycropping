@@ -22,6 +22,7 @@ from healthycropping_api.routers import (
     scans,
     uploads,
     weather,
+    weather_risk,
 )
 from healthycropping_api.services.weather import WeatherService
 from healthycropping_api.store import DocumentStore, FirestoreDocumentStore
@@ -78,6 +79,7 @@ def create_app(
     app.include_router(uploads.router)
     app.include_router(explanations.router)
     app.include_router(weather.router)
+    app.include_router(weather_risk.router)
     return app
 
 
