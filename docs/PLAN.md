@@ -167,7 +167,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 - [ ] Execute the Costa Rican field validation protocol across coffee, cacao, and banana photos in airplane mode and record empirical measurements in `docs/FIELD_VALIDATION.md` (`#38`).
 - [ ] Benchmark on-device warm inference latency (`< 300 ms`), peak RAM footprint (`< 250 MB`), and installed APK size (`< 80 MB`) across all 3 crop models (`#75`).
 - [ ] Analyze field validation agreement rates, confidence threshold calibration, and lighting/angle failure modes in `docs/FIELD_VALIDATION.md` (`#51`).
-- [ ] Complete end-to-end WCAG AA contrast, `>= 48 dp` touch target, TalkBack label, and reduced-motion accessibility audit across all app screens (`#52`).
+- [x] Complete end-to-end WCAG AA contrast, `>= 48 dp` touch target, TalkBack label, and reduced-motion accessibility audit across all app screens (`#52`).
 - [ ] Finalize `README.md` and `docs/MODEL_CARD.md` with empirical metrics tables, confusion matrices, Grad-CAM samples, and Android screenshots/demo GIF (`#53`).
 - [ ] Configure release APK Gradle signing and verify clean standalone installation and offline launch on Android (`#76`).
 - [ ] Tag `v1.0.0`, trigger `.github/workflows/release.yml`, and publish the GitHub Release containing `CHANGELOG.md` notes, the installable Android `.apk`, and the three `.tflite` models + `registry.json` files (`#39`).
