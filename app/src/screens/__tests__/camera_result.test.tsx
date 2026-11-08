@@ -236,5 +236,31 @@ describe('Camera, Photo Tips, Analyzing & Result Screens', () => {
         'Phytosanitary action required',
       );
     });
+
+    it('withholds result-explanation while scanId is null and renders it when scanId is omitted', async () => {
+      const { unmount } = renderWithTheme(
+        <ResultScreen
+          imageUri="file:///mock/captured_photo.jpg"
+          prediction={mockConfidentPrediction}
+          scanId={null}
+          onRetake={jest.fn()}
+          onDone={jest.fn()}
+        />,
+      );
+
+      expect(screen.queryByTestId('result-explanation')).toBeNull();
+      unmount();
+
+      renderWithTheme(
+        <ResultScreen
+          imageUri="file:///mock/captured_photo.jpg"
+          prediction={mockConfidentPrediction}
+          onRetake={jest.fn()}
+          onDone={jest.fn()}
+        />,
+      );
+
+      expect(await screen.findByTestId('result-explanation')).toBeTruthy();
+    });
   });
 });

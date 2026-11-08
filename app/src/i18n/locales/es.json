@@ -265,6 +265,14 @@
       "healthy": "La planta se ve sana; no hace falta una explicación.",
       "no_sources": "Los manuales oficiales disponibles no describen este problema. Consulte a un agrónomo.",
       "not_covered": "No encontramos información suficiente en los manuales oficiales para explicar este diagnóstico. Consulte a un agrónomo."
+    },
+    "citationHint": "Muestra la referencia completa y el enlace a la fuente.",
+    "openSource": "Abrir fuente",
+    "savedWithScan": "Guardada con este diagnóstico para leerla sin conexión.",
+    "savedWithScanOtherLanguage": "Guardada con este diagnóstico en {{language}}; conéctese para verla en el idioma actual.",
+    "languages": {
+      "es": "español",
+      "en": "inglés"
     }
   }
 }

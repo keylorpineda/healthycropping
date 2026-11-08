@@ -53,12 +53,18 @@ function makeQueryClient(): QueryClient {
 
 function renderCard(
   explanationKey: ExplanationKey | null,
-  load: (key: ExplanationKey) => Promise<ExplanationResult>,
+  load: (key: ExplanationKey, scanId?: string) => Promise<ExplanationResult>,
   queryClient = makeQueryClient(),
+  scanId?: string,
 ) {
   return render(
     <ThemeProvider>
-      <ExplanationCard explanationKey={explanationKey} load={load} queryClient={queryClient} />
+      <ExplanationCard
+        explanationKey={explanationKey}
+        load={load}
+        queryClient={queryClient}
+        {...(scanId ? { scanId } : {})}
+      />
     </ThemeProvider>,
   );
 }
@@ -101,12 +107,57 @@ describe('ExplanationCard', () => {
     expect(screen.getByTestId('explanation-card-step-1')).toHaveTextContent(
       '2. Consulte a un agronomo.',
     );
-    expect(screen.getByTestId('explanation-card-citation-0')).toHaveTextContent(/Guia tecnica/);
-    expect(screen.getByTestId('explanation-card-citation-0')).toHaveTextContent(/Roya/);
+    expect(screen.getByTestId('explanation-card-citation-0')).toHaveTextContent('ICAFE · Roya');
+    fireEvent.press(screen.getByTestId('explanation-card-citation-0'));
+    expect(screen.getByTestId('explanation-card-citation-0-details')).toHaveTextContent(
+      /Guia tecnica/,
+    );
+    expect(screen.getByTestId('explanation-card-citation-0-details')).toHaveTextContent(
+      /pág\. 40-42/,
+    );
     expect(screen.getByTestId('explanation-card-disclaimer')).toHaveTextContent(
       /manuales técnicos oficiales/i,
     );
     expect(screen.queryByTestId('explanation-card-offline-copy')).toBeNull();
+  });
+
+  it('shows the scan copy note when source is scan and language matches the key', async () => {
+    const load = jest.fn().mockResolvedValue({
+      explanation: COVERED_EXPLANATION,
+      source: 'scan',
+      fetchedAt: '2026-01-15T10:00:00.000Z',
+    } satisfies ExplanationResult);
+
+    renderCard(KEY, load);
+
+    expect(await screen.findByTestId('explanation-card-scan-copy')).toHaveTextContent(
+      /Guardada con este diagnóstico para leerla sin conexión/,
+    );
+  });
+
+  it('shows the other-language scan copy note when source is scan and explanation language differs from key', async () => {
+    const load = jest.fn().mockResolvedValue({
+      explanation: { ...COVERED_EXPLANATION, language: 'en' },
+      source: 'scan',
+      fetchedAt: '2026-01-15T10:00:00.000Z',
+    } satisfies ExplanationResult);
+
+    renderCard(KEY, load);
+
+    expect(await screen.findByTestId('explanation-card-scan-copy')).toHaveTextContent(/en inglés/);
+  });
+
+  it('passes scanId as the second argument to load', async () => {
+    const load = jest.fn().mockResolvedValue({
+      explanation: COVERED_EXPLANATION,
+      source: 'network',
+      fetchedAt: '2026-01-15T10:00:00.000Z',
+    } satisfies ExplanationResult);
+
+    renderCard(KEY, load, makeQueryClient(), 'scan-1');
+
+    expect(await screen.findByTestId('explanation-card-content')).toBeTruthy();
+    expect(load).toHaveBeenCalledWith(KEY, 'scan-1');
   });
 
   it('shows the offline copy note when source is cache', async () => {

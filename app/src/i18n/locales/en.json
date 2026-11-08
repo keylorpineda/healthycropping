@@ -265,6 +265,14 @@
       "healthy": "The plant looks healthy; no explanation is needed.",
       "no_sources": "The available official manuals do not describe this problem. Consult an agronomist.",
       "not_covered": "We did not find enough information in the official manuals to explain this diagnosis. Consult an agronomist."
+    },
+    "citationHint": "Shows the full reference and a link to the source.",
+    "openSource": "Open source",
+    "savedWithScan": "Saved with this diagnosis to read offline.",
+    "savedWithScanOtherLanguage": "Saved with this diagnosis in {{language}}; connect to see it in the current language.",
+    "languages": {
+      "es": "Spanish",
+      "en": "English"
     }
   }
 }
