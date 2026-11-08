@@ -151,7 +151,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 - [x] Implement `api/scripts/build_rag_index.py` and the local top-k retriever preserving `(source, section)` citation metadata (`#49`).
 - [x] Implement `POST /explanations` in `api/` using `google-genai` (`GEMINI_MODEL` env var, free-tier Flash model) to generate plain-Spanish/English explanations + next steps citing source and section, and explicitly declining when not covered (`#36`).
 - [x] Enforce strict privacy (never sending names, emails, or coordinates), response caching by `(crop, class, severity, language)`, and `20 requests/user/hour` rate limiting via `slowapi` (`#50`).
-- [ ] Connect the app's Result and Scan Detail screens to fetch RAG explanations when online and fall back gracefully when disconnected (`#37`).
+- [x] Connect the app's Result and Scan Detail screens to fetch RAG explanations when online and fall back gracefully when disconnected (`#37`).
 - [ ] Persist fetched RAG explanations and `(source, section)` citations in `expo-sqlite` for offline re-reading and render interactive source citation badges (`#74`).
 
 ### Done when
