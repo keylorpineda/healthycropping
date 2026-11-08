@@ -409,6 +409,7 @@ export function ScanDetailScreen({
             language,
           )}
           testID="scan-detail-explanation"
+          scanId={scan.id}
         />
 
         {/* Location Assignment Card */}

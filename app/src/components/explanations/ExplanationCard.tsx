@@ -4,23 +4,15 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Card, Skeleton } from '@/components/ui';
 import { type ExplanationKey } from '@/db';
-import {
-  useExplanation,
-  type ExplanationCitation,
-  type UseExplanationOptions,
-} from '@/services/explanations';
+import { useExplanation, type UseExplanationOptions } from '@/services/explanations';
 import { useTheme } from '@/theme';
+
+import { CitationBadge } from './CitationBadge';
 
 export interface ExplanationCardProps extends UseExplanationOptions {
   /** Diagnosis to explain; nothing is rendered when null (healthy or low confidence). */
   explanationKey: ExplanationKey | null;
   testID?: string;
-}
-
-function pages(citation: ExplanationCitation): string {
-  return citation.first_page === citation.last_page
-    ? `${citation.first_page}`
-    : `${citation.first_page}-${citation.last_page}`;
 }
 
 /** Grounded AI explanation with next steps and cited sources, loaded online or from SQLite. */
@@ -116,25 +108,15 @@ export function ExplanationCard({
             >
               {t('explanation.sources')}
             </Text>
-            {explanation.citations.map((citation, index) => (
-              <Text
-                key={`${citation.url}-${citation.section}`}
-                style={[
-                  theme.typography.caption,
-                  styles.citation,
-                  { color: theme.colors.textSecondary },
-                ]}
-                testID={`${testID}-citation-${index}`}
-              >
-                {t('explanation.citation', {
-                  source: citation.source_title,
-                  section: citation.section,
-                  publisher: citation.publisher,
-                  year: citation.year,
-                  pages: pages(citation),
-                })}
-              </Text>
-            ))}
+            <View style={styles.badges}>
+              {explanation.citations.map((citation, index) => (
+                <CitationBadge
+                  key={`${citation.url}-${citation.section}`}
+                  citation={citation}
+                  testID={`${testID}-citation-${index}`}
+                />
+              ))}
+            </View>
           </View>
 
           <Text
@@ -149,6 +131,18 @@ export function ExplanationCard({
               testID={`${testID}-offline-copy`}
             >
               {t('explanation.savedOffline')}
+            </Text>
+          )}
+          {source === 'scan' && (
+            <Text
+              style={[theme.typography.caption, { color: theme.colors.textTertiary }]}
+              testID={`${testID}-scan-copy`}
+            >
+              {explanation.language === explanationKey.language
+                ? t('explanation.savedWithScan')
+                : t('explanation.savedWithScanOtherLanguage', {
+                    language: t(`explanation.languages.${explanation.language}`),
+                  })}
             </Text>
           )}
         </View>
@@ -186,9 +180,9 @@ const styles = StyleSheet.create({
   step: {
     marginBottom: 4,
   },
-  citation: {
-    marginBottom: 4,
-    lineHeight: 16,
+  badges: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   note: {
     marginTop: 16,

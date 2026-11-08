@@ -20,6 +20,7 @@ export default function ScanScreen(): React.JSX.Element {
   const [status, setStatus] = useState<'camera' | 'analyzing' | 'result'>('camera');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [prediction, setPrediction] = useState<InferencePrediction | null>(null);
+  const [scanId, setScanId] = useState<string | null>(null);
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
 
   const handlePhotoCaptured = async (uri: string) => {
@@ -40,7 +41,7 @@ export default function ScanScreen(): React.JSX.Element {
       }
 
       // Persist scan to SQLite offline database
-      scansRepository.create({
+      const scan = scansRepository.create({
         crop,
         predicted_class: result.predictedClass,
         severity: result.severity,
@@ -54,6 +55,7 @@ export default function ScanScreen(): React.JSX.Element {
           inferenceTimeMs: result.inferenceTimeMs,
         }),
       });
+      setScanId(scan.id);
     } catch (error) {
       console.error('On-device inference failed', error);
       setErrorVisible(true);
@@ -64,6 +66,7 @@ export default function ScanScreen(): React.JSX.Element {
   const handleRetake = () => {
     setImageUri(null);
     setPrediction(null);
+    setScanId(null);
     setStatus('camera');
   };
 
@@ -99,6 +102,7 @@ export default function ScanScreen(): React.JSX.Element {
         <ResultScreen
           imageUri={imageUri}
           prediction={prediction}
+          scanId={scanId}
           onRetake={handleRetake}
           onDone={handleDone}
           testID="scan-result-screen"

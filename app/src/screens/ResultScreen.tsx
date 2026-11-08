@@ -15,6 +15,12 @@ import { useReducedMotion, useTheme } from '@/theme';
 export interface ResultScreenProps {
   imageUri: string;
   prediction: InferencePrediction;
+  /**
+   * Saved scan, so its explanation copy stays readable offline from Scan Detail.
+   * `null` means the scan is still being saved: the explanation waits for it instead
+   * of being requested twice. Omit it when there is no scan to link.
+   */
+  scanId?: string | null;
   onRetake: () => void;
   onDone: () => void;
   testID?: string;
@@ -23,6 +29,7 @@ export interface ResultScreenProps {
 export function ResultScreen({
   imageUri,
   prediction,
+  scanId,
   onRetake,
   onDone,
   testID = 'result-screen',
@@ -309,8 +316,9 @@ export function ResultScreen({
         )}
 
         <ExplanationCard
-          explanationKey={explanationKeyFor(prediction, language)}
+          explanationKey={scanId === null ? null : explanationKeyFor(prediction, language)}
           testID="result-explanation"
+          {...(scanId ? { scanId } : {})}
         />
 
         {/* Mandatory Agronomic Disclaimer */}
