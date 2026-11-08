@@ -48,6 +48,7 @@ export function CitationBadge({
         accessibilityLabel={reference}
         accessibilityHint={t('explanation.citationHint')}
         accessibilityState={{ expanded }}
+        style={styles.target}
         testID={testID}
       >
         <Badge label={`${citation.publisher} · ${citation.section}`} variant="neutral" size="sm" />
@@ -88,6 +89,11 @@ const styles = StyleSheet.create({
   root: {
     marginRight: 8,
     marginBottom: 8,
+  },
+  // The small badge is the visual; the touch area meets the 48 dp minimum.
+  target: {
+    minHeight: 48,
+    justifyContent: 'center',
   },
   details: {
     marginTop: 6,

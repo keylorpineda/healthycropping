@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking } from 'react-native';
+import { Linking, StyleSheet, type ViewStyle } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 
 import { CitationBadge } from '@/components/explanations';
@@ -58,5 +58,15 @@ describe('CitationBadge', () => {
 
     fireEvent.press(screen.getByTestId('badge'));
     expect(screen.getByTestId('badge-details')).toHaveTextContent(/pág\. 7\)/);
+  });
+
+  it('gives the badge a touch target of at least 48 dp', () => {
+    render(
+      <ThemeProvider>
+        <CitationBadge citation={CITATION} testID="badge" />
+      </ThemeProvider>,
+    );
+    const style = StyleSheet.flatten(screen.getByTestId('badge').props.style) as ViewStyle;
+    expect(style.minHeight).toBeGreaterThanOrEqual(48);
   });
 });
