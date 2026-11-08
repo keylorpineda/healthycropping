@@ -169,7 +169,8 @@
     "deletedToast": "Diagnóstico eliminado",
     "undo": "Deshacer",
     "syncPending": "Pendiente de sincronizar",
-    "syncSynced": "Sincronizado"
+    "syncSynced": "Sincronizado",
+    "scanLabel": "{{disease}}, {{crop}}, {{status}}, confianza {{confidence}} %, {{date}}"
   },
   "scanDetail": {
     "title": "Detalle del diagnóstico",
