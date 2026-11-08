@@ -6,7 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from healthycrop_ml.download import (
+from healthycropping_ml.download import (
     DatasetDownloadError,
     FileSpec,
     MendeleyDatasetMetadata,

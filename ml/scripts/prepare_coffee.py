@@ -13,10 +13,10 @@ from typing import Any
 
 import pandas as pd
 
-from healthycrop_ml.config import CropConfig, load_crop_config
-from healthycrop_ml.dedup import HashedItem, compute_phash_hex, deduplicate_hashed_items
-from healthycrop_ml.preprocess import CandidateSample, load_clean_rgb_image
-from healthycrop_ml.split import assign_grouped_stratified_splits, verify_no_group_leakage
+from healthycropping_ml.config import CropConfig, load_crop_config
+from healthycropping_ml.dedup import HashedItem, compute_phash_hex, deduplicate_hashed_items
+from healthycropping_ml.preprocess import CandidateSample, load_clean_rgb_image
+from healthycropping_ml.split import assign_grouped_stratified_splits, verify_no_group_leakage
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG_PATH = REPO_ROOT / "ml" / "configs" / "coffee.yaml"

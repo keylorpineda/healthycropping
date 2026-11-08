@@ -1,6 +1,6 @@
-# Contributing to HealthyCrop
+# Contributing to HealthyCropping
 
-Thank you for your interest in contributing to **HealthyCrop**. This document outlines our development setup, conventions, quality checks, and pull request workflow.
+Thank you for your interest in contributing to **HealthyCropping**. This document outlines our development setup, conventions, quality checks, and pull request workflow.
 
 ## Language Policy
 
@@ -76,10 +76,10 @@ All checks must pass locally before pushing. Fix root causes; never disable lint
 
 - **App (`app/`)**:
   ```bash
-  pnpm --filter @healthycrop/app lint
-  pnpm --filter @healthycrop/app format:check
-  pnpm --filter @healthycrop/app typecheck
-  pnpm --filter @healthycrop/app test
+  pnpm --filter @healthycropping/app lint
+  pnpm --filter @healthycropping/app format:check
+  pnpm --filter @healthycropping/app typecheck
+  pnpm --filter @healthycropping/app test
   ```
 
 - **API (`api/`)**:
@@ -100,10 +100,14 @@ All checks must pass locally before pushing. Fix root causes; never disable lint
   uv run pytest
   ```
 
-## Pull Request Flow
+## Pull Request Flow & Peer Review Authorization
 
-1. Open a Pull Request targeting `develop`, carry the active `vX.Y.Z` milestone, and include `Closes #<issue-number>` in the body.
-2. Ensure all CI jobs (`app`, `api`, `ml`) are green.
-3. **Rebase-merge (`--rebase`)** work PRs into `develop` so every atomic Conventional Commit is preserved in history; move the issue to **Done** on the Project board.
-4. When a milestone is complete, open a release PR from `develop` to `main` titled `chore(release): vX.Y.Z`, merge with a **merge commit (`--merge`)**, and tag `vX.Y.Z`.
+1. **Structured Template**: Every PR must fill out the `.github/PULL_REQUEST_TEMPLATE.md` checklist completely (summary, affected area, key decisions, verification proof, and local checks).
+2. **Target Branch**: Open the Pull Request targeting `develop` and include `Closes #<issue-number>` in the body.
+3. **Mandatory Peer Review Authorization**:
+   - Branch protection enforces **at least 1 approving code review from a Code Owner (`@keylorpineda` or `@JAbarca74`)** before merge.
+   - Any new push dismisses stale reviews and requires re-approval (`require_last_push_approval: true`).
+4. **Automated CI**: Ensure all 3 CI workflows (`App`, `API`, `ML`) are green.
+5. **Rebase-Merge**: Once approved and CI is green, work PRs are merged into `develop` using **rebase (`--rebase`)** to maintain clean, atomic Conventional Commits. Move the issue to **Done** on the Project board.
+6. **Release PRs to `main`**: When a milestone is complete, open a release PR from `develop` to `main` titled `chore(release): vX.Y.Z`, merge with **squash (`--squash`)** to keep `main` strictly to 1 commit per stable version, and tag `vX.Y.Z`.
 

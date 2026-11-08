@@ -1,7 +1,7 @@
 [project]
-name = "healthycrop-ml"
-version = "0.1.0"
-description = "Machine learning data preparation, training, evaluation, and TFLite export pipeline for HealthyCrop."
+name = "healthycropping-ml"
+version = "0.5.0"
+description = "Machine learning data preparation, training, evaluation, and TFLite export pipeline for HealthyCropping."
 requires-python = ">=3.12,<3.13"
 license = { text = "MIT" }
 authors = [
@@ -34,7 +34,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/healthycrop_ml"]
+packages = ["src/healthycropping_ml"]
 
 [tool.ruff]
 target-version = "py312"

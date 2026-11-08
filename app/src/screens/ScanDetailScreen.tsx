@@ -3,6 +3,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ExplanationCard } from '@/components/explanations';
 import { Badge, Button, Card, Chip, ProgressMeter, Sheet } from '@/components/ui';
 import {
   farmsRepository,
@@ -12,6 +13,8 @@ import {
   type Plot,
   type Scan,
 } from '@/db';
+import { explanationKeyFor } from '@/services/explanations';
+import { usePreferencesStore } from '@/stores/preferences';
 import { useTheme } from '@/theme';
 
 export interface ScanDetailScreenProps {
@@ -29,6 +32,7 @@ export function ScanDetailScreen({
 }: ScanDetailScreenProps): React.JSX.Element {
   const { t } = useTranslation();
   const theme = useTheme();
+  const language = usePreferencesStore((state) => state.language);
 
   const [scan, setScan] = useState<Scan | null>(null);
   const [farm, setFarm] = useState<Farm | null>(null);
@@ -117,7 +121,13 @@ export function ScanDetailScreen({
               style={styles.backButton}
               testID="scan-detail-back-btn"
             >
-              <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>←</Text>
+              <Text
+                importantForAccessibility="no"
+                accessible={false}
+                style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+              >
+                ←
+              </Text>
             </Pressable>
           )}
           <Text style={[theme.typography.title2, { color: theme.colors.textPrimary }]}>
@@ -254,7 +264,13 @@ export function ScanDetailScreen({
               style={styles.backButton}
               testID="scan-detail-back-btn"
             >
-              <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>←</Text>
+              <Text
+                importantForAccessibility="no"
+                accessible={false}
+                style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+              >
+                ←
+              </Text>
             </Pressable>
           )}
           <View style={{ flex: 1 }}>
@@ -281,6 +297,9 @@ export function ScanDetailScreen({
             source={{ uri: scan.local_photo_uri }}
             style={styles.heroImage}
             resizeMode="cover"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={t('result.photoLabel', { disease: displayTitle })}
             testID="scan-detail-hero-image"
           />
         </View>
@@ -393,6 +412,20 @@ export function ScanDetailScreen({
             </View>
           )}
         </Card>
+
+        <ExplanationCard
+          explanationKey={explanationKeyFor(
+            {
+              crop: scan.crop,
+              predictedClass: scan.predicted_class,
+              severity: scan.severity,
+              isLowConfidence: Boolean(scan.is_low_confidence),
+            },
+            language,
+          )}
+          testID="scan-detail-explanation"
+          scanId={scan.id}
+        />
 
         {/* Location Assignment Card */}
         <Card variant="outlined" style={styles.card} testID="scan-detail-location-card">

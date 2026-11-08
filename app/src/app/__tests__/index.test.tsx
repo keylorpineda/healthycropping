@@ -38,7 +38,7 @@ describe('IndexScreen (App Entrypoint / Router Dispatcher)', () => {
     renderWithTheme(<IndexScreen />);
 
     expect(screen.getByTestId('home-screen')).toBeTruthy();
-    expect(screen.getByTestId('home-title')).toHaveTextContent('HealthyCrop');
+    expect(screen.getByTestId('home-title')).toHaveTextContent('HealthyCropping');
     expect(screen.getByTestId('home-tagline')).toHaveTextContent(
       'Diagnóstico de cultivos fuera de línea',
     );
@@ -52,7 +52,7 @@ describe('IndexScreen (App Entrypoint / Router Dispatcher)', () => {
     await i18n.changeLanguage('en');
     renderWithTheme(<IndexScreen />);
 
-    expect(screen.getByTestId('home-title')).toHaveTextContent('HealthyCrop');
+    expect(screen.getByTestId('home-title')).toHaveTextContent('HealthyCropping');
     expect(screen.getByTestId('home-tagline')).toHaveTextContent('Offline crop diagnosis');
     expect(screen.getByTestId('home-disclaimer-box')).toHaveTextContent(
       /does not replace the judgment/i,

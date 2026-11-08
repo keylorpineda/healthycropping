@@ -1,0 +1,69 @@
+crop: cacao
+image_size: 224
+seed: 42
+phash_hash_size: 8
+phash_max_distance: 2
+min_train_images_per_class: 50
+
+split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+
+classes:
+  - healthy
+  - monilia
+  - black_pod
+
+sources:
+  cocoamonilia:
+    raw_dir: ml/data/raw/cocoamonilia
+    photos_dir: CocoaMoniliaDataSet/cocoapods_images
+    label_map:
+      h0:
+        label: healthy
+        severity: "0"
+      m1:
+        label: monilia
+        severity: "1"
+      m2:
+        label: monilia
+        severity: "2"
+      m3:
+        label: monilia
+        severity: "3"
+
+  unab:
+    raw_dir: ml/data/raw/unab_cacao
+    images_dir: images
+    labels_dir: labels
+    classes_file: classes.txt
+    box_margin: 0.05
+    label_map:
+      0:
+        label: black_pod
+        severity: "2"
+      1:
+        label: monilia
+        severity: "1"
+      2:
+        label: healthy
+        severity: "0"
+      healthy:
+        label: healthy
+        severity: "0"
+      sana:
+        label: healthy
+        severity: "0"
+      monilia:
+        label: monilia
+        severity: "1"
+      fitoftora:
+        label: black_pod
+        severity: "2"
+      phytophthora:
+        label: black_pod
+        severity: "2"
+      black_pod:
+        label: black_pod
+        severity: "2"

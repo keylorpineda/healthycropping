@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: healthycropping-api
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: api
+    branch: main
+    autoDeploy: true
+    # The RAG index is git-ignored: fetch the pinned manuals and build it on every deploy.
+    # `--check` fails the build if any disease class has no retrievable passage.
+    buildCommand: >-
+      uv sync --frozen --no-dev --extra rag &&
+      uv run python scripts/fetch_agronomic_docs.py &&
+      uv run python scripts/build_rag_index.py --check
+    startCommand: uv run uvicorn healthycropping_api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ENV
+        value: production
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        sync: false
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/secrets/service-account.json

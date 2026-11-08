@@ -1,8 +1,12 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { Alert, type AlertButton } from 'react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 
 import i18n from '@/i18n';
+import * as registry from '@/ml/registry';
+import { useAuthStore } from '@/stores/auth';
 import { usePreferencesStore } from '@/stores/preferences';
+import { useSyncStore } from '@/stores/sync';
 import { ThemeProvider } from '@/theme';
 import { HomeScreen, OnboardingScreen, SettingsScreen } from '../index';
 
@@ -82,7 +86,7 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
 
       renderWithTheme(<HomeScreen onOpenSettings={onOpenSettingsMock} onScan={onScanMock} />);
 
-      expect(screen.getByTestId('home-title')).toHaveTextContent('HealthyCrop');
+      expect(screen.getByTestId('home-title')).toHaveTextContent('HealthyCropping');
       expect(screen.getByTestId('home-tagline')).toHaveTextContent(
         'Diagnóstico de cultivos fuera de línea',
       );
@@ -108,6 +112,14 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       fireEvent.press(scanBtn);
       expect(onScanMock).toHaveBeenCalledWith('cacao');
 
+      // Select Banana and scan with it
+      const bananaChip = screen.getByTestId('crop-chip-banana');
+      expect(bananaChip.props.accessibilityState.disabled).toBe(false);
+      fireEvent.press(bananaChip);
+      expect(bananaChip.props.accessibilityState.selected).toBe(true);
+      fireEvent.press(scanBtn);
+      expect(onScanMock).toHaveBeenLastCalledWith('banana');
+
       // Empty State
       expect(screen.getByTestId('home-empty-state')).toBeTruthy();
 
@@ -115,6 +127,22 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       expect(screen.getByTestId('home-disclaimer-box')).toHaveTextContent(
         /no reemplaza el criterio/i,
       );
+    });
+
+    it('disables crops without a bundled model and labels them as coming soon', () => {
+      const spy = jest
+        .spyOn(registry, 'isCropAvailable')
+        .mockImplementation((crop) => crop !== 'banana');
+      try {
+        renderWithTheme(<HomeScreen />);
+        const bananaChip = screen.getByTestId('crop-chip-banana');
+        expect(bananaChip.props.accessibilityState.disabled).toBe(true);
+        expect(bananaChip).toHaveTextContent('Banano (Próximamente)');
+        fireEvent.press(bananaChip);
+        expect(bananaChip.props.accessibilityState.selected).toBe(false);
+      } finally {
+        spy.mockRestore();
+      }
     });
 
     it('displays English text when language is switched', async () => {
@@ -159,6 +187,93 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
       expect(screen.getByTestId('settings-disclaimer-box')).toHaveTextContent(
         /does not replace the judgment/i,
       );
+    });
+
+    it('offers sign-in while signed out and keeps local mode', () => {
+      useAuthStore.setState({ status: 'signedOut', user: null });
+      const onSignIn = jest.fn();
+      renderWithTheme(<SettingsScreen onSignIn={onSignIn} onManageAccount={jest.fn()} />);
+
+      expect(screen.getByTestId('settings-account-status')).toHaveTextContent(
+        'Modo local activo (no requiere cuenta)',
+      );
+      expect(screen.queryByTestId('settings-manage-account-btn')).toBeNull();
+      fireEvent.press(screen.getByTestId('settings-sign-in-btn'));
+      expect(onSignIn).toHaveBeenCalledTimes(1);
+    });
+
+    describe('signed-in account section', () => {
+      const pressAlertButton = (style: AlertButton['style']) =>
+        jest.spyOn(Alert, 'alert').mockImplementationOnce((_t, _m, buttons) => {
+          (buttons as AlertButton[]).find((b) => b.style === style)?.onPress?.();
+        });
+
+      beforeEach(() => {
+        useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'ana@finca.cr' } });
+        useSyncStore.setState({
+          phase: 'synced',
+          pendingCount: 2,
+          lastSyncedAt: '2026-11-07T15:30:00.000Z',
+          refreshPending: jest.fn(),
+        });
+      });
+
+      it('shows the last sync time and pending changes', () => {
+        renderWithTheme(<SettingsScreen />);
+        expect(screen.getByTestId('settings-last-synced')).toHaveTextContent(
+          /Última sincronización: .*2026/,
+        );
+        expect(screen.getByTestId('settings-pending-count')).toHaveTextContent(
+          '2 cambios pendientes',
+        );
+      });
+
+      it('says when nothing was synced yet', () => {
+        useSyncStore.setState({ lastSyncedAt: null, pendingCount: 0 });
+        renderWithTheme(<SettingsScreen />);
+        expect(screen.getByTestId('settings-last-synced')).toHaveTextContent(
+          'Aún no se ha sincronizado',
+        );
+        expect(screen.getByTestId('settings-pending-count')).toHaveTextContent(
+          'Todo está sincronizado',
+        );
+      });
+
+      it('runs a manual sync', () => {
+        const requestSync = jest.fn(() => Promise.resolve());
+        useSyncStore.setState({ requestSync });
+        renderWithTheme(<SettingsScreen />);
+
+        fireEvent.press(screen.getByTestId('settings-sync-now-btn'));
+        expect(requestSync).toHaveBeenCalledTimes(1);
+      });
+
+      it('signs out only after confirmation', async () => {
+        const signOut = jest.fn(() => Promise.resolve());
+        useAuthStore.setState({ signOut });
+        renderWithTheme(<SettingsScreen />);
+
+        pressAlertButton('cancel');
+        fireEvent.press(screen.getByTestId('settings-sign-out-btn'));
+        expect(signOut).not.toHaveBeenCalled();
+
+        pressAlertButton('destructive');
+        fireEvent.press(screen.getByTestId('settings-sign-out-btn'));
+        await waitFor(() => expect(signOut).toHaveBeenCalledTimes(1));
+      });
+    });
+
+    it('shows the signed-in email and links to account management', () => {
+      useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'ana@finca.cr' } });
+      const onManageAccount = jest.fn();
+      renderWithTheme(<SettingsScreen onSignIn={jest.fn()} onManageAccount={onManageAccount} />);
+
+      expect(screen.getByTestId('settings-account-status')).toHaveTextContent(
+        'Sesión iniciada como ana@finca.cr',
+      );
+      expect(screen.queryByTestId('settings-sign-in-btn')).toBeNull();
+      fireEvent.press(screen.getByTestId('settings-manage-account-btn'));
+      expect(onManageAccount).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "HealthyCrop",
-    "slug": "healthycrop",
-    "version": "0.2.0",
+    "name": "HealthyCropping",
+    "slug": "healthycropping",
+    "version": "0.5.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "healthycrop",
+    "scheme": "healthycropping",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -15,14 +15,14 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.keylorpineda.healthycrop"
+      "bundleIdentifier": "com.keylorpineda.healthycropping"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1B3B2B"
       },
-      "package": "com.keylorpineda.healthycrop",
+      "package": "com.keylorpineda.healthycropping",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
@@ -35,7 +35,9 @@
         {
           "root": "./src/app"
         }
-      ]
+      ],
+      "./plugins/withTfliteModels",
+      "./plugins/withReleaseSigning"
     ],
     "experiments": {
       "typedRoutes": true

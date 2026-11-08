@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-title: "HealthyCrop: Offline-First Crop Disease Detection for Coffee, Cacao, and Banana"
-message: "If you use HealthyCrop in your research or project, please cite it using the metadata from this file."
+title: "HealthyCropping: Offline-First Crop Disease Detection for Coffee, Cacao, and Banana"
+message: "If you use HealthyCropping in your research or project, please cite it using the metadata from this file."
 type: software
 authors:
   - given-names: Keylor
@@ -10,7 +10,7 @@ authors:
 repository-code: "https://github.com/keylorpineda/healthycrop"
 url: "https://github.com/keylorpineda/healthycrop"
 abstract: >-
-  HealthyCrop is an open-source, offline-first Android application and machine
+  HealthyCropping is an open-source, offline-first Android application and machine
   learning pipeline that detects crop diseases in coffee, cacao, and banana from
   smartphone photos using on-device TensorFlow Lite models, provides grounded
   agronomic explanations via retrieval-augmented generation (RAG), and tracks

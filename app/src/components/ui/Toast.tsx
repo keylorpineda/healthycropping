@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -38,6 +39,7 @@ export function Toast({
   action,
   testID,
 }: ToastProps): React.JSX.Element | null {
+  const { t } = useTranslation();
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
 
@@ -163,11 +165,13 @@ export function Toast({
           onPress={onDismiss}
           testID={testID ? `${testID}-dismiss` : 'toast-dismiss'}
           accessibilityRole="button"
-          accessibilityLabel="Dismiss notification"
+          accessibilityLabel={t('common.close')}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={styles.dismissButton}
         >
           <Text
+            importantForAccessibility="no"
+            accessible={false}
             style={[theme.typography.bodyBold, { color: theme.colors.textTertiary, fontSize: 16 }]}
           >
             ✕

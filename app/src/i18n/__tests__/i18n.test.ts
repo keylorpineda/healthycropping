@@ -12,14 +12,14 @@ function getNestedKeys(obj: Record<string, unknown>, prefix = ''): string[] {
   });
 }
 
-describe('HealthyCrop i18n subsystem', () => {
+describe('HealthyCropping i18n subsystem', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('es');
   });
 
   it('defaults to Spanish (es) as primary market language', () => {
     expect(i18n.language).toBe('es');
-    expect(i18n.t('common.appName')).toBe('HealthyCrop');
+    expect(i18n.t('common.appName')).toBe('HealthyCropping');
     expect(i18n.t('nav.home')).toBe('Inicio');
     expect(i18n.t('crops.coffee')).toBe('Café');
   });

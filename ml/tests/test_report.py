@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from healthycrop_ml.report import (
+from healthycropping_ml.report import (
     compute_manifest_summary,
     format_coffee_report_markdown,
     render_class_sample_grid,

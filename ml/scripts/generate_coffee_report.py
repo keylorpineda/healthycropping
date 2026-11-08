@@ -8,8 +8,8 @@ import json
 import sys
 from pathlib import Path
 
-from healthycrop_ml.config import load_crop_config
-from healthycrop_ml.report import (
+from healthycropping_ml.config import load_crop_config
+from healthycropping_ml.report import (
     compute_manifest_summary,
     format_coffee_report_markdown,
     render_class_sample_grid,

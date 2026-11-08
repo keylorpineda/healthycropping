@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v*.*.*"
+  # Build and verify the APK without publishing a release (artifact only).
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,6 +14,9 @@ jobs:
   build-and-release:
     name: Build Android APK & Publish GitHub Release
     runs-on: ubuntu-latest
+    env:
+      # Upload keystore (base64 .jks); see docs/SETUP_SERVICES_ES.md. Empty -> debug key.
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,34 +46,91 @@ jobs:
       - name: Install JS dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run prebuild & assemble release APK (when Android native project is configured)
+      - name: Decide whether to assemble the APK
+        id: plan
+        run: |
+          # Tags from v1.0.0 on and manual runs build the APK; earlier tags only check prebuild.
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || [[ "${GITHUB_REF_NAME}" =~ ^v([1-9][0-9]*)\. ]]; then
+            echo "assemble=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "assemble=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Decode upload keystore
+        if: steps.plan.outputs.assemble == 'true' && env.ANDROID_KEYSTORE_BASE64 != ''
+        run: |
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/upload.jks"
+          echo "HEALTHYCROPPING_KEYSTORE_PATH=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+
+      - name: Run prebuild & assemble release APK
         working-directory: app
         env:
           CI: "1"
+          ASSEMBLE: ${{ steps.plan.outputs.assemble }}
+          # In this monorepo Expo would make the repo root Metro's server root, and the
+          # release bundle then resolves the app entry one level too high; use app/.
+          EXPO_NO_METRO_WORKSPACE_ROOT: "1"
+          HEALTHYCROPPING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          HEALTHYCROPPING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          HEALTHYCROPPING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -f "app.json" ] || [ -f "app.config.ts" ]; then
-            npx expo prebuild --platform android --no-install
-            if [ -d "android" ] && [ "${GITHUB_REF_NAME}" = "v1.0.0" ]; then
-              cd android
-              ./gradlew assembleRelease -x lint -x test --no-daemon
-              cp app/build/outputs/apk/release/*.apk "../../healthycrop-${GITHUB_REF_NAME}.apk"
-            else
-              echo "Intermediate pre-1.0 milestone (${GITHUB_REF_NAME}); native prebuild verified."
-            fi
-          else
-            echo "Expo app configuration not yet initialized; skipping APK assembly."
+          if [ "${ASSEMBLE}" = "true" ]; then
+            # Fail prebuild if any registered TFLite model is missing (app/plugins/withTfliteModels.js)
+            export HEALTHYCROPPING_REQUIRE_MODELS=1
           fi
+          # app/plugins/withReleaseSigning.js reads HEALTHYCROPPING_* at Gradle time.
+          pnpm exec expo prebuild --platform android --no-install
+          if [ "${ASSEMBLE}" != "true" ]; then
+            echo "Pre-1.0 tag (${GITHUB_REF_NAME}); native prebuild verified."
+            exit 0
+          fi
+          SUFFIX=""
+          if [ -z "${HEALTHYCROPPING_KEYSTORE_PATH:-}" ]; then
+            echo "::warning title=Debug-signed APK::ANDROID_KEYSTORE_BASE64 is not set; the APK is signed with the debug key and cannot be updated by a properly signed build later."
+            SUFFIX="-debug-signed"
+          fi
+          cd android
+          ./gradlew assembleRelease -x lint -x test --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk "../../healthycropping-${GITHUB_REF_NAME}${SUFFIX}.apk"
+
+      - name: Verify APK signature
+        if: steps.plan.outputs.assemble == 'true'
+        run: |
+          APKSIGNER="$(ls -d "${ANDROID_HOME}"/build-tools/*/ | sort -V | tail -1)apksigner"
+          for apk in healthycropping-*.apk; do
+            "$APKSIGNER" verify --verbose --print-certs "$apk" | tee apksigner.txt
+            {
+              echo "### APK signature: \`$apk\`"
+              echo '```'
+              grep -E "Verified using|Signer #1 certificate (DN|SHA-256)" apksigner.txt
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Remove decoded keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks"
+
+      - name: Upload APK artifact (manual runs)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: healthycropping-apk
+          path: healthycropping-*.apk
+          if-no-files-found: error
 
       - name: Extract release notes from CHANGELOG.md
+        if: startsWith(github.ref, 'refs/tags/')
         id: changelog
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           awk "/^## \[${VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md > release_notes.md
           if [ ! -s release_notes.md ]; then
-            echo "Release ${GITHUB_REF_NAME} of HealthyCrop." > release_notes.md
+            echo "Release ${GITHUB_REF_NAME} of HealthyCropping." > release_notes.md
           fi
 
       - name: Create GitHub Release with APK and TFLite models
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           body_path: release_notes.md
@@ -76,6 +138,6 @@ jobs:
           prerelease: false
           fail_on_unmatched_files: false
           files: |
-            healthycrop-*.apk
+            healthycropping-*.apk
             ml/models/**/*.tflite
             ml/models/**/registry.json

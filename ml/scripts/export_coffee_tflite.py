@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from healthycrop_ml.export_tflite import main
+from healthycropping_ml.export_tflite import main
 
 if __name__ == "__main__":
     raise SystemExit(main())

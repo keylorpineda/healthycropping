@@ -116,54 +116,65 @@ export function HistoryScreen({
         style={[styles.scanCard, { borderColor: theme.colors.borderSubtle }]}
         testID={`scan-item-card-${item.id}`}
       >
-        <Pressable
-          onPress={() => onOpenScanDetail?.(item.id)}
-          style={styles.cardPressable}
-          accessibilityRole="button"
-          accessibilityLabel={`${displayTitle}, ${t(`crops.${item.crop}`)}`}
-          testID={`scan-item-${item.id}`}
-        >
-          {/* Photo Thumbnail */}
-          <View style={styles.thumbnailContainer}>
-            <Image
-              source={{ uri: item.local_photo_uri }}
-              style={styles.thumbnail}
-              resizeMode="cover"
-            />
-          </View>
-
-          {/* Details Column */}
-          <View style={styles.cardDetails}>
-            <View style={styles.cardHeaderRow}>
-              <Badge label={t(`crops.${item.crop}`)} variant={item.crop} size="sm" />
-              <View style={{ width: 6 }} />
-              <Badge label={statusLabel} variant={item.severity} size="sm" />
+        {/* Open and delete are siblings: nested pressables break TalkBack focus. */}
+        <View style={styles.cardRow}>
+          <Pressable
+            onPress={() => onOpenScanDetail?.(item.id)}
+            style={styles.cardPressable}
+            accessibilityRole="button"
+            accessibilityLabel={t('history.scanLabel', {
+              disease: displayTitle,
+              crop: t(`crops.${item.crop}`),
+              status: statusLabel,
+              confidence: Math.round(item.confidence * 100),
+              date: formatDate(item.scanned_at),
+            })}
+            testID={`scan-item-${item.id}`}
+          >
+            {/* Photo Thumbnail */}
+            <View style={styles.thumbnailContainer}>
+              <Image
+                source={{ uri: item.local_photo_uri }}
+                style={styles.thumbnail}
+                resizeMode="cover"
+                accessible={false}
+                importantForAccessibility="no"
+              />
             </View>
 
-            <Text
-              style={[
-                theme.typography.headline,
-                { color: theme.colors.textPrimary, marginTop: 4, marginBottom: 4 },
-              ]}
-              numberOfLines={1}
-            >
-              {displayTitle}
-            </Text>
+            {/* Details Column */}
+            <View style={styles.cardDetails}>
+              <View style={styles.cardHeaderRow}>
+                <Badge label={t(`crops.${item.crop}`)} variant={item.crop} size="sm" />
+                <View style={{ width: 6 }} />
+                <Badge label={statusLabel} variant={item.severity} size="sm" />
+              </View>
 
-            <View style={styles.cardMetaRow}>
-              <Text style={[theme.typography.caption, { color: theme.colors.textTertiary }]}>
-                {formatDate(item.scanned_at)}
-              </Text>
               <Text
                 style={[
-                  theme.typography.caption,
-                  { color: theme.colors.primary, fontWeight: '700', marginLeft: 8 },
+                  theme.typography.headline,
+                  { color: theme.colors.textPrimary, marginTop: 4, marginBottom: 4 },
                 ]}
+                numberOfLines={2}
               >
-                {`${Math.round(item.confidence * 100)}%`}
+                {displayTitle}
               </Text>
+
+              <View style={styles.cardMetaRow}>
+                <Text style={[theme.typography.caption, { color: theme.colors.textTertiary }]}>
+                  {formatDate(item.scanned_at)}
+                </Text>
+                <Text
+                  style={[
+                    theme.typography.caption,
+                    { color: theme.colors.primary, fontWeight: '700', marginLeft: 8 },
+                  ]}
+                >
+                  {`${Math.round(item.confidence * 100)}%`}
+                </Text>
+              </View>
             </View>
-          </View>
+          </Pressable>
 
           {/* Delete Action Button */}
           <Pressable
@@ -173,9 +184,15 @@ export function HistoryScreen({
             accessibilityLabel={`${t('common.delete')} ${displayTitle}`}
             testID={`delete-scan-btn-${item.id}`}
           >
-            <Text style={{ fontSize: 18, color: theme.colors.textTertiary }}>🗑️</Text>
+            <Text
+              importantForAccessibility="no"
+              accessible={false}
+              style={{ fontSize: 18, color: theme.colors.textTertiary }}
+            >
+              🗑️
+            </Text>
           </Pressable>
-        </Pressable>
+        </View>
       </Card>
     );
   };
@@ -209,7 +226,13 @@ export function HistoryScreen({
             style={styles.backButton}
             testID="history-back-btn"
           >
-            <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>←</Text>
+            <Text
+              importantForAccessibility="no"
+              accessible={false}
+              style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+            >
+              ←
+            </Text>
           </Pressable>
         )}
         <View style={{ flex: 1 }}>
@@ -378,9 +401,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 12,
   },
-  cardPressable: {
+  cardRow: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  cardPressable: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 48,
   },
   thumbnailContainer: {
     width: 64,
@@ -406,8 +435,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteButton: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: 48,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,

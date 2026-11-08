@@ -1,12 +1,12 @@
-# AGENTS.md — HealthyCrop Guide
+# AGENTS.md — HealthyCropping Guide
 
 ## Summary
-**HealthyCrop** (`com.keylorpineda.healthycrop`) is an open-source, non-commercial, offline-first Android app that detects crop diseases (coffee leaf, cacao pod, banana leaf) from phone photos via on-device TFLite models, generates grounded explanations with Gemini RAG, and tracks farms/plots. First market: Costa Rica. Distributed only as an APK on GitHub Releases. Supports decisions; does not replace an agronomist.
+**HealthyCropping** (`com.keylorpineda.healthycropping`) is an open-source, non-commercial, offline-first Android app that detects crop diseases (coffee leaf, cacao pod, banana leaf) from phone photos via on-device TFLite models, generates grounded explanations with Gemini RAG, and tracks farms/plots. First market: Costa Rica. Distributed only as an APK on GitHub Releases. Supports decisions; does not replace an agronomist.
 Owner & author: **Keylor Pineda** (`@keylorpineda`).
 
 ## Layout
 ```text
-healthycrop/
+healthycropping/
 ├── AGENTS.md      # Rules & workflow (< 4,000 chars)
 ├── .github/       # Community files, templates, CI/release workflows
 ├── ml/            # Python 3.12 (uv): data, training, eval, TFLite export
@@ -22,7 +22,7 @@ healthycrop/
 
 ## Conventions
 - **Commits**: Conventional Commits (`<type>(<scope>): <imperative summary, lowercase, no period>`).
-- **Branches**: `develop` is default (protected, PR + green CI). Work branches `<type>/<id>-<slug>` cut from `develop`, rebase-merged (`--rebase`) into `develop`. `main` holds completed releases only (`chore(release): vX.Y.Z` PR from `develop`, `--merge`, tagged `vX.Y.Z`).
+- **Branches**: `develop` is default (protected, PR + green CI + 1 approval). Work branches `<type>/<id>-<slug>` cut from `develop`, rebase-merged (`--rebase`) into `develop`. `main` holds completed releases only (`chore(release): vX.Y.Z` PR from `develop`, `--squash`, tagged `vX.Y.Z`).
 - **Python**: Python 3.12, strict `mypy`, `ruff`, `pytest`.
 - **App**: TypeScript `strict`, ESLint, Prettier, Jest + RNTL. Tokens only in `app/src/theme/`; UI primitives only in `app/src/components/ui/`. UI i18n: `es` default, `en` secondary.
 
@@ -34,7 +34,7 @@ healthycrop/
 5. **Identical Preprocessing**: Python training/export and `app/src/ml/` must produce the exact same 224x224 RGB normalized tensor (verified by a shared fixture test).
 6. **Firestore Boundary**: App sends Firebase ID tokens to `api/` and **never** touches Firestore directly; Firestore rules deny all client access.
 7. **No Secrets/Data/Weights in Git**: Never read, print, or commit `.env`, `service-account*.json`, `google-services.json`, `kaggle.json`, keystores, `ml/data/`, or `*.tflite`/`*.keras`/`*.h5`.
-8. **Issue & Branch Flow**: Every task has an issue (`[Phase N] Imperative summary`, 1 `type:`, >=1 `area:`, 1 `priority:`, Milestone `vX.Y.Z`, Project board). Move to *In progress* -> branch from `develop` -> PR to `develop` (`Closes #N`, Milestone) -> green CI -> rebase-merge -> *Done*.
+8. **Issue & Branch Flow**: Every task has an issue (`[Phase N] Imperative summary`, 1 `type:`, >=1 `area:`, 1 `priority:`, Milestone `vX.Y.Z`, Project board). Move to *In progress* -> branch from `develop` -> PR to `develop` (`Closes #N`) -> peer review approval (`@keylorpineda` / `@JAbarca74`) -> green CI -> rebase-merge -> *Done*.
 
 ## Workflow
 1. One phase at a time, in order (`docs/PLAN.md`).

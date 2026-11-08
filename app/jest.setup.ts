@@ -12,6 +12,31 @@ try {
   // Ignore if reanimated is not loaded in node context
 }
 
+// Mock AsyncStorage (used by Firebase Auth session persistence)
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+
+// Mock the Firebase JS SDK (ESM-only); screens never reach Firebase in tests.
+jest.mock('firebase/app', () => ({
+  getApps: jest.fn(() => []),
+  getApp: jest.fn(),
+  initializeApp: jest.fn(() => ({})),
+}));
+jest.mock('firebase/auth', () => ({
+  initializeAuth: jest.fn(() => ({ currentUser: null })),
+  getReactNativePersistence: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+  signInWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  onAuthStateChanged: jest.fn(() => jest.fn()),
+}));
+
+// Mock NetInfo (native connectivity module)
+jest.mock('@react-native-community/netinfo', () =>
+  require('@react-native-community/netinfo/jest/netinfo-mock.js'),
+);
+
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),
@@ -84,7 +109,9 @@ jest.mock('expo-image-picker', () => ({
     canceled: false,
     assets: [{ uri: 'file:///mock/gallery_photo.jpg', width: 800, height: 600 }],
   }),
-  requestMediaLibraryPermissionsAsync: jest.fn().mockResolvedValue({ status: 'granted', granted: true }),
+  requestMediaLibraryPermissionsAsync: jest
+    .fn()
+    .mockResolvedValue({ status: 'granted', granted: true }),
   MediaTypeOptions: {
     Images: 'Images',
   },
@@ -118,6 +145,13 @@ jest.mock('expo-crypto', () => ({
     const pad = String(mockUuidCounter++).padStart(12, '0');
     return `00000000-0000-4000-8000-${pad}`;
   }),
+}));
+
+// Mock expo-file-system
+jest.mock('expo-file-system', () => ({
+  documentDirectory: 'file:///mock/documents/',
+  makeDirectoryAsync: jest.fn().mockResolvedValue(undefined),
+  copyAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
 // In-memory SQLite mock for expo-sqlite
@@ -204,7 +238,20 @@ class MockSQLiteDatabase {
 
       for (const row of rows) {
         let match = false;
-        if (wherePart.includes('id = ?')) {
+        const conditions = wherePart.split(/\s+AND\s+/i).map((c) => c.trim());
+        const simple = /^(\w+) = (\?|'[^']*')$/;
+        if (
+          (conditions.length > 1 || /'/.test(wherePart)) &&
+          conditions.every((c) => simple.test(c))
+        ) {
+          // e.g. `id = ? AND updated_at = ?` or `sync_status = 'failed'`
+          let paramIdx = 0;
+          match = conditions.every((c) => {
+            const [, col, value] = simple.exec(c)!;
+            const expected = value === '?' ? whereVals[paramIdx++] : value!.slice(1, -1);
+            return row[col!] === expected;
+          });
+        } else if (wherePart.includes('id = ?')) {
           match = row.id === whereVals[0];
         } else if (wherePart.includes('id=')) {
           const idVal = wherePart.split('id=')[1]!.trim().replace(/['"]/g, '');
@@ -259,7 +306,10 @@ class MockSQLiteDatabase {
     const orderIdx = clean.search(/\bORDER BY\b/i);
 
     const tableEnd = whereIdx !== -1 ? whereIdx : orderIdx !== -1 ? orderIdx : clean.length;
-    const table = clean.slice(fromIdx + 5, tableEnd).trim().split(' ')[0]!;
+    const table = clean
+      .slice(fromIdx + 5, tableEnd)
+      .trim()
+      .split(' ')[0]!;
 
     let wherePart = '';
     if (whereIdx !== -1) {
@@ -344,4 +394,3 @@ jest.mock('expo-sqlite', () => ({
   openDatabaseAsync: jest.fn().mockResolvedValue(mockDb),
   __mockDb: mockDb,
 }));
-

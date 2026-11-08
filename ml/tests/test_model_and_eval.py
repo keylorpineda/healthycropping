@@ -7,12 +7,12 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from healthycrop_ml.evaluate import (
+from healthycropping_ml.evaluate import (
     compute_balanced_class_weights,
     evaluate_predictions,
     render_confusion_matrix_png,
 )
-from healthycrop_ml.model import build_mobilenetv3_classifier
+from healthycropping_ml.model import build_mobilenetv3_classifier
 
 
 def test_compute_balanced_class_weights() -> None:
@@ -76,3 +76,26 @@ def test_build_mobilenetv3_classifier_frozen_and_finetune() -> None:
     )
     probs_ft = model_ft.predict(dummy_x, verbose=0)
     assert probs_ft.shape == (2, 6)
+
+
+def test_breakdown_by_group_reports_accuracy_and_recall_per_source() -> None:
+    import numpy as np
+
+    from healthycropping_ml.evaluate import breakdown_by_group
+
+    y_true = np.array([0, 1, 2, 0, 2, 2])
+    y_pred = np.array([0, 1, 2, 1, 2, 0])
+    groups = ["lsd", "lsd", "nm", "nm", "nm", "nm"]
+    result = breakdown_by_group(y_true, y_pred, groups, ("healthy", "sigatoka", "fusarium"))
+
+    assert result["lsd"] == {
+        "n": 2,
+        "accuracy": 1.0,
+        "per_class": {
+            "healthy": {"correct": 1, "total": 1},
+            "sigatoka": {"correct": 1, "total": 1},
+        },
+    }
+    assert result["nm"]["n"] == 4
+    assert result["nm"]["accuracy"] == 0.5
+    assert result["nm"]["per_class"]["fusarium"] == {"correct": 2, "total": 3}

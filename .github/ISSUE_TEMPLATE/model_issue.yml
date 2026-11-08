@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this template to report an inaccurate or unexpected disease classification. Remember that **HealthyCrop** supports decisions and does not replace a certified agronomist.
+        Use this template to report an inaccurate or unexpected disease classification. Remember that **HealthyCropping** supports decisions and does not replace a certified agronomist.
 
   - type: dropdown
     id: crop

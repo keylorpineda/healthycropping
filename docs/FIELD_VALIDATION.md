@@ -1,6 +1,6 @@
-# HealthyCrop — Costa Rican Field Validation Protocol & Results
+# HealthyCropping — Costa Rican Field Validation Protocol & Results
 
-This document specifies the real-world validation procedure and records empirical results for **HealthyCrop** (`com.keylorpineda.healthycrop`) using smartphone photos of Costa Rican coffee, cacao, and banana crops (completed in Phase 8 prior to the `v1.0.0` release).
+This document specifies the real-world validation procedure and records empirical results for **HealthyCropping** (`com.keylorpineda.healthycroppingping`) using smartphone photos of Costa Rican coffee, cacao, and banana crops (completed in Phase 8 prior to the `v1.0.0` release).
 
 ---
 
@@ -16,7 +16,7 @@ Public benchmark datasets (RoCoLe, BRACOL, CocoaMoniliaDataSet, UNAB, NM-AIST, B
 ## 2. Capture & Evaluation Procedure
 
 1. **Test Device & Build**:
-   - Physical Android smartphone running the standalone/development build of `com.keylorpineda.healthycrop` in **Airplane Mode** (verifying 100% offline execution).
+   - Physical Android smartphone running the standalone/development build of `com.keylorpineda.healthycroppingping` in **Airplane Mode** (verifying 100% offline execution).
 2. **Sample Selection**:
    - Collect a validation set of real Costa Rican photos across the three target crops (**Coffee**, **Cacao**, **Banana**) covering healthy organs, primary disease classes, and challenging edge cases (wet leaves, harsh sunlight, off-angle framing).
    - Ensure no validation photo was present in any training or benchmark dataset.

@@ -19,7 +19,7 @@ Instead, please report them privately using [**GitHub Security Advisories**](htt
 2. Click **Report a vulnerability** to open a private advisory draft.
 3. Provide a clear description of the vulnerability, steps to reproduce, affected component (`app`, `api`, or `ml`), and potential impact.
 
-If you are unable to use GitHub Security Advisories, contact the maintainer directly at **keylorpineda729@gmail.com** with the subject `[SECURITY] HealthyCrop`.
+If you are unable to use GitHub Security Advisories, contact the maintainer directly at **keylorpineda729@gmail.com** with the subject `[SECURITY] HealthyCropping`.
 
 ## Response Timeline
 

@@ -1,5 +1,5 @@
 name: Feature / Task Request
-description: Propose a feature or define an implementation task following the HealthyCrop phase structure.
+description: Propose a feature or define an implementation task following the HealthyCropping phase structure.
 title: "[Phase N] "
 labels: ["type: feature"]
 body:

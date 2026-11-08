@@ -1,6 +1,6 @@
-# HealthyCrop — Datasets, Licensing & Data Governance
+# HealthyCropping — Datasets, Licensing & Data Governance
 
-This document tracks all external datasets used to train and evaluate the **HealthyCrop** models (`ml/`), their licensing terms, academic citations, taxonomy mappings, and leakage-prevention rules.
+This document tracks all external datasets used to train and evaluate the **HealthyCropping** models (`ml/`), their licensing terms, academic citations, taxonomy mappings, and leakage-prevention rules.
 
 > [!IMPORTANT]
 > **License Gate Policy**: Before downloading or processing any dataset in Phases 1 and 5, the download script and engineer must inspect the upstream license file (`license.txt` or repository metadata). If any dataset license is missing, ambiguous, or incompatible with open-source non-commercial research/educational model training, work stops immediately to consult the project owner. Raw and processed images (`ml/data/`) are never committed to Git or redistributed in GitHub Releases.
@@ -13,10 +13,10 @@ This document tracks all external datasets used to train and evaluate the **Heal
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **RoCoLe** | Coffee (*Coffea canephora*) | Leaf (field photos, upper/underside) | Mendeley Data, DOI: [`10.17632/c5yvn32dzg.2`](https://doi.org/10.17632/c5yvn32dzg.2) | Healthy, Rust (levels 1–4), Red spider mite (1,560 `.jpg` images + annotations) | **CC BY 4.0** (Verified via Mendeley API, [`creativecommons.org/licenses/by/4.0`](http://creativecommons.org/licenses/by/4.0)) |
 | **BRACOL** | Coffee (*Coffea arabica*) | Whole leaf only (exclude cropped symptom patches) | Mendeley Data: `yy2k5y8mxg` ([`10.17632/yy2k5y8mxg.1`](https://doi.org/10.17632/yy2k5y8mxg.1)) | Healthy, Leaf miner, Rust, Brown leaf spot, Cercospora + severity labels (`BRACOL_coffee_leaf_ images_datasets.zip`, SHA-256 `25a2fc97...fdfc1f`) | **CC BY 4.0** (Verified via Mendeley API, [`creativecommons.org/licenses/by/4.0`](http://creativecommons.org/licenses/by/4.0)) |
-| **CocoaMoniliaDataSet** | Cacao (*Theobroma cacao*) | Pod (fruit) | Zenodo, DOI: [`10.5281/zenodo.17156051`](https://doi.org/10.5281/zenodo.17156051) | Healthy (`h0`), Monilia stages (`m1`, `m2`, `m3`) | CC BY 4.0 *(verify in Phase 5)* |
-| **UNAB Cocoa Diseases** | Cacao (*Theobroma cacao*) | Pod (cropped from YOLOv4 bounding boxes) | Kaggle: `serranosebas/enfermedades-cacao-yolov4` | Healthy, Monilia, Black pod (*Phytophthora*) | Inspect on Kaggle in Phase 5 before use |
-| **Banana Leaves Imagery** | Banana (*Musa* spp.) | Leaf | NM-AIST DSpace [`20.500.12479/3003`](https://dspace.nm-aist.ac.tz/handle/20.500.12479/3003); DOI: [`10.1038/s41597-025-04456-4`](https://doi.org/10.1038/s41597-025-04456-4) | Healthy, Black Sigatoka, Fusarium wilt | Read `license.txt` in Phase 5 before use |
-| **BananaLSD** | Banana (*Musa* spp.) | Leaf | Mendeley Data: `9tb7k297ff` (`10.17632/9tb7k297ff.1`) | Healthy, Black Sigatoka (complement classes mapping to our taxonomy only) | CC BY 4.0 *(verify in Phase 5)* |
+| **CocoaMoniliaDataSet** | Cacao (*Theobroma cacao*) | Pod (fruit) | Zenodo, DOI: [`10.5281/zenodo.17156051`](https://doi.org/10.5281/zenodo.17156051) | Healthy (`h0`), Monilia stages (`m1`, `m2`, `m3`) | **CC BY 4.0** (Verified via Zenodo API, Alvarado Molina et al., [`creativecommons.org/licenses/by/4.0`](http://creativecommons.org/licenses/by/4.0)) |
+| **UNAB Cocoa Diseases** | Cacao (*Theobroma cacao*) | Pod (cropped from YOLOv4 bounding boxes) | Kaggle: `serranosebas/enfermedades-cacao-yolov4` | Healthy, Monilia, Black pod (*Phytophthora*) | **ODbL v1.0 / © Original Authors** (Verified via Kaggle metadata, Heredia Gómez & Serrano, UNAB, [`opendatacommons.org/licenses/odbl/1.0`](https://opendatacommons.org/licenses/odbl/1.0/)) |
+| **Banana Leaves Imagery** (*Banana Imagery Dataset - Tanzania*) | Banana (*Musa* spp.) | Leaf (field photos) | Zenodo, DOI: [`10.5281/zenodo.7670326`](https://doi.org/10.5281/zenodo.7670326) (also NM-AIST DSpace [`20.500.12479/3003`](https://dspace.nm-aist.ac.tz/handle/20.500.12479/3003); article DOI [`10.1038/s41597-025-04456-4`](https://doi.org/10.1038/s41597-025-04456-4)) | Healthy (`HEALTHY-1.zip`), Black Sigatoka (`BLACK SIGATOKA-2.zip`), Fusarium wilt (`FUSARIUM WILT-1.zip`); first 300 / 150 / 300 images (archive order) extracted via HTTP Range | **CC BY 4.0** (Verified via Zenodo API `license.id = cc-by-4.0`, Mduma & Elinisa, [`creativecommons.org/licenses/by/4.0`](http://creativecommons.org/licenses/by/4.0)) |
+| **BananaLSD** | Banana (*Musa* spp.) | Leaf | Mendeley Data: `9tb7k297ff` ([`10.17632/9tb7k297ff.1`](https://doi.org/10.17632/9tb7k297ff.1)) | `OriginalSet` only: `healthy` -> `healthy`, `sigatoka` -> `black_sigatoka` (archive MD5 `4d55d992...682c36`) | **CC BY 4.0** (Verified via Mendeley API, [`creativecommons.org/licenses/by/4.0`](http://creativecommons.org/licenses/by/4.0)) |
 
 ---
 
@@ -33,7 +33,10 @@ This document tracks all external datasets used to train and evaluate the **Heal
 
 ### 2.3 Banana (`ml/configs/banana.yaml`)
 - **Classes**: `healthy`, `black_sigatoka`, `fusarium_wilt`.
-- **BananaLSD Filtering**: Only images belonging to classes that map cleanly to `healthy`, `black_sigatoka`, or `fusarium_wilt` are included; unrelated classes (e.g., pest-only or unmapped foliar conditions) are excluded and documented in `docs/data_reports/banana.md`.
+- **BananaLSD Filtering**: Only `OriginalSet/` is ingested. `AugmentedSet/` holds synthetic augmentations of the same photos and would leak across splits, so it is excluded entirely. `healthy` maps to `healthy` and `sigatoka` to `black_sigatoka`; `cordana` and `pestalotiopsis` are outside the taxonomy and counted as `skipped_unmapped` in `docs/data_reports/banana.md`.
+- **NM-AIST Range Extraction**: The Zenodo record ships nine 2-7 GB ZIP archives. `ml/scripts/download_banana_nmaist.py` reads each archive's Central Directory with HTTP `Range` requests and extracts the first `max_images` entries (archive order) in contiguous, CRC-32-verified batches, throttled for Zenodo's rate limit.
+- **NM-AIST Grouping**: No plant IDs are published; photos are numbered per capture session, so blocks of 10 consecutive numbers share one `group_id` to keep near-identical shots of the same plant in a single split.
+- **Source/Class Confounding**: `fusarium_wilt` only exists in NM-AIST, so NM-AIST `healthy` and `black_sigatoka` images are also ingested to keep the model from learning the source instead of the disease.
 
 ---
 
@@ -58,7 +61,21 @@ Every `ml/scripts/prepare_<crop>.py` script enforces the following steps:
 
 - **RoCoLe**: Parraga-Alava, J., Cusme, K., Loor, A., & Santander, E. (2019). *RoCoLe: A robusta coffee leaf images dataset for evaluation of machine learning based methods in plant diseases recognition*. Mendeley Data, V2. `https://doi.org/10.17632/c5yvn32dzg.2`
 - **BRACOL**: Krohling, R. A., Esgario, J. G. M., & Ventura, J. A. (2019). *BRACOL - A Brazilian Arabica Coffee Leaf images dataset to identification and quantification of coffee diseases and pests*. Mendeley Data, V1. `https://doi.org/10.17632/yy2k5y8mxg.1`
-- **CocoaMoniliaDataSet**: Zenodo record `10.5281/zenodo.17156051` (CC BY 4.0). *Full citation metadata to be populated upon Phase 5 script inspection.*
-- **UNAB Cocoa Diseases**: Serrano, S. *Enfermedades Cacao YOLOv4*. Kaggle Dataset (`serranosebas/enfermedades-cacao-yolov4`). *Full citation and license details to be verified in Phase 5.*
-- **Banana Leaves Imagery**: NM-AIST DSpace (`20.500.12479/3003`) / *Scientific Data* (2025), `https://doi.org/10.1038/s41597-025-04456-4`. *Full citation and `license.txt` terms to be verified in Phase 5.*
-- **BananaLSD**: Mendeley Data (`9tb7k297ff`), `https://doi.org/10.17632/9tb7k297ff.1`. *Full citation and license details to be verified in Phase 5.*
+- **CocoaMoniliaDataSet**: Alvarado Molina, J. F., Restrepo-Arias, J. F., Velásquez, D., Branch Bedoya, J. W., & Maiza, M. (2025). *CocoaMoniliaDataSet*. Zenodo. `https://doi.org/10.5281/zenodo.17156051` / `https://doi.org/10.5281/zenodo.17716661` (CC BY 4.0).
+- **UNAB Cocoa Diseases**: Heredia Gómez, J. F., & Serrano, S. (2020). *Cocoa Diseases (YOLOv4)* / *Enfermedades Cacao YOLOv4*. Universidad Autónoma de Bucaramanga (UNAB). Kaggle Dataset `serranosebas/enfermedades-cacao-yolov4` (ODbL v1.0 / © Original Authors).
+- **Banana Leaves Imagery**: Mduma, N., & Elinisa, C. (2023). *Banana Imagery Dataset - Tanzania*. Zenodo. `https://doi.org/10.5281/zenodo.7670326` (CC BY 4.0). Data descriptor: *Scientific Data* (2025), `https://doi.org/10.1038/s41597-025-04456-4`.
+- **BananaLSD**: Arman, S. E., Bhuiyan, M. A. B., Abdullah, H. M., Islam, S., Chowdhury, T. T., & Hossain, M. A. (2023). *Banana Leaf Spot Diseases (BananaLSD) Dataset for Classification of Banana Leaf Diseases Using Machine Learning*. Mendeley Data, V1. `https://doi.org/10.17632/9tb7k297ff.1` (CC BY 4.0).
+
+## 5. Agronomic Sources for RAG Explanations
+
+Official technical documents used to ground Gemini explanations (Phase 7). They are listed in `api/rag_sources.toml` with a pinned SHA-256, downloaded at build time by `api/scripts/fetch_agronomic_docs.py` into the git-ignored `api/.cache/rag/`, and never committed or redistributed. Explanations cite the source title, publisher, and section.
+
+| Source ID | Crop | Document | Publisher | URL | Indexed sections → model classes |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `icafe-guia-tecnica-2020` | Coffee | *Guía técnica para el cultivo de café* (2020, 94 pp.) | Instituto del Café de Costa Rica (ICAFE), CICAFE | [icafe.cr](https://www.icafe.cr/wp-content/uploads/cicafe/documentos/GUIA-TECNICA.pdf) | Minador de la hoja and Arañita roja → `leaf_miner`, `red_spider_mite`; Roya del Café → `leaf_rust`; Chasparria (*Cercospora coffeicola*) → `cercospora`; Derrite (*Phoma* spp.) → `brown_leaf_spot` |
+| `catie-cacao-enfermedades-2021` | Cacao | *Guía para el manejo integrado de enfermedades en el cultivo de cacao*, Manual técnico no. 146 (Leandro-Muñoz, Cerda et al., 2021) | Centro Agronómico Tropical de Investigación y Enseñanza (CATIE) | [repositorio.catie.ac.cr](https://repositorio.catie.ac.cr/handle/11554/10918) | Moniliasis → `monilia`; Mazorca negra → `black_pod`; Manejo integrado de plagas → both |
+| `corbana-sigatoka-negra-2011` | Banana | *Manejo de la Sigatoka negra en el cultivo del banano*, Hoja divulgativa n.º 2-2011 (Martínez, Villalta, Soto, Murillo, Guzmán) | Corporación Bananera Nacional (CORBANA) | [corbana.co.cr](https://www.corbana.co.cr/wp-content/uploads/HD-n.%C2%B0-2-2011-Manejo-de-la-Sigatoka-negra.pdf) | Whole bulletin → `black_sigatoka` |
+| `fao-fusarium-tr4-manual-2014` | Banana | *Technical Manual: Prevention and diagnostic of Fusarium Wilt (Panama disease) of banana caused by Foc TR4* (Pérez-Vicente, Dita, Martínez-de la Parte, 2014), in English | Food and Agriculture Organization of the United Nations (FAO) | [fao.org](https://www.fao.org/fileadmin/templates/banana/documents/Docs_Resources_2015/TR4/13ManualFusarium.pdf) | Symptoms, Dispersal, Phytosanitary risk, Disease management → `fusarium_wilt` |
+
+No Spanish Fusarium TR4 guide from CORBANA, SFE or MAG was available as a downloadable document (Costa Rica is free of TR4; CORBANA's page only links the decree), so the FAO manual is used and its chunks are tagged `language = "en"`.
+

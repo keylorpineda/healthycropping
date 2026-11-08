@@ -8,13 +8,13 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from healthycrop_ml.gradcam import (
+from healthycropping_ml.gradcam import (
     apply_heatmap_colormap,
     compute_gradcam_heatmap,
     overlay_gradcam_on_image,
     render_crop_gradcam_grid,
 )
-from healthycrop_ml.model import build_mobilenetv3_classifier
+from healthycropping_ml.model import build_mobilenetv3_classifier
 
 
 def test_compute_gradcam_and_render_grid(tmp_path: Path) -> None:

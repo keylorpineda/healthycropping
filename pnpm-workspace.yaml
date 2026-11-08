@@ -1,2 +1,10 @@
 packages:
   - "app"
+# Expo/React Native (Metro, Gradle autolinking) need a flat node_modules. pnpm 11
+# reads this from here; `node-linker` in .npmrc is ignored.
+nodeLinker: hoisted
+# Postinstall scripts of these transitive Firebase JS SDK dependencies are not
+# needed by the app bundle (version notices and optional autoinit defaults).
+allowBuilds:
+  '@firebase/util': false
+  protobufjs: false

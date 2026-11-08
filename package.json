@@ -1,6 +1,6 @@
 {
-  "name": "healthycrop",
-  "version": "0.2.0",
+  "name": "healthycropping",
+  "version": "0.5.0",
   "private": true,
   "description": "Offline-first Android app that detects coffee, cacao and banana diseases from a phone photo.",
   "author": "Keylor Pineda <keylorpineda729@gmail.com> (https://github.com/keylorpineda)",
@@ -19,10 +19,10 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "lint": "pnpm --filter @healthycrop/app lint",
-    "format:check": "pnpm --filter @healthycrop/app format:check",
-    "format": "pnpm --filter @healthycrop/app format",
-    "typecheck": "pnpm --filter @healthycrop/app typecheck",
-    "test": "pnpm --filter @healthycrop/app test"
+    "lint": "pnpm --filter @healthycropping/app lint",
+    "format:check": "pnpm --filter @healthycropping/app format:check",
+    "format": "pnpm --filter @healthycropping/app format",
+    "typecheck": "pnpm --filter @healthycropping/app typecheck",
+    "test": "pnpm --filter @healthycropping/app test"
   }
 }

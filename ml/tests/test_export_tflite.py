@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from healthycrop_ml.export_tflite import (
+from healthycropping_ml.export_tflite import (
     REQUIRED_REGISTRY_KEYS,
     ThresholdCalibration,
     accuracy_from_probs,
@@ -22,7 +22,7 @@ from healthycrop_ml.export_tflite import (
     run_tflite_inference,
     validate_registry,
 )
-from healthycrop_ml.model import build_mobilenetv3_classifier
+from healthycropping_ml.model import build_mobilenetv3_classifier
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 COFFEE_REGISTRY = REPO_ROOT / "ml" / "models" / "coffee" / "registry.json"
@@ -61,6 +61,16 @@ def test_calibrate_threshold_picks_lowest_threshold_meeting_target() -> None:
     assert cal.threshold == pytest.approx(0.61)
     assert cal.accepted_precision == pytest.approx(1.0)
     assert cal.coverage == pytest.approx(0.4)
+
+
+def test_calibrate_threshold_respects_floor_when_precision_saturates() -> None:
+    probs = np.array([[0.95, 0.05], [0.40, 0.60], [0.55, 0.45], [0.10, 0.90]], dtype=np.float32)
+    y_true = np.array([0, 1, 0, 1])
+    # Every prediction is correct, so without a floor the search stops at its first step.
+    assert calibrate_confidence_threshold(probs, y_true).threshold == pytest.approx(0.30)
+    cal = calibrate_confidence_threshold(probs, y_true, min_threshold=0.80)
+    assert cal.threshold == pytest.approx(0.80)
+    assert cal.coverage == pytest.approx(0.5)
 
 
 def test_calibrate_threshold_falls_back_when_target_unreachable() -> None:

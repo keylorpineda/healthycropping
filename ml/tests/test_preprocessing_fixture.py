@@ -8,12 +8,12 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from healthycrop_ml.export_tflite import (
+from healthycropping_ml.export_tflite import (
     build_preprocessing_fixture,
     decode_fixture_rgb,
     sha256_bytes,
 )
-from healthycrop_ml.preprocess import image_to_normalized_tensor
+from healthycropping_ml.preprocess import image_to_normalized_tensor
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURE_PATH = REPO_ROOT / "ml" / "fixtures" / "preprocessing_fixture_224.json"

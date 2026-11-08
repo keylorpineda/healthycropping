@@ -6,13 +6,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for reporting a bug in **HealthyCrop**. Please fill out the details below so we can reproduce and fix the root cause.
+        Thank you for reporting a bug in **HealthyCropping**. Please fill out the details below so we can reproduce and fix the root cause.
 
   - type: dropdown
     id: area
     attributes:
       label: Component / Area
-      description: Which part of HealthyCrop is affected?
+      description: Which part of HealthyCropping is affected?
       options:
         - app (Android Expo React Native client)
         - api (FastAPI backend & sync)
@@ -55,7 +55,7 @@ body:
     attributes:
       label: Environment (Device / Android Version / App Version / OS)
       description: Details about where the bug occurred.
-      placeholder: "e.g., Samsung Galaxy A54, Android 14, HealthyCrop v1.0.0 (offline mode)"
+      placeholder: "e.g., Samsung Galaxy A54, Android 14, HealthyCropping v1.0.0 (offline mode)"
     validations:
       required: true
 

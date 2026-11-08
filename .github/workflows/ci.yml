@@ -31,16 +31,16 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        run: pnpm --filter @healthycrop/app lint
+        run: pnpm --filter @healthycropping/app lint
 
       - name: Check Prettier formatting
-        run: pnpm --filter @healthycrop/app format:check
+        run: pnpm --filter @healthycropping/app format:check
 
       - name: Run TypeScript typecheck
-        run: pnpm --filter @healthycrop/app typecheck
+        run: pnpm --filter @healthycropping/app typecheck
 
       - name: Run Jest unit tests
-        run: pnpm --filter @healthycrop/app test --ci
+        run: pnpm --filter @healthycropping/app test --ci
 
   api:
     name: API (Ruff, Mypy & Pytest)

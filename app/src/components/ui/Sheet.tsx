@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -26,6 +27,7 @@ export function Sheet({
   testID,
   accessibilityLabel,
 }: SheetProps): React.JSX.Element {
+  const { t } = useTranslation();
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
 
@@ -86,7 +88,7 @@ export function Sheet({
             onPress={onClose}
             testID={testID ? `${testID}-backdrop` : 'sheet-backdrop'}
             accessibilityRole="button"
-            accessibilityLabel="Dismiss sheet"
+            accessibilityLabel={t('common.dismiss')}
           />
         </Animated.View>
 
@@ -124,11 +126,13 @@ export function Sheet({
               onPress={onClose}
               testID={testID ? `${testID}-close` : 'sheet-close-button'}
               accessibilityRole="button"
-              accessibilityLabel="Close"
+              accessibilityLabel={t('common.close')}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               style={styles.closeButton}
             >
               <Text
+                importantForAccessibility="no"
+                accessible={false}
                 style={[
                   theme.typography.headline,
                   { color: theme.colors.textSecondary, fontSize: 18 },

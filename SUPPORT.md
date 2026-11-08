@@ -2,7 +2,7 @@
 
 ## Getting Help
 
-If you need help installing, using, or building **HealthyCrop**, please check these resources first:
+If you need help installing, using, or building **HealthyCropping**, please check these resources first:
 
 1. **Documentation**:
    - [`README.md`](README.md) — Overview, requirements, and quickstart.
@@ -18,7 +18,7 @@ If you need help installing, using, or building **HealthyCrop**, please check th
 
 ## Agronomic Disclaimer
 
-**HealthyCrop is an open-source, non-commercial decision-support tool and does not replace a certified agronomist or phytosanitary laboratory.** Disease predictions depend on image quality, lighting, plant part framing, and model coverage. Before applying chemical treatments, pruning, or removing plants, consult a qualified agricultural professional or local extension office (such as ICAFE or MAG in Costa Rica).
+**HealthyCropping is an open-source, non-commercial decision-support tool and does not replace a certified agronomist or phytosanitary laboratory.** Disease predictions depend on image quality, lighting, plant part framing, and model coverage. Before applying chemical treatments, pruning, or removing plants, consult a qualified agricultural professional or local extension office (such as ICAFE or MAG in Costa Rica).
 
 ## Maintainer Contact
 

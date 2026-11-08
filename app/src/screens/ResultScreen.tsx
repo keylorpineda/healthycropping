@@ -5,13 +5,22 @@ import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ExplanationCard } from '@/components/explanations';
 import { Badge, Button, Card, ProgressMeter } from '@/components/ui';
 import { type InferencePrediction } from '@/ml/types';
+import { explanationKeyFor } from '@/services/explanations';
+import { usePreferencesStore } from '@/stores/preferences';
 import { useReducedMotion, useTheme } from '@/theme';
 
 export interface ResultScreenProps {
   imageUri: string;
   prediction: InferencePrediction;
+  /**
+   * Saved scan, so its explanation copy stays readable offline from Scan Detail.
+   * `null` means the scan is still being saved: the explanation waits for it instead
+   * of being requested twice. Omit it when there is no scan to link.
+   */
+  scanId?: string | null;
   onRetake: () => void;
   onDone: () => void;
   testID?: string;
@@ -20,6 +29,7 @@ export interface ResultScreenProps {
 export function ResultScreen({
   imageUri,
   prediction,
+  scanId,
   onRetake,
   onDone,
   testID = 'result-screen',
@@ -27,6 +37,7 @@ export function ResultScreen({
   const { t } = useTranslation();
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
+  const language = usePreferencesStore((state) => state.language);
 
   const badgeScale = useSharedValue(reduceMotion ? 1 : 0.7);
 
@@ -96,6 +107,9 @@ export function ResultScreen({
             source={{ uri: imageUri }}
             style={styles.heroImage}
             resizeMode="cover"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={t('result.photoLabel', { disease: displayTitle })}
             testID="result-hero-image"
           />
         </View>
@@ -254,7 +268,7 @@ export function ResultScreen({
                         theme.typography.caption,
                         { color: theme.colors.textSecondary, flex: 1 },
                       ]}
-                      numberOfLines={1}
+                      numberOfLines={2}
                     >
                       {classLabel !== classKey ? classLabel : key}
                     </Text>
@@ -303,6 +317,12 @@ export function ResultScreen({
             </View>
           </Card>
         )}
+
+        <ExplanationCard
+          explanationKey={scanId === null ? null : explanationKeyFor(prediction, language)}
+          testID="result-explanation"
+          {...(scanId ? { scanId } : {})}
+        />
 
         {/* Mandatory Agronomic Disclaimer */}
         <View

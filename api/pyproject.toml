@@ -1,24 +1,34 @@
 [project]
-name = "healthycrop-api"
-version = "0.1.0"
-description = "FastAPI backend for HealthyCrop (auth, offline sync, Cloudinary signing, and Gemini RAG explanations)."
+name = "healthycropping-api"
+version = "0.5.0"
+description = "FastAPI backend for HealthyCropping (auth, offline sync, Cloudinary signing, and Gemini RAG explanations)."
 requires-python = ">=3.12,<3.13"
 license = { text = "MIT" }
 authors = [
     { name = "Keylor Pineda", email = "keylorpineda729@gmail.com" },
 ]
 dependencies = [
+    "cloudinary>=1.46.3",
     "fastapi>=0.115.0",
+    "firebase-admin>=6.6.0",
+    "google-cloud-firestore>=2.19.0",
+    "google-genai>=3.0.0",
+    "httpx2>=2.16.0",
     "pydantic>=2.10.0",
+    "slowapi>=0.1.10",
     "uvicorn[standard]>=0.32.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "httpx>=0.28.0",
+    "httpx2>=2.16.0",
     "mypy>=1.13.0",
     "pytest>=8.3.0",
     "ruff>=0.9.0",
+]
+rag = [
+    "fonttools>=4.68.0",
+    "pypdf>=7.0.0",
 ]
 
 [build-system]
@@ -26,7 +36,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/healthycrop_api"]
+packages = ["src/healthycropping_api"]
 
 [tool.ruff]
 target-version = "py312"
@@ -42,6 +52,10 @@ strict = true
 warn_return_any = true
 warn_unused_configs = true
 mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["cloudinary.*", "firebase_admin"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

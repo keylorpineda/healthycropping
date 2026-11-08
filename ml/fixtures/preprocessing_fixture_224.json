@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Shared HealthyCrop preprocessing fixture: normalized = (rgb - mean) / std, float32, NHWC without batch axis, RGB channel order.",
+  "description": "Shared HealthyCropping preprocessing fixture: normalized = (rgb - mean) / std, float32, NHWC without batch axis, RGB channel order.",
   "width": 224,
   "height": 224,
   "channels": 3,

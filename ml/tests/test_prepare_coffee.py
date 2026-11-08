@@ -9,15 +9,15 @@ import pandas as pd
 import pytest
 from PIL import Image
 
-from healthycrop_ml.config import SplitRatios, load_crop_config
-from healthycrop_ml.dedup import (
+from healthycropping_ml.config import SplitRatios, load_crop_config
+from healthycropping_ml.dedup import (
     HashedItem,
     compute_phash_hex,
     deduplicate_hashed_items,
     hamming_distance_hex,
 )
-from healthycrop_ml.preprocess import load_clean_rgb_image
-from healthycrop_ml.split import assign_grouped_stratified_splits, verify_no_group_leakage
+from healthycropping_ml.preprocess import load_clean_rgb_image
+from healthycropping_ml.split import assign_grouped_stratified_splits, verify_no_group_leakage
 
 
 def _make_patterned_image(path: Path, seed: int, size: tuple[int, int] = (300, 240)) -> None:
