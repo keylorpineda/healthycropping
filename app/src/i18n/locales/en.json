@@ -169,7 +169,8 @@
     "deletedToast": "Diagnosis deleted",
     "undo": "Undo",
     "syncPending": "Pending sync",
-    "syncSynced": "Synced"
+    "syncSynced": "Synced",
+    "scanLabel": "{{disease}}, {{crop}}, {{status}}, {{confidence}}% confidence, {{date}}"
   },
   "scanDetail": {
     "title": "Diagnosis Detail",
