@@ -1,6 +1,6 @@
 [project]
 name = "healthycropping-api"
-version = "0.1.0"
+version = "0.5.0"
 description = "FastAPI backend for HealthyCropping (auth, offline sync, Cloudinary signing, and Gemini RAG explanations)."
 requires-python = ">=3.12,<3.13"
 license = { text = "MIT" }

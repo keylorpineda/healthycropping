@@ -1,6 +1,6 @@
 {
   "name": "@healthycropping/app",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "private": true,
   "description": "HealthyCropping offline-first Android app (com.keylorpineda.healthycropping).",
   "author": "Keylor Pineda <keylorpineda729@gmail.com> (https://github.com/keylorpineda)",
