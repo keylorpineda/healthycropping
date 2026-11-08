@@ -3,6 +3,7 @@ import { QueryClient, useQuery, type UseQueryResult } from '@tanstack/react-quer
 import {
   explanationId,
   explanationsRepository,
+  parseExplanationId,
   type DiagnosisSeverity,
   type ExplanationKey,
   type ExplanationsRepository,
@@ -46,7 +47,8 @@ export interface Explanation {
 
 export interface ExplanationResult {
   explanation: Explanation;
-  source: 'network' | 'cache';
+  /** `scan`: the copy kept with this scan, shown because the API could not be reached. */
+  source: 'network' | 'cache' | 'scan';
   fetchedAt: string;
 }
 
@@ -177,6 +179,8 @@ export interface LoadExplanationDeps {
   repository?: ExplanationsRepository;
   isSignedIn?: () => boolean;
   now?: () => Date;
+  /** Scan the explanation is shown for; its copy is kept and used as an offline fallback. */
+  scanId?: string;
 }
 
 function readCached(
@@ -195,15 +199,61 @@ function readCached(
   }
 }
 
-/** Cached answer if there is one, otherwise ask the API and keep the answer. */
+function readScanCopy(
+  repository: ExplanationsRepository,
+  scanId: string,
+): ExplanationResult | null {
+  const stored = repository.getForScan(scanId);
+  const key = stored ? parseExplanationId(stored.explanation_id) : null;
+  if (!stored || !key) {
+    return null;
+  }
+  try {
+    const explanation = parseExplanation(JSON.parse(stored.response_json), key);
+    return explanation ? { explanation, source: 'scan', fetchedAt: stored.fetched_at } : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Cached answer if there is one, otherwise ask the API and keep the answer. With a
+ * `scanId`, the answer is also copied to that scan, and that copy is returned when
+ * the API cannot be reached (for example offline after switching the app language).
+ */
 export async function loadExplanation(
+  key: ExplanationKey,
+  deps: LoadExplanationDeps = {},
+): Promise<ExplanationResult> {
+  const { repository = explanationsRepository, scanId } = deps;
+  let result: ExplanationResult;
+  try {
+    result = await cachedOrFetched(key, deps);
+  } catch (error) {
+    const copy = scanId ? readScanCopy(repository, scanId) : null;
+    if (copy) {
+      return copy;
+    }
+    throw error;
+  }
+  if (scanId && shouldStore(result.explanation)) {
+    try {
+      repository.linkToScan(scanId, key, JSON.stringify(result.explanation), result.fetchedAt);
+    } catch (error) {
+      console.error('Failed to link explanation to scan', error);
+    }
+  }
+  return result;
+}
+
+async function cachedOrFetched(
   key: ExplanationKey,
   {
     client = apiClient,
     repository = explanationsRepository,
     isSignedIn = () => useAuthStore.getState().status === 'signedIn',
     now = () => new Date(),
-  }: LoadExplanationDeps = {},
+  }: LoadExplanationDeps,
 ): Promise<ExplanationResult> {
   const cached = readCached(repository, key);
   if (cached) {
@@ -260,27 +310,29 @@ export const explanationsQueryClient = new QueryClient({
 
 export interface UseExplanationOptions {
   queryClient?: QueryClient;
-  load?: (key: ExplanationKey) => Promise<ExplanationResult>;
+  load?: (key: ExplanationKey, scanId?: string) => Promise<ExplanationResult>;
+  scanId?: string;
 }
 
 export function useExplanation(
   key: ExplanationKey | null,
   {
     queryClient = explanationsQueryClient,
-    load = (k) => loadExplanation(k),
+    load = (k, id) => loadExplanation(k, id ? { scanId: id } : {}),
+    scanId,
   }: UseExplanationOptions = {},
 ): UseQueryResult<ExplanationResult, ExplanationError> {
   // Signing in changes the key so a "sign in to see this" state refetches by itself.
   const signedIn = useAuthStore((state) => state.status === 'signedIn');
   return useQuery<ExplanationResult, ExplanationError>(
     {
-      queryKey: ['explanation', key ? explanationId(key) : null, signedIn],
+      queryKey: ['explanation', key ? explanationId(key) : null, scanId ?? null, signedIn],
       queryFn: async () => {
         if (!key) {
           throw new ExplanationError('unavailable');
         }
         try {
-          return await load(key);
+          return await load(key, scanId);
         } catch (error) {
           throw error instanceof ExplanationError ? error : new ExplanationError('unavailable');
         }
