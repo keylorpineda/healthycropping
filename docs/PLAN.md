@@ -184,7 +184,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 - [ ] **Google Account Linking & Offline Claiming (`#80`)**: Link Google OAuth accounts with existing email/password credentials and pre-existing local SQLite data.
 - [ ] **OpenStreetMap Plot Boundary Editor (`#41`)**: Interactive plot boundary polygon editor and offline map tile caching using OpenStreetMap tiles.
 - [ ] **Spatial Disease Hotspot Markers (`#77`)**: Render clustered disease markers color-coded by status badge (`healthy` / `watch` / `act now`) inside plot polygons.
-- [ ] **Open-Meteo Microclimate Ingestion (`#42`)**: Query historical and forecast humidity, precipitation, and temperature per plot from Open-Meteo (`CC BY 4.0`).
+- [x] **Open-Meteo Microclimate Ingestion (`#42`)**: Query historical and forecast humidity, precipitation, and temperature per plot from Open-Meteo (`CC BY 4.0`).
 - [ ] **Rule-Based Disease Risk Engine (`#78`)**: Deterministic agronomic risk thresholds (`low` / `moderate` / `high`) for coffee rust, cacao monilia, and banana sigatoka in `api/`.
 - [ ] **Weather Risk Alert Banner & Card (`#79`)**: Offline-cached weather risk alerts and plot microclimate forecast card with `CC BY 4.0` attribution in `app/`.
 
