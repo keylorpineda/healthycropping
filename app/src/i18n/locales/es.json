@@ -245,5 +245,26 @@
     "offline": "Sin conexión",
     "error": "Error al sincronizar",
     "retryHint": "Toca para sincronizar ahora"
+  },
+  "explanation": {
+    "title": "Explicación con fuentes oficiales",
+    "loading": "Cargando la explicación",
+    "nextSteps": "Qué hacer ahora",
+    "sources": "Fuentes",
+    "citation": "{{source}}, sección «{{section}}» ({{publisher}}, {{year}}, pág. {{pages}})",
+    "disclaimer": "Texto generado con IA solo a partir de manuales técnicos oficiales. Consulte a un agrónomo antes de aplicar agroquímicos.",
+    "savedOffline": "Guardada en el teléfono para leerla sin conexión.",
+    "errors": {
+      "notConfigured": "Las explicaciones no están disponibles en esta versión de la app.",
+      "signedOut": "Inicie sesión para ver una explicación con fuentes oficiales.",
+      "offline": "Sin conexión. Conéctese a internet para cargar la explicación; después quedará guardada en el teléfono.",
+      "rateLimited": "Alcanzó el límite de explicaciones por hora. Intente de nuevo más tarde.",
+      "unavailable": "La explicación no está disponible en este momento. Intente de nuevo más tarde."
+    },
+    "declined": {
+      "healthy": "La planta se ve sana; no hace falta una explicación.",
+      "no_sources": "Los manuales oficiales disponibles no describen este problema. Consulte a un agrónomo.",
+      "not_covered": "No encontramos información suficiente en los manuales oficiales para explicar este diagnóstico. Consulte a un agrónomo."
+    }
   }
 }

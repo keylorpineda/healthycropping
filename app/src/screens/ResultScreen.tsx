@@ -5,8 +5,11 @@ import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ExplanationCard } from '@/components/explanations';
 import { Badge, Button, Card, ProgressMeter } from '@/components/ui';
 import { type InferencePrediction } from '@/ml/types';
+import { explanationKeyFor } from '@/services/explanations';
+import { usePreferencesStore } from '@/stores/preferences';
 import { useReducedMotion, useTheme } from '@/theme';
 
 export interface ResultScreenProps {
@@ -27,6 +30,7 @@ export function ResultScreen({
   const { t } = useTranslation();
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
+  const language = usePreferencesStore((state) => state.language);
 
   const badgeScale = useSharedValue(reduceMotion ? 1 : 0.7);
 
@@ -303,6 +307,11 @@ export function ResultScreen({
             </View>
           </Card>
         )}
+
+        <ExplanationCard
+          explanationKey={explanationKeyFor(prediction, language)}
+          testID="result-explanation"
+        />
 
         {/* Mandatory Agronomic Disclaimer */}
         <View
