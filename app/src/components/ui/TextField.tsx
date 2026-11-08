@@ -49,7 +49,7 @@ export function TextField({
     ? theme.colors.status.actNow.main
     : focused
       ? theme.colors.primary
-      : theme.colors.border;
+      : theme.colors.controlBorder;
 
   return (
     <View style={[styles.root, { marginBottom: theme.spacing.lg }, style]}>

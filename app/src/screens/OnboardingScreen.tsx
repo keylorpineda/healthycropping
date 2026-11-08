@@ -224,7 +224,7 @@ export function OnboardingScreen({
                   {
                     borderColor: disclaimerAccepted
                       ? theme.colors.primary
-                      : theme.colors.borderStrong,
+                      : theme.colors.controlBorder,
                     backgroundColor: disclaimerAccepted ? theme.colors.primary : 'transparent',
                   },
                 ]}

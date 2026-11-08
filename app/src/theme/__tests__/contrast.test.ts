@@ -173,4 +173,53 @@ describe('WCAG AA Contrast Compliance', () => {
       expect(bananaRatio).toBeGreaterThanOrEqual(WCAG_AA_BODY_MIN);
     });
   });
+
+  describe.each([
+    ['light', lightColors],
+    ['dark', darkColors],
+  ] as const)('Pairs used by components (%s theme)', (_name, colors) => {
+    const surfaces = [colors.background, colors.surface, colors.surfaceSubtle];
+
+    it('tertiary text (captions, placeholders, disclaimers) satisfies WCAG AA on every surface', () => {
+      for (const surface of surfaces) {
+        expect(getContrastRatio(colors.textTertiary, surface)).toBeGreaterThanOrEqual(
+          WCAG_AA_BODY_MIN,
+        );
+      }
+    });
+
+    it('form control outlines satisfy WCAG 1.4.11 (>= 3.0:1) on every surface', () => {
+      for (const surface of surfaces) {
+        expect(getContrastRatio(colors.controlBorder, surface)).toBeGreaterThanOrEqual(
+          WCAG_AA_LARGE_TEXT_MIN,
+        );
+      }
+    });
+
+    it('selected crop chip text satisfies WCAG AA on the crop accent', () => {
+      for (const crop of [colors.crops.coffee, colors.crops.cacao, colors.crops.banana]) {
+        expect(getContrastRatio(colors.textInverse, crop.accent)).toBeGreaterThanOrEqual(
+          WCAG_AA_BODY_MIN,
+        );
+      }
+    });
+
+    it('danger and secondary button texts satisfy WCAG AA', () => {
+      expect(
+        getContrastRatio(colors.textInverse, colors.status.actNow.main),
+      ).toBeGreaterThanOrEqual(WCAG_AA_BODY_MIN);
+      expect(getContrastRatio(colors.primary, colors.surfaceSubtle)).toBeGreaterThanOrEqual(
+        WCAG_AA_BODY_MIN,
+      );
+    });
+
+    it('primary and secondary text satisfy WCAG AA on the analyzing card surface', () => {
+      expect(getContrastRatio(colors.textPrimary, colors.surface)).toBeGreaterThanOrEqual(
+        WCAG_AA_BODY_MIN,
+      );
+      expect(getContrastRatio(colors.textSecondary, colors.surface)).toBeGreaterThanOrEqual(
+        WCAG_AA_BODY_MIN,
+      );
+    });
+  });
 });
