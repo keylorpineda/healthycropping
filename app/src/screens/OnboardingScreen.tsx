@@ -106,7 +106,7 @@ export function OnboardingScreen({
               {t('onboarding.slide1Description')}
             </Text>
 
-            <View style={styles.cropRow}>
+            <View style={styles.cropRow} importantForAccessibility="no-hide-descendants">
               <Chip label={t('crops.coffee')} crop="coffee" selected />
               <View style={{ width: theme.spacing.sm }} />
               <Chip label={t('crops.cacao')} crop="cacao" selected />
@@ -261,11 +261,18 @@ export function OnboardingScreen({
         ]}
       >
         {/* Indicators */}
-        <View style={styles.indicatorRow} testID="onboarding-dots">
+        <View
+          style={styles.indicatorRow}
+          accessible
+          accessibilityRole="progressbar"
+          accessibilityLabel={t('onboarding.progress', { current: activeSlide + 1, total: 3 })}
+          testID="onboarding-dots"
+        >
           {[0, 1, 2].map((idx) => (
             <View
               key={idx}
               testID={`dot-${idx}`}
+              importantForAccessibility="no"
               style={[
                 styles.dot,
                 {
@@ -312,7 +319,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    height: 56,
+    minHeight: 56,
+    paddingVertical: 8,
   },
   skipButton: {
     minHeight: 48,

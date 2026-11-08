@@ -107,6 +107,9 @@ export function ResultScreen({
             source={{ uri: imageUri }}
             style={styles.heroImage}
             resizeMode="cover"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={t('result.photoLabel', { disease: displayTitle })}
             testID="result-hero-image"
           />
         </View>
@@ -265,7 +268,7 @@ export function ResultScreen({
                         theme.typography.caption,
                         { color: theme.colors.textSecondary, flex: 1 },
                       ]}
-                      numberOfLines={1}
+                      numberOfLines={2}
                     >
                       {classLabel !== classKey ? classLabel : key}
                     </Text>

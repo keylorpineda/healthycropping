@@ -53,6 +53,8 @@ export function AnalyzingOverlay({
               source={{ uri: imageUri }}
               style={styles.image}
               resizeMode="cover"
+              accessible={false}
+              importantForAccessibility="no"
               testID={`${testID}-image`}
             />
           ) : (

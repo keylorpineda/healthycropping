@@ -129,6 +129,8 @@ export function HistoryScreen({
               source={{ uri: item.local_photo_uri }}
               style={styles.thumbnail}
               resizeMode="cover"
+              accessible={false}
+              importantForAccessibility="no"
             />
           </View>
 
@@ -145,7 +147,7 @@ export function HistoryScreen({
                 theme.typography.headline,
                 { color: theme.colors.textPrimary, marginTop: 4, marginBottom: 4 },
               ]}
-              numberOfLines={1}
+              numberOfLines={2}
             >
               {displayTitle}
             </Text>
@@ -173,7 +175,13 @@ export function HistoryScreen({
             accessibilityLabel={`${t('common.delete')} ${displayTitle}`}
             testID={`delete-scan-btn-${item.id}`}
           >
-            <Text style={{ fontSize: 18, color: theme.colors.textTertiary }}>🗑️</Text>
+            <Text
+              importantForAccessibility="no"
+              accessible={false}
+              style={{ fontSize: 18, color: theme.colors.textTertiary }}
+            >
+              🗑️
+            </Text>
           </Pressable>
         </Pressable>
       </Card>
@@ -209,7 +217,13 @@ export function HistoryScreen({
             style={styles.backButton}
             testID="history-back-btn"
           >
-            <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>←</Text>
+            <Text
+              importantForAccessibility="no"
+              accessible={false}
+              style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+            >
+              ←
+            </Text>
           </Pressable>
         )}
         <View style={{ flex: 1 }}>
@@ -406,8 +420,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteButton: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: 48,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,

@@ -103,10 +103,11 @@ export function Chip({
   return (
     <AnimatedPressable
       testID={testID}
-      accessibilityRole="checkbox"
+      accessibilityRole="radio"
       accessibilityLabel={accessibilityLabel || label}
       accessibilityState={{
         selected,
+        checked: selected,
         disabled,
       }}
       disabled={disabled}

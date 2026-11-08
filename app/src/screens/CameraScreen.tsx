@@ -192,7 +192,9 @@ export function CameraScreen({
             style={styles.iconButton}
             testID="camera-close-btn"
           >
-            <Text style={styles.iconText}>✕</Text>
+            <Text importantForAccessibility="no" accessible={false} style={styles.iconText}>
+              ✕
+            </Text>
           </Pressable>
 
           <Badge label={t(`crops.${crop}`)} variant={crop} size="md" testID="camera-crop-badge" />
@@ -204,7 +206,9 @@ export function CameraScreen({
             style={styles.iconButton}
             testID="camera-tips-btn"
           >
-            <Text style={styles.iconText}>💡</Text>
+            <Text importantForAccessibility="no" accessible={false} style={styles.iconText}>
+              💡
+            </Text>
           </Pressable>
         </View>
 
@@ -238,7 +242,9 @@ export function CameraScreen({
             style={styles.galleryButton}
             testID="camera-gallery-btn"
           >
-            <Text style={styles.iconText}>🖼️</Text>
+            <Text importantForAccessibility="no" accessible={false} style={styles.iconText}>
+              🖼️
+            </Text>
           </Pressable>
 
           {/* Shutter Button */}

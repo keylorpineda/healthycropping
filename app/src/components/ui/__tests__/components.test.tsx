@@ -167,7 +167,7 @@ describe('UI Component Library', () => {
 
       const chip = screen.getByTestId('chip-coffee');
       expect(screen.getByText('Coffee')).toBeTruthy();
-      expect(chip.props.accessibilityRole).toBe('checkbox');
+      expect(chip.props.accessibilityRole).toBe('radio');
       expect(chip.props.accessibilityState.selected).toBe(false);
 
       fireEvent.press(chip);
