@@ -12,6 +12,7 @@ from healthycropping_api.config import Settings
 from healthycropping_api.errors import register_error_handlers
 from healthycropping_api.firebase import get_firebase_app
 from healthycropping_api.rag.explain import ExplanationService
+from healthycropping_api.rate_limit import register_rate_limiting
 from healthycropping_api.routers import explanations, farms, health, me, plots, scans, uploads
 from healthycropping_api.store import DocumentStore, FirestoreDocumentStore
 
@@ -55,6 +56,7 @@ def create_app(
         allow_headers=["Authorization", "Content-Type"],
     )
     register_error_handlers(app)
+    register_rate_limiting(app)
 
     app.include_router(health.router)
     app.include_router(me.router)

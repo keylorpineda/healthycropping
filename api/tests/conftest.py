@@ -1,7 +1,7 @@
 """Shared fixtures: an app wired to a fake token verifier and an in-memory store."""
 
 import copy
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from typing import Any
 
 import pytest
@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from healthycropping_api.auth import AuthenticatedUser, InvalidTokenError, VerifierUnavailableError
 from healthycropping_api.config import Settings
 from healthycropping_api.main import create_app
+from healthycropping_api.rate_limit import limiter
 from healthycropping_api.store import DocumentAlreadyExistsError
 
 VALID_TOKEN = "valid-token"
@@ -79,3 +80,11 @@ def app(store: InMemoryDocumentStore) -> FastAPI:
 @pytest.fixture
 def client(app: FastAPI) -> TestClient:
     return TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limits() -> Iterator[None]:
+    """The slowapi limiter is process-wide; give every test a fresh quota."""
+    limiter.reset()
+    yield
+    limiter.reset()

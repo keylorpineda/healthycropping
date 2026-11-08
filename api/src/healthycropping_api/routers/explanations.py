@@ -5,7 +5,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, Request
 
-from healthycropping_api.auth import CurrentUser
 from healthycropping_api.config import Settings
 from healthycropping_api.errors import ApiError
 from healthycropping_api.rag.explain import (
@@ -14,6 +13,7 @@ from healthycropping_api.rag.explain import (
     UnsupportedClassError,
 )
 from healthycropping_api.rag.index import IndexFormatError, RagIndex
+from healthycropping_api.rate_limit import EXPLANATIONS_LIMIT, RateLimitedUser, limiter
 from healthycropping_api.schemas import ErrorResponse, ExplanationRequest, ExplanationResponse
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ router = APIRouter(
     responses={
         401: {"model": ErrorResponse},
         422: {"model": ErrorResponse},
+        429: {"model": ErrorResponse},
         503: {"model": ErrorResponse},
     },
 )
@@ -63,9 +64,11 @@ def _service(request: Request) -> ExplanationService:
 
 
 @router.post("")
+@limiter.limit(EXPLANATIONS_LIMIT)
 def create_explanation(
-    body: ExplanationRequest, user: CurrentUser, request: Request
+    body: ExplanationRequest, user: RateLimitedUser, request: Request
 ) -> ExplanationResponse:
+    """Explain a diagnosis; at most 20 requests per user per hour (429 after that)."""
     try:
         return _service(request).explain(body)
     except UnsupportedClassError as exc:
