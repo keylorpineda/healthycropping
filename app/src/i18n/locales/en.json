@@ -8,6 +8,7 @@
     "delete": "Delete",
     "confirm": "Confirm",
     "close": "Close",
+    "dismiss": "Dismiss",
     "back": "Back",
     "retry": "Retry",
     "continue": "Continue",
@@ -62,7 +63,8 @@
     "slide2Title": "Calibrated & Accurate AI",
     "slide2Description": "Deep learning models running on-device with calibrated confidence thresholds and abstention coverage.",
     "slide3Title": "Agronomic Decision Support",
-    "slide3Description": "HealthyCropping supports your integrated management decisions but does not replace a certified agronomist."
+    "slide3Description": "HealthyCropping supports your integrated management decisions but does not replace a certified agronomist.",
+    "progress": "Step {{current}} of {{total}}"
   },
   "home": {
     "selectCrop": "Select Crop to Diagnose",
@@ -73,7 +75,8 @@
     "noScansDescription": "Tap the scan button to assess the phytosanitary condition of your crop.",
     "offlinePill": "100% Offline",
     "syncPill": "Local Storage",
-    "cropComingSoon": "Coming soon"
+    "cropComingSoon": "Coming soon",
+    "recentScanLabel": "{{disease}}, {{crop}}, {{status}}, {{confidence}}% confidence"
   },
   "camera": {
     "tipsTitle": "Photo Tips",
@@ -126,7 +129,8 @@
     "probabilities": "Probability distribution",
     "adviceHealthy": "Maintain standard agronomic practices and continue periodic plot monitoring.",
     "adviceWatch": "Increase inspection frequency and evaluate symptom dispersion on neighboring plants.",
-    "adviceActNow": "Consult official extension service guides or a certified agronomist immediately before applying treatments."
+    "adviceActNow": "Consult official extension service guides or a certified agronomist immediately before applying treatments.",
+    "photoLabel": "Analyzed photo: {{disease}}"
   },
   "settings": {
     "title": "Settings",

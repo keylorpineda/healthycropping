@@ -6,10 +6,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '@/i18n';
 import { startSyncTriggers } from '@/services/syncTriggers';
 import { useAuthStore } from '@/stores/auth';
-import { ThemeProvider, useTheme } from '@/theme';
+import { ThemeProvider, useReducedMotion, useTheme } from '@/theme';
 
 function NavigationStack(): React.JSX.Element {
   const { isDark } = useTheme();
+  const reduceMotion = useReducedMotion();
 
   // Restore the persisted Firebase session; signed-out users keep full offline access.
   useEffect(() => useAuthStore.getState().start(), []);
@@ -22,7 +23,7 @@ function NavigationStack(): React.JSX.Element {
       <Stack
         screenOptions={{
           headerShown: false,
-          animation: 'fade',
+          animation: reduceMotion ? 'none' : 'fade',
         }}
       >
         <Stack.Screen name="index" options={{ title: 'HealthyCropping' }} />

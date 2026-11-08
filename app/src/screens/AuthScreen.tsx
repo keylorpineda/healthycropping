@@ -202,6 +202,8 @@ export function AuthScreen({
             <Pressable
               onPress={onSwitchMode}
               accessibilityRole="link"
+              accessibilityLabel={t(isSignUp ? 'auth.toSignIn' : 'auth.toSignUp')}
+              accessibilityState={{ disabled: submitting }}
               disabled={submitting}
               style={styles.link}
               testID="auth-switch-mode-btn"
@@ -268,6 +270,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   link: {
+    minWidth: 48,
     minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',

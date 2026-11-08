@@ -96,7 +96,11 @@ export function HomeScreen({
                 style={styles.settingsButton}
                 testID="home-farms-btn"
               >
-                <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>
+                <Text
+                  importantForAccessibility="no"
+                  accessible={false}
+                  style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+                >
                   🏡
                 </Text>
               </Pressable>
@@ -109,7 +113,11 @@ export function HomeScreen({
                 style={styles.settingsButton}
                 testID="home-history-btn"
               >
-                <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>
+                <Text
+                  importantForAccessibility="no"
+                  accessible={false}
+                  style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+                >
                   📋
                 </Text>
               </Pressable>
@@ -121,7 +129,13 @@ export function HomeScreen({
               style={styles.settingsButton}
               testID="home-settings-btn"
             >
-              <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>⚙️</Text>
+              <Text
+                importantForAccessibility="no"
+                accessible={false}
+                style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+              >
+                ⚙️
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -228,6 +242,14 @@ export function HomeScreen({
                 const diseaseKey = `diseases.${scan.crop}.${scan.predicted_class}`;
                 const translated = t(diseaseKey);
                 const title = translated !== diseaseKey ? translated : scan.predicted_class;
+                const cropLabel = t(`crops.${scan.crop}`);
+                const statusLabel =
+                  scan.severity === 'healthy'
+                    ? t('result.statusHealthy')
+                    : scan.severity === 'actNow'
+                      ? t('result.statusActNow')
+                      : t('result.statusWatch');
+                const confidencePct = Math.round(scan.confidence * 100);
                 return (
                   <Card
                     key={scan.id}
@@ -237,37 +259,32 @@ export function HomeScreen({
                   >
                     <Pressable
                       onPress={() => onOpenScanDetail?.(scan.id)}
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
+                      style={{ flexDirection: 'row', alignItems: 'center', minHeight: 48 }}
                       accessibilityRole="button"
-                      accessibilityLabel={title}
+                      accessibilityLabel={t('home.recentScanLabel', {
+                        disease: title,
+                        crop: cropLabel,
+                        status: statusLabel,
+                        confidence: confidencePct,
+                      })}
                     >
                       <View style={{ flex: 1 }}>
                         <View
                           style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}
                         >
-                          <Badge label={t(`crops.${scan.crop}`)} variant={scan.crop} size="sm" />
+                          <Badge label={cropLabel} variant={scan.crop} size="sm" />
                           <View style={{ width: 6 }} />
-                          <Badge
-                            label={
-                              scan.severity === 'healthy'
-                                ? t('result.statusHealthy')
-                                : scan.severity === 'actNow'
-                                  ? t('result.statusActNow')
-                                  : t('result.statusWatch')
-                            }
-                            variant={scan.severity}
-                            size="sm"
-                          />
+                          <Badge label={statusLabel} variant={scan.severity} size="sm" />
                         </View>
                         <Text
                           style={[theme.typography.headline, { color: theme.colors.textPrimary }]}
-                          numberOfLines={1}
+                          numberOfLines={2}
                         >
                           {title}
                         </Text>
                       </View>
                       <Text style={[theme.typography.bodyBold, { color: theme.colors.primary }]}>
-                        {`${Math.round(scan.confidence * 100)}%`}
+                        {`${confidencePct}%`}
                       </Text>
                     </Pressable>
                   </Card>

@@ -107,7 +107,7 @@ export function SyncStatusPill({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint={t('sync.retryHint')}
-      accessibilityState={{ busy: phase === 'syncing' }}
+      accessibilityState={{ busy: phase === 'syncing', disabled: phase === 'syncing' }}
       accessibilityLiveRegion="polite"
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       style={[
@@ -147,7 +147,8 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 32,
+    minHeight: 48,
+    minWidth: 48,
     borderWidth: 1.5,
   },
   iconBox: {

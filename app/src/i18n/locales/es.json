@@ -8,6 +8,7 @@
     "delete": "Eliminar",
     "confirm": "Confirmar",
     "close": "Cerrar",
+    "dismiss": "Cerrar",
     "back": "Atrás",
     "retry": "Reintentar",
     "continue": "Continuar",
@@ -62,7 +63,8 @@
     "slide2Title": "Modelos precisos y calibrados",
     "slide2Description": "Modelos de aprendizaje profundo ejecutados localmente con evaluación de confianza y umbrales de abstención.",
     "slide3Title": "Herramienta de apoyo al productor",
-    "slide3Description": "HealthyCropping apoya sus decisiones de manejo integrado pero no reemplaza la inspección de un agrónomo certificado."
+    "slide3Description": "HealthyCropping apoya sus decisiones de manejo integrado pero no reemplaza la inspección de un agrónomo certificado.",
+    "progress": "Paso {{current}} de {{total}}"
   },
   "home": {
     "selectCrop": "Cultivo a diagnosticar",
@@ -73,7 +75,8 @@
     "noScansDescription": "Presione el botón de escaneo para evaluar el estado fitosanitario de su cultivo.",
     "offlinePill": "100% Fuera de línea",
     "syncPill": "Almacenamiento local",
-    "cropComingSoon": "Próximamente"
+    "cropComingSoon": "Próximamente",
+    "recentScanLabel": "{{disease}}, {{crop}}, {{status}}, confianza {{confidence}} %"
   },
   "camera": {
     "tipsTitle": "Consejos de captura",
@@ -126,7 +129,8 @@
     "probabilities": "Distribución de probabilidades",
     "adviceHealthy": "Mantenga las prácticas culturales habituales y continúe el monitoreo periódico del lote.",
     "adviceWatch": "Aumente la frecuencia de inspección y evalúe la dispersión de síntomas en plantas vecinas.",
-    "adviceActNow": "Consulte inmediatamente las recomendaciones oficiales de su servicio de extensión o un agrónomo certificado antes de aplicar tratamientos."
+    "adviceActNow": "Consulte inmediatamente las recomendaciones oficiales de su servicio de extensión o un agrónomo certificado antes de aplicar tratamientos.",
+    "photoLabel": "Foto analizada: {{disease}}"
   },
   "settings": {
     "title": "Ajustes",

@@ -145,7 +145,13 @@ export function FarmsScreen({
             accessibilityLabel={`${t('common.delete')} ${item.name}`}
             testID={`delete-farm-${item.id}`}
           >
-            <Text style={{ fontSize: 16, color: theme.colors.textTertiary }}>🗑️</Text>
+            <Text
+              importantForAccessibility="no"
+              accessible={false}
+              style={{ fontSize: 16, color: theme.colors.textTertiary }}
+            >
+              🗑️
+            </Text>
           </Pressable>
         </View>
 
@@ -208,7 +214,13 @@ export function FarmsScreen({
                 accessibilityLabel={`${t('common.delete')} ${p.name}`}
                 testID={`delete-plot-${p.id}`}
               >
-                <Text style={{ fontSize: 14, color: theme.colors.textTertiary }}>✕</Text>
+                <Text
+                  importantForAccessibility="no"
+                  accessible={false}
+                  style={{ fontSize: 14, color: theme.colors.textTertiary }}
+                >
+                  ✕
+                </Text>
               </Pressable>
             </View>
           ))}
@@ -241,6 +253,7 @@ export function FarmsScreen({
           <TextInput
             value={newFarmName}
             onChangeText={setNewFarmName}
+            accessibilityLabel={t('farms.farmName')}
             placeholder="e.g. Finca El Cafetal"
             placeholderTextColor={theme.colors.textTertiary}
             style={[
@@ -270,6 +283,7 @@ export function FarmsScreen({
           <TextInput
             value={newFarmRegion}
             onChangeText={setNewFarmRegion}
+            accessibilityLabel={t('farms.region')}
             placeholder="e.g. Tarrazú, San José"
             placeholderTextColor={theme.colors.textTertiary}
             style={[
@@ -299,6 +313,7 @@ export function FarmsScreen({
           <TextInput
             value={newFarmAltitude}
             onChangeText={setNewFarmAltitude}
+            accessibilityLabel={t('farms.altitude')}
             placeholder="e.g. 1500"
             keyboardType="numeric"
             placeholderTextColor={theme.colors.textTertiary}
@@ -345,6 +360,7 @@ export function FarmsScreen({
           <TextInput
             value={newPlotName}
             onChangeText={setNewPlotName}
+            accessibilityLabel={t('farms.plotName')}
             placeholder="e.g. Lote Las Nubes"
             placeholderTextColor={theme.colors.textTertiary}
             style={[
@@ -408,6 +424,7 @@ export function FarmsScreen({
           <TextInput
             value={newPlotArea}
             onChangeText={setNewPlotArea}
+            accessibilityLabel={t('farms.areaHa')}
             placeholder="e.g. 2.5"
             keyboardType="decimal-pad"
             placeholderTextColor={theme.colors.textTertiary}
@@ -445,7 +462,13 @@ export function FarmsScreen({
             style={styles.backButton}
             testID="farms-back-btn"
           >
-            <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>←</Text>
+            <Text
+              importantForAccessibility="no"
+              accessible={false}
+              style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+            >
+              ←
+            </Text>
           </Pressable>
         )}
         <View style={{ flex: 1 }}>
@@ -520,8 +543,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   iconButton: {
-    minWidth: 36,
-    minHeight: 36,
+    minWidth: 48,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
@@ -546,8 +569,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   smallDeleteBtn: {
-    minWidth: 32,
-    minHeight: 32,
+    minWidth: 48,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -555,7 +578,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   input: {
-    height: 48,
+    minHeight: 48,
+    paddingVertical: 8,
     borderRadius: 8,
     borderWidth: 1,
     paddingHorizontal: 12,

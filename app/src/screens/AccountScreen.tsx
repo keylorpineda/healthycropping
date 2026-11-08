@@ -57,7 +57,13 @@ export function AccountScreen({
             style={styles.backButton}
             testID="account-back-btn"
           >
-            <Text style={[theme.typography.title2, { color: theme.colors.textPrimary }]}>←</Text>
+            <Text
+              importantForAccessibility="no"
+              accessible={false}
+              style={[theme.typography.title2, { color: theme.colors.textPrimary }]}
+            >
+              ←
+            </Text>
           </Pressable>
         ) : (
           <View style={styles.backButton} />
@@ -132,7 +138,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    height: 56,
+    minHeight: 56,
+    paddingVertical: 8,
   },
   backButton: {
     minWidth: 48,

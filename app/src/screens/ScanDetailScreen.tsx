@@ -121,7 +121,13 @@ export function ScanDetailScreen({
               style={styles.backButton}
               testID="scan-detail-back-btn"
             >
-              <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>←</Text>
+              <Text
+                importantForAccessibility="no"
+                accessible={false}
+                style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+              >
+                ←
+              </Text>
             </Pressable>
           )}
           <Text style={[theme.typography.title2, { color: theme.colors.textPrimary }]}>
@@ -258,7 +264,13 @@ export function ScanDetailScreen({
               style={styles.backButton}
               testID="scan-detail-back-btn"
             >
-              <Text style={[theme.typography.title3, { color: theme.colors.textPrimary }]}>←</Text>
+              <Text
+                importantForAccessibility="no"
+                accessible={false}
+                style={[theme.typography.title3, { color: theme.colors.textPrimary }]}
+              >
+                ←
+              </Text>
             </Pressable>
           )}
           <View style={{ flex: 1 }}>
@@ -285,6 +297,9 @@ export function ScanDetailScreen({
             source={{ uri: scan.local_photo_uri }}
             style={styles.heroImage}
             resizeMode="cover"
+            accessible
+            accessibilityRole="image"
+            accessibilityLabel={t('result.photoLabel', { disease: displayTitle })}
             testID="scan-detail-hero-image"
           />
         </View>
