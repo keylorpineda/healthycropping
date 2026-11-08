@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The Render blueprint (`#124`) now builds the RAG index on every deploy (`uv sync --frozen --no-dev --extra rag`, `scripts/fetch_agronomic_docs.py`, `scripts/build_rag_index.py --check`, which fails the build if a disease class has no passage) and declares `GEMINI_API_KEY` and `GEMINI_MODEL` (`sync: false`); the Spanish setup guide lists both.
 - `README.md` and `app/README.md` now match the verified project state: an "in active development, no APK yet" note, measured test Macro-F1 (`0.729` coffee, `0.850` cacao, `0.973` banana) instead of unverified targets, float16-only export, a phase table aligned with `docs/PLAN.md`, and sync, RAG, Render deployment and APK distribution marked as in progress or planned (`#110`).
 
 ### Fixed
