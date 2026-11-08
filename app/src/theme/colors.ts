@@ -49,7 +49,7 @@ export const palette = {
   cacaoLight: '#FEF3C7',
 
   // Banana: musa leaf & ripening peel
-  bananaGreen: '#65A30D',
+  bananaGreen: '#4D7C0F', // Dark enough for white chip text (WCAG AA 4.99:1)
   bananaGold: '#EAB308',
   bananaLeaf: '#84CC16',
   bananaLight: '#FEF9C3',
@@ -93,6 +93,8 @@ export interface ThemeColors {
   border: string;
   borderSubtle: string;
   borderStrong: string;
+  /** Outline of form controls (inputs, checkboxes): >= 3:1 against surfaces (WCAG 1.4.11). */
+  controlBorder: string;
 
   // Semantic Status
   status: {
@@ -155,12 +157,13 @@ export const lightColors: ThemeColors = {
 
   textPrimary: palette.soil950,
   textSecondary: palette.soil700,
-  textTertiary: palette.soil500,
+  textTertiary: palette.soil600,
   textInverse: palette.white,
 
   border: palette.soil200,
   borderSubtle: palette.soil100,
   borderStrong: palette.soil400,
+  controlBorder: palette.soil500,
 
   status: {
     healthy: {
@@ -227,6 +230,7 @@ export const darkColors: ThemeColors = {
   border: palette.soil700,
   borderSubtle: palette.soil800,
   borderStrong: palette.soil600,
+  controlBorder: palette.soil500,
 
   status: {
     healthy: {

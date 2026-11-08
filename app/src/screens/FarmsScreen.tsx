@@ -248,7 +248,7 @@ export function FarmsScreen({
               {
                 color: theme.colors.textPrimary,
                 backgroundColor: theme.colors.surfaceSubtle,
-                borderColor: theme.colors.border,
+                borderColor: theme.colors.controlBorder,
               },
             ]}
             testID="new-farm-name-input"
@@ -277,7 +277,7 @@ export function FarmsScreen({
               {
                 color: theme.colors.textPrimary,
                 backgroundColor: theme.colors.surfaceSubtle,
-                borderColor: theme.colors.border,
+                borderColor: theme.colors.controlBorder,
               },
             ]}
             testID="new-farm-region-input"
@@ -307,7 +307,7 @@ export function FarmsScreen({
               {
                 color: theme.colors.textPrimary,
                 backgroundColor: theme.colors.surfaceSubtle,
-                borderColor: theme.colors.border,
+                borderColor: theme.colors.controlBorder,
               },
             ]}
             testID="new-farm-altitude-input"
@@ -352,7 +352,7 @@ export function FarmsScreen({
               {
                 color: theme.colors.textPrimary,
                 backgroundColor: theme.colors.surfaceSubtle,
-                borderColor: theme.colors.border,
+                borderColor: theme.colors.controlBorder,
               },
             ]}
             testID="new-plot-name-input"
@@ -416,7 +416,7 @@ export function FarmsScreen({
               {
                 color: theme.colors.textPrimary,
                 backgroundColor: theme.colors.surfaceSubtle,
-                borderColor: theme.colors.border,
+                borderColor: theme.colors.controlBorder,
               },
             ]}
             testID="new-plot-area-input"

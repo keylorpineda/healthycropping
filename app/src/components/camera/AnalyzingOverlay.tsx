@@ -45,7 +45,7 @@ export function AnalyzingOverlay({
       accessibilityLiveRegion="polite"
       testID={testID}
     >
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
         {/* Photo Box with Scan Line */}
         <View style={[styles.photoBox, { borderColor: theme.colors.primary }]}>
           {imageUri ? (
@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   card: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 24,
     alignItems: 'center',
