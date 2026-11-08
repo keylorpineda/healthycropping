@@ -33,7 +33,7 @@ class ApiError(Exception):
         self.headers = headers
 
 
-def _error_response(
+def error_response(
     status_code: int,
     code: str,
     message: str,
@@ -57,12 +57,12 @@ def _status_code_name(status_code: int) -> str:
 
 async def _handle_api_error(_: Request, exc: Exception) -> JSONResponse:
     assert isinstance(exc, ApiError)
-    return _error_response(exc.status_code, exc.code, exc.message, headers=exc.headers)
+    return error_response(exc.status_code, exc.code, exc.message, headers=exc.headers)
 
 
 async def _handle_http_exception(_: Request, exc: Exception) -> JSONResponse:
     assert isinstance(exc, StarletteHTTPException)
-    return _error_response(
+    return error_response(
         exc.status_code,
         _status_code_name(exc.status_code),
         str(exc.detail),
@@ -75,12 +75,12 @@ async def _handle_validation_error(_: Request, exc: Exception) -> JSONResponse:
     details: list[dict[str, Any]] = jsonable_encoder(
         [{"loc": err["loc"], "msg": err["msg"], "type": err["type"]} for err in exc.errors()]
     )
-    return _error_response(422, "validation_error", "Request validation failed.", details)
+    return error_response(422, "validation_error", "Request validation failed.", details)
 
 
 async def _handle_unexpected_error(_: Request, exc: Exception) -> JSONResponse:
     logger.exception("Unhandled error", exc_info=exc)
-    return _error_response(500, "internal_error", "An unexpected error occurred.")
+    return error_response(500, "internal_error", "An unexpected error occurred.")
 
 
 def register_error_handlers(app: FastAPI) -> None:
