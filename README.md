@@ -1,143 +1,146 @@
+<p align="center">
+  <a href="https://github.com/keylorpineda/healthycropping/releases"><img src="docs/assets/readme/tab-download.svg" alt="Download (GitHub Releases)"></a>
+  <a href="docs/MODEL_CARD.md"><img src="docs/assets/readme/tab-model-card.svg" alt="Model card"></a>
+  <a href="docs/DATASETS.md"><img src="docs/assets/readme/tab-datasets.svg" alt="Datasets and licences"></a>
+  <a href="docs/FIELD_VALIDATION.md"><img src="docs/assets/readme/tab-field.svg" alt="Field validation protocol"></a>
+  <a href="docs/SETUP_SERVICES_ES.md"><img src="docs/assets/readme/tab-setup.svg" alt="Setup guide (Spanish)"></a>
+</p>
+
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/hero-dark.svg">
-  <img src="docs/assets/hero-light.svg" alt="HealthyCropping: offline crop disease diagnosis on Android" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/card-dark.svg">
+  <img src="docs/assets/readme/card-light.svg" width="100%" alt="HealthyCropping, offline crop disease diagnosis for coffee, cacao and banana in Costa Rica. The full content of this card is available as text in the section below.">
 </picture>
 
 <p align="center">
   <a href="https://github.com/keylorpineda/healthycropping/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/keylorpineda/healthycropping/ci.yml?branch=develop&event=push&style=flat-square&label=CI" alt="CI"></a>
-  <img src="https://img.shields.io/badge/React%20Native-0.76-059669?style=flat-square" alt="React Native 0.76">
-  <img src="https://img.shields.io/badge/Expo-52-059669?style=flat-square" alt="Expo 52">
-  <img src="https://img.shields.io/badge/TensorFlow%20Lite-float16-059669?style=flat-square" alt="TensorFlow Lite float16">
-  <img src="https://img.shields.io/badge/FastAPI-0.115-059669?style=flat-square" alt="FastAPI">
-  <img src="https://img.shields.io/badge/Python-3.12-059669?style=flat-square" alt="Python 3.12">
-  <img src="https://img.shields.io/badge/SQLite-Offline-059669?style=flat-square" alt="SQLite Offline">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-059669?style=flat-square" alt="MIT License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-2D7A4F?style=flat-square" alt="MIT License"></a>
 </p>
 
+<details>
+<summary><b>Read this page as text</b></summary>
+
+## HealthyCropping
+
 > [!NOTE]
-> **In active development.** There is no installable APK yet: the first signed APK is planned for `v1.0.0`. Today the app can be built from source (see [Run Locally](#run-locally)). Star the repository to follow progress.
+> **In active development.** There is no installable APK yet: the first signed APK is planned for `v1.0.0`, after field validation. Today the app can be built from source (see [Run locally](#run-locally)).
 
-Smallholder and medium-scale producers of coffee (*Coffea arabica* / *canephora*), cacao (*Theobroma cacao*), and banana (*Musa* spp.) in Central America frequently work in mountainous or rural plots with intermittent or zero cellular connectivity. Identifying pathogens early—such as coffee leaf rust (*Hemileia vastatrix*), cacao frosty pod rot (*Moniliophthora roreri*), or banana black Sigatoka (*Pseudocercospora fijiensis*)—is critical to timing cultural controls and preventing yield loss, yet cloud-only diagnostic tools fail in the field when connectivity drops.
+Smallholder and medium-scale producers of coffee (*Coffea arabica*), cacao (*Theobroma cacao*) and banana (*Musa* spp.) in Costa Rica often work in mountain or rural plots with weak or no mobile signal. Spotting diseases early, such as coffee leaf rust (*Hemileia vastatrix*), cacao frosty pod rot (*Moniliophthora roreri*) or banana black Sigatoka (*Pseudocercospora fijiensis*), matters for timing controls, yet cloud-only tools fail when the connection drops.
 
-**HealthyCropping** (`com.keylorpineda.healthycropping`) is an open-source, non-commercial, offline-first Android application. It runs float16 TensorFlow Lite models directly on the phone and stores scans, farms and plots locally in SQLite, so diagnosis works without a signal. Optional sync through a FastAPI backend and a Gemini RAG advisory layer grounded in official agronomy manuals (ICAFE, CATIE, CORBANA) are being built.
+**HealthyCropping** (`com.keylorpineda.healthycropping`) is an open-source, non-commercial, offline-first Android app. It runs float16 TensorFlow Lite models on the phone and keeps scans, farms and plots in SQLite, so diagnosis works without a signal. When online, an optional account syncs data through a FastAPI backend, and a Gemini RAG layer explains the result with citations from official manuals (ICAFE, CATIE, CORBANA).
 
-> **Agronomic Disclaimer**: HealthyCropping is a non-commercial, open-source decision-support tool designed initially for Costa Rica. **It supports field decisions and does not replace a certified agronomist or phytosanitary laboratory.** Always consult an agricultural professional before applying agrochemicals or removing plants.
+> **Agronomic disclaimer**: HealthyCropping supports field decisions and **does not replace a certified agronomist or phytosanitary laboratory**. Always consult an agricultural professional before applying agrochemicals or removing plants.
 
----
+### At a glance
 
-## Development Status
+| | |
+| :--- | :--- |
+| Crops | 3 (coffee, cacao, banana), one model each |
+| Classes | 12 health and disease classes in total |
+| Model | `MobileNetV3-Large`, `224x224` RGB, float16 TFLite, about `6.1 MB` each |
+| Network calls to diagnose | 0 |
+
+### How a scan works
+
+```mermaid
+flowchart LR
+    A["1. Photo\n(camera or gallery)"] --> B["2. 224x224 RGB\n(same math as training)"]
+    B --> C["3. TFLite float16\n(MobileNetV3)"]
+    C --> D["4. Verdict\n(class, severity, confidence)"]
+    D -. "only when online" .-> E["5. Advice\n(cited manuals, Gemini RAG)"]
+```
+
+1. **Crop selection**: the user picks coffee (leaf underside), cacao (pod) or banana (leaf) so the right model runs.
+2. **Preprocessing**: the photo is resized to `224x224`, decoded to RGB and normalized exactly as in training. A shared fixture test proves the Python and React Native tensors match.
+3. **On-device inference** with `react-native-fast-tflite`.
+4. **Verdict**: if confidence is under the crop's calibrated threshold, the app asks for a new photo instead of guessing. Otherwise it shows the class, severity, confidence and one of `healthy`, `watch` or `act now`.
+5. **Advice (optional, online)**: the backend retrieves passages from official manuals and Gemini explains next steps, citing source and section, and declines when the manuals do not cover the case. Explanations are stored for offline re-reading.
+
+### The models
+
+Numbers are for the exported float16 TFLite models on held-out test splits of public datasets. Real-field accuracy in Costa Rica is measured in Phase 8.
+
+| Crop | Organ | Classes | Test accuracy | Test macro-F1 | Threshold | Documentation |
+| :--- | :--- | :--- | :---: | :---: | :---: | :--- |
+| **Coffee** | Leaf (underside) | `healthy`, `leaf_rust`, `leaf_miner`, `cercospora`, `brown_leaf_spot`, `red_spider_mite` | `81.1%` | `0.72` | `0.79` | [Model card](docs/MODEL_CARD.md#2-coffee-leaf-model-coffee) |
+| **Cacao** | Pod | `healthy`, `monilia`, `black_pod` | `91.7%` | `0.85` | `0.51` | [Model card](docs/MODEL_CARD.md#3-cacao-pod-model-cacao) |
+| **Banana** | Leaf | `healthy`, `black_sigatoka`, `fusarium_wilt` | `97.5%` | `0.97` | `0.80` | [Model card](docs/MODEL_CARD.md#4-banana-leaf-model-banana) |
+
+Coffee is under the `0.80` macro-F1 target: `cercospora` and `red_spider_mite` have about 20 test leaves each, so one leaf moves their F1 by several points. The analysis and every run, including failed attempts, are in [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md).
+
+| Crop | Confusion matrix (fine-tuned) | Grad-CAM |
+| :--- | :--- | :--- |
+| Coffee | <img src="docs/assets/confusion_matrices/coffee_finetuned.png" width="320" alt="Coffee confusion matrix"> | <img src="docs/assets/gradcam/coffee_gradcam.png" width="320" alt="Coffee Grad-CAM samples"> |
+| Cacao | <img src="docs/assets/confusion_matrices/cacao_finetuned.png" width="320" alt="Cacao confusion matrix"> | <img src="docs/assets/gradcam/cacao_gradcam.png" width="320" alt="Cacao Grad-CAM samples"> |
+| Banana | <img src="docs/assets/confusion_matrices/banana_finetuned.png" width="320" alt="Banana confusion matrix"> | <img src="docs/assets/gradcam/banana_gradcam.png" width="320" alt="Banana Grad-CAM samples"> |
+
+### The verdict
+
+| Stamp | Meaning |
+| :--- | :--- |
+| `healthy` | No action needed |
+| `watch` | Early or mild signs |
+| `act now` | Treat, or call a technician |
+| `retake` | Confidence under the threshold; take a new photo |
+
+### Where the project stands
 
 Work follows the phases in [`docs/PLAN.md`](docs/PLAN.md):
 
 | Phase | Milestone | Scope | Status |
 | :--- | :--- | :--- | :--- |
-| **0** | `v0.1.0` | Repository setup, community standards, CI | Done |
-| **1** | `v0.1.0` | Coffee datasets, leakage-free split, baseline model | Done |
-| **2** | `v0.1.0` | Coffee model fine-tuning, float16 TFLite export, preprocessing parity fixture | Done |
-| **3** | `v0.2.0` | Expo app shell, design system, onboarding, home and settings | Done |
-| **4** | `v0.2.0` | Camera, on-device inference, result screen, offline history | Done |
-| **5** | `v0.3.0` | Cacao and banana models; all three crops wired into the app | Models done, on-device check pending |
-| **6** | `v0.4.0` | FastAPI, Firebase auth, farm/plot/scan sync | In progress |
-| **7** | `v0.5.0` | Gemini RAG explanations with cited sources | Planned |
-| **8** | `v1.0.0` | Field validation, benchmarks, signed APK release | Planned |
+| 0 | `v0.1.0` | Repository setup, community standards, CI | Done |
+| 1 | `v0.1.0` | Coffee datasets, leakage-free split, baseline | Done |
+| 2 | `v0.1.0` | Coffee fine-tuning, float16 export, preprocessing fixture | Done |
+| 3 | `v0.2.0` | App shell, design system, onboarding, home, settings | Done |
+| 4 | `v0.2.0` | Camera, on-device inference, result screen, offline history | Done |
+| 5 | `v0.3.0` | Cacao and banana models, all three crops in the app | Done; on-device check pending |
+| 6 | `v0.4.0` | FastAPI, Firebase auth, farm/plot/scan sync | Done |
+| 7 | `v0.5.0` | Gemini RAG explanations with cited sources | Done |
+| 8 | `v1.0.0` | Field validation, benchmarks, signed APK release | In progress |
 
----
+Next: plot maps, disease hotspots and weather risk alerts (`v1.1.0`), then Sentinel-2 NDVI and one more Costa Rican crop (`v1.2.0`).
 
-## How It Works
-
-```mermaid
-flowchart LR
-    A["1. Select Crop\n(Coffee / Cacao / Banana)"] --> B["2. Capture Photo\n(Guided framing tips)"]
-    B --> C["3. On-Device Preprocessing\n(224x224 RGB + normalize)"]
-    C --> D["4. Offline TFLite Inference\n(MobileNetV3, float16)"]
-    D --> E["5. Instant Local Result\n(Class, Severity, SQLite)"]
-    E -. "Optional when online" .-> F["6. Cloud Sync & Gemini RAG\n(in development)"]
-```
-
-1. **Crop Selection**: The user selects **Coffee** (leaf underside), **Cacao** (pod), or **Banana** (leaf) prior to scanning so a dedicated specialist model runs for that crop.
-2. **Offline On-Device Inference**: The captured photo is resized to `224x224`, decoded to raw RGB, normalized with exact training statistics, and evaluated locally with `react-native-fast-tflite`. On-device latency has not been benchmarked yet (Phase 8).
-3. **Actionable Triage & Thresholding**: If confidence falls below the calibrated validation threshold, the app instructs the user to retake the photo. Otherwise, it reports predicted class, severity level, confidence, and recommended triage action (`healthy`, `watch`, or `act now`).
-4. **Local Persistence & Optional Sync**: Scans, farms, and plots are stored locally in `expo-sqlite` with client-generated UUIDs. Optional accounts and idempotent sync through the FastAPI backend (`api/`) are in progress (Phase 6).
-5. **Grounded RAG Advisory (planned, Phase 7)**: When online, the backend will retrieve passages from official technical manuals (ICAFE for coffee, CATIE for cacao, CORBANA for banana) and use Gemini to explain next steps, citing the source and declining when the manuals do not cover the case.
-
----
-
-## Supported Crops & Model Architectures
-
-One fine-tuned `MobileNetV3-Large` model is trained, evaluated, and exported per crop (`224x224` RGB input, float16 TFLite, `6.06 MB` each). Metrics are on held-out test splits of public datasets; field validation in Costa Rica is still pending (Phase 8):
-
-| Crop | Target Organ | Target Classes | Test Macro-F1 | Test Accuracy | Documentation |
-| :--- | :--- | :--- | :---: | :---: | :--- |
-| **Coffee** | Leaf (underside) | `healthy`, `leaf_rust` (+ severity), `leaf_miner`, `cercospora`, `brown_leaf_spot`, `red_spider_mite` | `0.729` | `81.4%` | [Model Card](docs/MODEL_CARD.md#2-coffee-leaf-model-coffee) |
-| **Cacao** | Pod | `healthy`, `monilia`, `black_pod` (*Phytophthora*) | `0.850` | `91.7%` | [Model Card](docs/MODEL_CARD.md#3-cacao-pod-model-cacao) |
-| **Banana** | Leaf | `healthy`, `black_sigatoka`, `fusarium_wilt` | `0.973` | `97.5%` | [Model Card](docs/MODEL_CARD.md#4-banana-leaf-model-banana) |
-
-Every run, including baselines and failed attempts, is logged in [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md).
-
-Tensor preprocessing parity between Python (`ml/`) and React Native (`app/src/ml/`) is enforced by shared fixture tests.
-
----
-
-## Architecture & Monorepo Structure
+### What is inside
 
 ```text
 healthycropping/
 ├── app/       # Expo React Native (Android, pnpm): on-device TFLite, SQLite, UI
-├── api/       # Python 3.12 (uv): FastAPI, Firebase Admin, Cloudinary, RAG
-├── ml/        # Python 3.12 (uv): data preprocessing, training, eval, TFLite export
-└── docs/      # ARCHITECTURE, PLAN, MODEL_CARD, DATASETS, EXPERIMENTS, DEVLOG
+├── api/       # Python 3.12 (uv): FastAPI, Firebase Admin, Cloudinary, RAG, weather
+├── ml/        # Python 3.12 (uv): data, training, evaluation, TFLite export
+└── docs/      # PLAN, ARCHITECTURE, DATASETS, MODEL_CARD, EXPERIMENTS, DEVLOG
 ```
 
 | Workspace | Stack | Purpose |
 | :--- | :--- | :--- |
-| [`app/`](app/README.md) | React Native 0.76, Expo 52, TypeScript, SQLite, TFLite | Offline mobile application for Android |
-| `api/` | Python 3.12, FastAPI, Firebase Admin, Cloudinary, Gemini | Sync endpoints, token verification & RAG advisory |
-| `ml/` | Python 3.12, TensorFlow 2.18+, TFLite, Pillow | Training pipelines, evaluation & quantized edge export |
+| [`app/`](app/README.md) | React Native 0.76, Expo 52, TypeScript, SQLite, TFLite | Offline Android app |
+| `api/` | Python 3.12, FastAPI, Firebase Admin, Cloudinary, Gemini | Token verification, sync, RAG advice, weather risk |
+| `ml/` | Python 3.12, TensorFlow 2.18+, Pillow | Training, evaluation and float16 export |
 
----
+The phone never talks to Firestore: it sends Firebase ID tokens to `api/`, and the Firestore rules deny all client access.
 
-## Run Locally
+### Run locally
 
-### Prerequisites
-
-- **Mobile**: Node.js 20+, `pnpm` (configured with `node-linker=hoisted`), Android SDK.
-- **Backend & ML**: Python 3.12, `uv` package manager.
-
-### 1. Mobile App (`app/`, pnpm only)
+Prerequisites: Node.js 20+ and `pnpm` for the app (never `npm` or `yarn`), the Android SDK, Python 3.12 and `uv` for `api/` and `ml/`. Step-by-step service setup (Spanish): [`docs/SETUP_SERVICES_ES.md`](docs/SETUP_SERVICES_ES.md).
 
 ```bash
-cd app
-pnpm install
-pnpm typecheck
-pnpm lint
-pnpm test
-pnpm start
+cd app && pnpm install && pnpm lint && pnpm typecheck && pnpm test && pnpm start
 ```
-
-### 2. Backend API (`api/`, uv only)
 
 ```bash
-cd api
-uv sync --all-extras
-uv run ruff check .
-uv run mypy src tests
-uv run pytest
-uv run uvicorn src.main:app --reload
+cd api && uv sync --all-extras && uv run pytest && uv run uvicorn healthycropping_api.main:app --reload
 ```
-
-### 3. Machine Learning (`ml/`, uv only)
 
 ```bash
-cd ml
-uv sync --all-extras
-uv run ruff check .
-uv run mypy src scripts tests
-uv run pytest
+cd ml && uv sync --all-extras && uv run ruff check . && uv run mypy src scripts tests && uv run pytest
 ```
 
----
+The card above is generated from the model registries; rebuild it after a model or status change:
 
-## Open Source Contributions & Community
+```bash
+cd ml && uv run python scripts/build_readme_card.py
+```
+
+### Open Source Contributions & Community
 
 Contributions are welcome. Please check our open issues and guidelines before opening a pull request:
 
@@ -149,16 +152,16 @@ Contributions are welcome. Please check our open issues and guidelines before op
 
 ---
 
-## Limitations
+### Limitations
 
 1. **Decision Support Only**: Visual symptoms cannot distinguish every microscopic pathogen strain or nutrient deficiency. Laboratory diagnostics remain necessary for high-impact interventions.
 2. **Field Lighting Sensitivity**: Direct specular glare on wet foliage or extreme motion blur can reduce model confidence.
-3. **Backend Cold Starts**: Once deployed, the optional FastAPI sync API is planned to run on Render's free tier, which sleeps after 15 minutes of inactivity. Disease diagnosis and SQLite storage run fully offline on the phone and do not depend on it.
+3. **Backend Cold Starts**: The optional FastAPI API runs on Render's free tier, which sleeps after 15 minutes of inactivity. Disease diagnosis and SQLite storage run fully offline on the phone and do not depend on it.
 4. **Public Training Data**: Models are trained on public datasets whose cameras, cultivars and backgrounds differ from Costa Rican farms; real-field accuracy is unmeasured until field validation (Phase 8).
 
 ---
 
-## Dataset Credits & Licenses
+### Dataset Credits & Licenses
 
 The MIT license in [`LICENSE`](LICENSE) applies **solely to the source code** in this repository. Training datasets remain under their respective upstream licenses documented in [`docs/DATASETS.md`](docs/DATASETS.md):
 
@@ -171,13 +174,13 @@ The MIT license in [`LICENSE`](LICENSE) applies **solely to the source code** in
 
 ---
 
-## Non-Commercial Distribution Note
+### Non-Commercial Distribution Note
 
-**HealthyCropping** (`com.keylorpineda.healthycropping`) is strictly non-commercial. Starting with `v1.0.0`, it will be distributed free of charge as an installable Android `.apk` exclusively through [GitHub Releases](https://github.com/keylorpineda/healthycropping/releases), with no advertisements or paid subscriptions. Current releases only include the exported `.tflite` models.
+**HealthyCropping** (`com.keylorpineda.healthycropping`) is strictly non-commercial. Starting with `v1.0.0`, it will be distributed free of charge as an installable Android `.apk` exclusively through [GitHub Releases](https://github.com/keylorpineda/healthycropping/releases), with no advertisements or paid subscriptions. Until then, releases only include the exported `.tflite` models.
 
 ---
 
-## How to Cite
+### How to Cite
 
 ```bibtex
 @software{pineda2026healthycropping,
@@ -192,7 +195,9 @@ The MIT license in [`LICENSE`](LICENSE) applies **solely to the source code** in
 
 ---
 
-## Author & Maintainers
+### Author & Maintainers
 
 - **Keylor Pineda** — [@keylorpineda](https://github.com/keylorpineda)
 - **Jefferson Abarca** — [@JAbarca74](https://github.com/JAbarca74)
+
+</details>
