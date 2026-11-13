@@ -17,6 +17,8 @@ jobs:
     env:
       # Upload keystore (base64 .jks); see docs/SETUP_SERVICES_ES.md. Empty -> debug key.
       ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      # Pre-release whose assets are the .tflite files named in app/src/ml/models/*/registry.json.
+      MODELS_RELEASE_TAG: models-v0.1.0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -55,6 +57,28 @@ jobs:
           else
             echo "assemble=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Fetch TFLite models from the models release
+        if: steps.plan.outputs.assemble == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Weights are never committed; they live as assets of a pre-release (see
+          # docs/SETUP_SERVICES_ES.md §10.6). Place each one where the registry expects it;
+          # app/plugins/withTfliteModels.js then verifies its SHA-256 during prebuild.
+          DL_DIR="$RUNNER_TEMP/models"
+          gh release download "$MODELS_RELEASE_TAG" --pattern '*.tflite' --dir "$DL_DIR"
+          for registry in app/src/ml/models/*/registry.json; do
+            crop="$(jq -r '.crop' "$registry")"
+            model_file="$(jq -r '.model_file' "$registry")"
+            if [ ! -f "$DL_DIR/$model_file" ]; then
+              echo "::error title=Missing model::$model_file (${crop}) is not an asset of release $MODELS_RELEASE_TAG"
+              exit 1
+            fi
+            mkdir -p "ml/models/$crop"
+            mv "$DL_DIR/$model_file" "ml/models/$crop/$model_file"
+            echo "$crop: $model_file"
+          done
 
       - name: Decode upload keystore
         if: steps.plan.outputs.assemble == 'true' && env.ANDROID_KEYSTORE_BASE64 != ''
