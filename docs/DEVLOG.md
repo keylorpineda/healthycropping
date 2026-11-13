@@ -363,6 +363,12 @@ This log documents what was built, key architectural decisions, and technical pr
 ### Doubled App Id in Docs (`#138`)
 - `docs/` wrote the app id as `com.keylorpineda.healthycropping` with the last syllable repeated, and the Python packages the same way, in 23 places. The real values come from `app/app.json` and the `ml/src/` and `api/src/` package folders. The case that mattered was `docs/SETUP_SERVICES_ES.md`, which told the reader to type the doubled package name when registering the Android app in Firebase; the downloaded `google-services.json` would then not match the build. Several DEVLOG links pointed to `ml/src/` paths that do not exist; all relative links in this file now resolve.
 
+### Release Model Assets (`#76`, CI part)
+- Found while reviewing the release path: from `v1.0.0` on, `release.yml` sets `HEALTHYCROPPING_REQUIRE_MODELS=1`, so prebuild fails unless every `.tflite` named in `app/src/ml/models/*/registry.json` is in `ml/models/<crop>/`. Weights are never committed and no step fetched them, so tagging `v1.0.0` would have failed. Only the coffee model was published before (as an asset of `v0.2.0`).
+- The workflow now downloads the weights from a pre-release whose tag is the `MODELS_RELEASE_TAG` workflow variable (`models-v0.1.0`) and moves each file to the path its registry names. It fails with a named error when a file is missing; the hash check stays in `withTfliteModels.js` (one place), which already throws on a SHA-256 mismatch. The tag does not start with `v`, so it does not match the `v*.*.*` trigger.
+- The step runs only when the APK is assembled (tags from `v1.0.0` and manual runs), so pre-1.0 tags keep their prebuild-only check. The release step already attaches `ml/models/**/*.tflite`, so `v1.0.0` will carry the three models as the plan requires.
+- `docs/SETUP_SERVICES_ES.md` §10.6 explains how to check the hashes and create the pre-release. Not verified yet: the manual run needs the pre-release to exist.
+
 ## v1.1 — Maps, Hotspots & Weather Alerts
 
 ### Open-Meteo Microclimate Ingestion (`#42`)
