@@ -2,7 +2,7 @@
 
 ## 1. System Overview
 
-**HealthyCropping** (`com.keylorpineda.healthycroppingping`) is an offline-first Android decision-support system for smallholder farmers and field technicians in Costa Rica. Every core diagnostic workflow runs on the device without requiring network connectivity or a user account. Optional cloud features (multi-device farm/plot/scan synchronization, cloud photo backup, and retrieval-augmented agronomic explanations) are mediated exclusively through a stateless FastAPI backend (`api/`).
+**HealthyCropping** (`com.keylorpineda.healthycropping`) is an offline-first Android decision-support system for smallholder farmers and field technicians in Costa Rica. Every core diagnostic workflow runs on the device without requiring network connectivity or a user account. Optional cloud features (multi-device farm/plot/scan synchronization, cloud photo backup, and retrieval-augmented agronomic explanations) are mediated exclusively through a stateless FastAPI backend (`api/`).
 
 ```mermaid
 flowchart TB
@@ -42,7 +42,7 @@ flowchart TB
 ## 2. Monorepo Structure
 
 ```text
-healthycroppingping/
+healthycropping/
 ├── AGENTS.md                   # Engineering rules and workflow (< 4,000 chars)
 ├── .github/                    # Workflows (ci.yml, release.yml), templates, CODEOWNERS, dependabot
 ├── ml/                         # Python 3.12 (uv) — Dataset pipeline, training, evaluation, TFLite export
@@ -54,7 +54,7 @@ healthycroppingping/
 │   └── tests/                  # Pytest unit tests + shared preprocessing fixture generator
 ├── api/                        # Python 3.12 (uv) — FastAPI backend
 │   ├── scripts/                # fetch_agronomic_docs.py and build_rag_index.py (RAG build steps)
-│   ├── src/healthycroppingping_api/    # Routers, Pydantic v2 models, Firebase Admin auth, Firestore, RAG
+│   ├── src/healthycropping_api/    # Routers, Pydantic v2 models, Firebase Admin auth, Firestore, RAG
 │   └── tests/                  # Pytest + httpx suites including multi-tenant isolation tests
 ├── app/                        # Expo React Native (Android, pnpm)
 │   └── src/
@@ -128,7 +128,7 @@ To prevent train/serve skew between Python (`Pillow` / `TensorFlow`) and React N
 | **Node.js** | Node LTS | `24.18.0` (`.nvmrc`) | Pinned for local dev and GitHub Actions |
 | **Package Manager (JS)** | `pnpm` | `11.17.0` (`packageManager`) | Configured with `node-linker=hoisted` in `.npmrc` |
 | **Package Manager (Py)** | `uv` | `>=0.6` (`Python 3.12`) | Independent lockfiles in `api/uv.lock` and `ml/uv.lock` |
-| **App Framework** | Expo SDK (Dev Build) | `expo@~52.0.49` | Managed workflow with custom native build (`com.keylorpineda.healthycroppingping`) |
+| **App Framework** | Expo SDK (Dev Build) | `expo@~52.0.49` | Managed workflow with custom native build (`com.keylorpineda.healthycropping`) |
 | **React & React Native** | React / React Native | `react@18.3.1`, `react-native@0.76.7` | New Architecture enabled (`newArchEnabled: true`) |
 | **Navigation & Routing** | Expo Router | `expo-router@~4.0.22` | File-based routing rooted at `src/app` |
 | **Animation & Gestures** | Reanimated / Gestures | `react-native-reanimated@~3.16.7`, `react-native-gesture-handler@~2.20.2` | 60/120 fps native driver interactions |
