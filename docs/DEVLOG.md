@@ -369,6 +369,13 @@ This log documents what was built, key architectural decisions, and technical pr
 - The step runs only when the APK is assembled (tags from `v1.0.0` and manual runs), so pre-1.0 tags keep their prebuild-only check. The release step already attaches `ml/models/**/*.tflite`, so `v1.0.0` will carry the three models as the plan requires.
 - `docs/SETUP_SERVICES_ES.md` §10.6 explains how to check the hashes and create the pre-release. Not verified yet: the manual run needs the pre-release to exist.
 
+### Field Validation Analysis Tool (`#51`, preparation)
+- `ml/src/healthycropping_ml/field_validation.py` and `ml/scripts/analyze_field_validation.py` turn the per-photo CSV (`docs/field_validation/results_template.csv`) into the section 4 tables of `docs/FIELD_VALIDATION.md`, so the analysis is ready before the photos are taken.
+- Metrics per crop: top-1 agreement on in-scope photos (threshold ignored), coverage and accepted precision at the registry's `confidence_threshold` (the same pair used to calibrate it on validation data, so field and lab numbers compare directly), rejection rate for `other` photos, confusion matrix, recall per class, agreement per lighting, and nearest-rank latency p50/p95.
+- Acceptance is recomputed from `confidence` and the registry instead of trusting the recorded `status`; rows where they disagree are listed, because that means the phone is running a different registry than the repository.
+- Strict input checks (allowed values, labels from each crop's registry, confidence in 0-1, unique IDs) fail with the CSV line number. Pure standard library; 19 tests with synthetic rows.
+- `#51` stays open: the real analysis needs the field photos (`#38`).
+
 ## v1.1 — Maps, Hotspots & Weather Alerts
 
 ### Open-Meteo Microclimate Ingestion (`#42`)
