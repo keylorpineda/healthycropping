@@ -31,6 +31,22 @@ Public benchmark datasets (RoCoLe, BRACOL, CocoaMoniliaDataSet, UNAB, NM-AIST, B
 
 ## 3. Field Validation Results Table *(Populated in Phase 8)*
 
+Record one row per photo in a copy of [`field_validation/results_template.csv`](field_validation/results_template.csv) (UTF-8; keep the photos and the filled CSV out of Git if they show people or farm locations). Allowed values:
+
+- `crop`: `coffee`, `cacao`, `banana`.
+- `reference_condition`: one of the crop's model labels in `ml/models/<crop>/registry.json`, or `other` for a photo outside the model's classes (another disease, wrong organ, not a crop). `other` rows measure how often the threshold rejects out-of-scope photos.
+- `predicted_class`, `severity`, `status`: as shown by the app; `status` is `healthy`, `watch`, `act_now` or `low_confidence`.
+- `confidence`: between `0` and `1` (the app shows a percentage; divide by 100).
+- `lighting`: `shade`, `direct_sun`, `overcast`, `wet`. `capture_source`: `camera`, `gallery`. `latency_ms` may be empty.
+
+Then generate the tables for section 4:
+
+```bash
+cd ml && uv run python scripts/analyze_field_validation.py --csv path/to/results.csv --out path/to/summary.md
+```
+
+The script rejects unknown values and duplicate sample IDs with the line number, and flags samples whose recorded `low_confidence` status disagrees with the registry threshold (a sign the phone runs a different model build).
+
 | Sample ID | Crop | Region (CR) | Lighting | Reference Condition | Predicted Class | Severity | Confidence | Status | Latency (ms) | Outcome / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | `CR-COF-01` | Coffee | *Pending (Phase 8)* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* | *Pending* |

@@ -363,6 +363,13 @@ This log documents what was built, key architectural decisions, and technical pr
 ### Doubled App Id in Docs (`#138`)
 - `docs/` wrote the app id as `com.keylorpineda.healthycropping` with the last syllable repeated, and the Python packages the same way, in 23 places. The real values come from `app/app.json` and the `ml/src/` and `api/src/` package folders. The case that mattered was `docs/SETUP_SERVICES_ES.md`, which told the reader to type the doubled package name when registering the Android app in Firebase; the downloaded `google-services.json` would then not match the build. Several DEVLOG links pointed to `ml/src/` paths that do not exist; all relative links in this file now resolve.
 
+### Field Validation Analysis Tool (`#51`, preparation)
+- `ml/src/healthycropping_ml/field_validation.py` and `ml/scripts/analyze_field_validation.py` turn the per-photo CSV (`docs/field_validation/results_template.csv`) into the section 4 tables of `docs/FIELD_VALIDATION.md`, so the analysis is ready before the photos are taken.
+- Metrics per crop: top-1 agreement on in-scope photos (threshold ignored), coverage and accepted precision at the registry's `confidence_threshold` (the same pair used to calibrate it on validation data, so field and lab numbers compare directly), rejection rate for `other` photos, confusion matrix, recall per class, agreement per lighting, and nearest-rank latency p50/p95.
+- Acceptance is recomputed from `confidence` and the registry instead of trusting the recorded `status`; rows where they disagree are listed, because that means the phone is running a different registry than the repository.
+- Strict input checks (allowed values, labels from each crop's registry, confidence in 0-1, unique IDs) fail with the CSV line number. Pure standard library; 19 tests with synthetic rows.
+- `#51` stays open: the real analysis needs the field photos (`#38`).
+
 ## v1.1 — Maps, Hotspots & Weather Alerts
 
 ### Open-Meteo Microclimate Ingestion (`#42`)
