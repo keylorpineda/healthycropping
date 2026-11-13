@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Docs (`#138`): the app id and the Python package paths were written with a repeated syllable in 23 places, including the Android package name that `docs/SETUP_SERVICES_ES.md` tells the reader to register in Firebase.
 - Release bundling on a clean install (`#76`): the app now declares `query-string`, which `expo-router` `4.0.22` requires at load time without listing it as a dependency.
 
 ## [0.5.0] - 2026-11-08

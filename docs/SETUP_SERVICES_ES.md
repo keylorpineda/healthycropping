@@ -1,6 +1,6 @@
 # Guía Paso a Paso de Configuración de Servicios y Herramientas (`HealthyCropping`)
 
-Esta guía explica desde cero, paso a paso y con los nombres exactos de cada menú, cómo instalar las herramientas locales y configurar todos los servicios gratuitos necesarios para desarrollar, entrenar, desplegar y compilar **HealthyCropping** (`com.keylorpineda.healthycroppingping`).
+Esta guía explica desde cero, paso a paso y con los nombres exactos de cada menú, cómo instalar las herramientas locales y configurar todos los servicios gratuitos necesarios para desarrollar, entrenar, desplegar y compilar **HealthyCropping** (`com.keylorpineda.healthycropping`).
 
 > [!CAUTION]
 > **Regla de oro de seguridad**: Nunca subas a Git archivos `.env`, `service-account.json`, `google-services.json`, `kaggle.json` ni llaves de firma (`.jks` / `.keystore`). Todos están ignorados en `.gitignore`.
@@ -128,7 +128,7 @@ Usaremos el plan **Spark (Gratuito)** de Firebase.
 ### 2.4 Registrar la Aplicación Android y Obtener `google-services.json`
 1. En la página principal del proyecto en Firebase (**Project Overview**), haz clic en el ícono de **Android** (el robot verde) para agregar una app.
 2. Completa los campos:
-   - **Android package name**: escribe exactamente `com.keylorpineda.healthycroppingping`
+   - **Android package name**: escribe exactamente `com.keylorpineda.healthycropping`
    - **App nickname (opcional)**: `HealthyCropping Android`
    - **Debug signing certificate SHA-1 (opcional en MVP, requerido en v1.1 para Google Sign-In)**: puedes dejarlo en blanco por ahora.
 3. Haz clic en **Register app**.

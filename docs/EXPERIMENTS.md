@@ -96,7 +96,7 @@ This document records all training, hyperparameter, ablation, and quantization e
 
 ### 3.3 `coffee-v0.1.0` — Float16 TFLite Export & Confidence Calibration (`2026-10-16`, `#18`)
 
-- **Conversion**: `ml/src/healthycroppingping_ml/export_tflite.py` strips the `aug_*` and `head_dropout` layers, exports a batch-1 SavedModel via `keras.export.ExportArchive`, and converts it with `TFLiteConverter.from_saved_model` + `Optimize.DEFAULT` + `supported_types=[float16]`.
+- **Conversion**: `ml/src/healthycropping_ml/export_tflite.py` strips the `aug_*` and `head_dropout` layers, exports a batch-1 SavedModel via `keras.export.ExportArchive`, and converts it with `TFLiteConverter.from_saved_model` + `Optimize.DEFAULT` + `supported_types=[float16]`.
   - Converting a raw `tf.function` (`from_concrete_functions`) left the Keras 3 variables unfrozen, producing a `226 KB` model that output `NaN`; the SavedModel path fixed this.
 - **Parity (test, `n = 429`)**: Keras `81.35%` → TFLite `81.12%` (`-0.23 pp`), Macro-F1 `0.7290` → `0.7222`, top-1 predictions agree on `99.77%` of images. Size: `6,061,508` bytes.
 - **Threshold calibration (val, `n = 426`)**: lowest top-1 probability with accepted precision `>= 0.90` → **`0.79`** (`90.9%` precision, `69.5%` coverage). Test at `0.79`: `87.7%` precision, `72.0%` coverage.
@@ -209,13 +209,13 @@ This document records all training, hyperparameter, ablation, and quantization e
 
 ### 4.1 Coffee Leaf Disease Grad-CAM (`Phase 2`)
 
-Generated via `ml/src/healthycroppingping_ml/gradcam.py` on held-out test samples for all 6 coffee classes (`Original 224x224` | `Grad-CAM Activation` | `Lesion Focus Overlay`):
+Generated via `ml/src/healthycropping_ml/gradcam.py` on held-out test samples for all 6 coffee classes (`Original 224x224` | `Grad-CAM Activation` | `Lesion Focus Overlay`):
 
 ![Coffee Grad-CAM Visual Explanations per Class](assets/gradcam/coffee_gradcam.png)
 
 ### 4.2 Cacao Pod Disease Grad-CAM (`Phase 5`, `#28`)
 
-Generated via `ml/src/healthycroppingping_ml/gradcam.py` on held-out test samples for all 3 cacao pod classes (`healthy`, `monilia`, `black_pod`), confirming that spatial activations localize onto the white mycelial sporulation / chocolate necrosis of *Moniliophthora roreri* (`monilia`) and the dark advancing water-soaked lesions of *Phytophthora* (`black_pod`) rather than background foliage:
+Generated via `ml/src/healthycropping_ml/gradcam.py` on held-out test samples for all 3 cacao pod classes (`healthy`, `monilia`, `black_pod`), confirming that spatial activations localize onto the white mycelial sporulation / chocolate necrosis of *Moniliophthora roreri* (`monilia`) and the dark advancing water-soaked lesions of *Phytophthora* (`black_pod`) rather than background foliage:
 
 ![Cacao Grad-CAM Visual Explanations per Class](assets/gradcam/cacao_gradcam.png)
 

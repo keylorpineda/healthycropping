@@ -1,6 +1,6 @@
 # HealthyCropping — Master Implementation Plan
 
-This document tracks the phased delivery of **HealthyCropping** (`com.keylorpineda.healthycroppingping`). Work proceeds strictly one phase at a time, in order. Every task maps to an atomic GitHub Issue (`0.5–2` days of work) on the GitHub Project board.
+This document tracks the phased delivery of **HealthyCropping** (`com.keylorpineda.healthycropping`). Work proceeds strictly one phase at a time, in order. Every task maps to an atomic GitHub Issue (`0.5–2` days of work) on the GitHub Project board.
 
 ---
 
@@ -62,7 +62,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 ### Tasks
 - [x] Fine-tune top layers of `MobileNetV3-Large` on the coffee dataset at a lower learning rate after head warm-up, with early stopping on validation macro-F1; log runs in `docs/EXPERIMENTS.md` (target test macro-F1 >= `0.80`, or document experiments and root causes).
 - [x] Generate Grad-CAM visual explanations per coffee class for `README.md` and `docs/MODEL_CARD.md`.
-- [x] Export the best coffee model to float16 TFLite (`< 10 MB`) via `ml/src/healthycroppingping_ml/export_tflite.py` and verify TFLite test accuracy is within `1 pp` of the Keras model.
+- [x] Export the best coffee model to float16 TFLite (`< 10 MB`) via `ml/src/healthycropping_ml/export_tflite.py` and verify TFLite test accuracy is within `1 pp` of the Keras model.
 - [x] Calibrate the validation confidence threshold and write `ml/models/coffee/registry.json` (model filename, version, ordered labels, input size `224x224`, normalization parameters, confidence threshold).
 - [x] Create a deterministic shared fixture test (`ml/tests/test_preprocessing_fixture.py` + `ml/fixtures/preprocessing_fixture_224.json`) exporting reference RGB bytes and normalized tensor values so the React Native app can prove identical preprocessing.
 - [x] Complete the coffee section of `docs/MODEL_CARD.md`.
@@ -78,7 +78,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 **Milestone:** `v0.2.0 — Offline Android App & Coffee Diagnosis` (`#20`–`#23`)
 
 ### Tasks
-- [x] Initialize the Expo SDK Android application in `app/` (`com.keylorpineda.healthycroppingping`) using Expo Router, TypeScript strict, NativeWind, Reanimated, Gesture Handler, `expo-haptics`, `expo-image`, Zustand, and `i18next` (`es` default, `en` secondary); pin and document all native package versions in `docs/ARCHITECTURE.md`.
+- [x] Initialize the Expo SDK Android application in `app/` (`com.keylorpineda.healthycropping`) using Expo Router, TypeScript strict, NativeWind, Reanimated, Gesture Handler, `expo-haptics`, `expo-image`, Zustand, and `i18next` (`es` default, `en` secondary); pin and document all native package versions in `docs/ARCHITECTURE.md`.
 - [x] Build the agricultural design token system in `app/src/theme/` (deep leaf greens, soil/coffee browns, crop accents for coffee/cacao/banana, light/dark themes, typography scale, spacing, radii, elevation, and reduced-motion-aware animation tokens).
 - [x] Build and unit-test the reusable UI component library in `app/src/components/ui/`: `Button` (press-in scale `0.97` + spring release), `Card`, `Chip` (spring + crop color morph), `Badge`, `Sheet`, `Toast`, `Skeleton`, `EmptyState`, and `ProgressMeter` (WCAG AA contrast, touch targets >= `48 dp`, accessibility labels).
 - [x] Implement the Onboarding screen (3 slides + mandatory non-replacement agronomic disclaimer), Home screen (camera-first layout with primary Scan CTA, crop selector chips, recent scans placeholder, offline/sync status pill), and Settings screen (language switcher `es`/`en`, light/dark theme toggle, account status placeholder, About screen with dataset credits and model versions).
