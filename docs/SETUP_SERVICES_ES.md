@@ -433,3 +433,17 @@ El flujo `.github/workflows/release.yml` firma el APK con tu *upload keystore* p
 Si los *secrets* no existen, el flujo usa la llave de depuración (*debug*), avisa con una advertencia y nombra el archivo `healthycropping-vX.Y.Z-debug-signed.apk`. Ese APK sirve para pruebas, pero no para publicar `v1.0.0`.
 
 **`versionCode`**: el plugin `app/plugins/withReleaseSigning.js` lo calcula a partir de la versión (`0.5.0` -> `500`, `1.0.0` -> `10000`), así cada APK nuevo se puede instalar encima del anterior sin desinstalar.
+
+### 10.6 Modelos TFLite para el APK de Release
+Los pesos (`*.tflite`) **nunca** se suben a Git. El flujo `release.yml` los descarga de un *pre-release* de GitHub cuyo tag está en la variable `MODELS_RELEASE_TAG` del propio flujo (hoy `models-v0.1.0`), los coloca en `ml/models/<cultivo>/` y el plugin `app/plugins/withTfliteModels.js` verifica el SHA-256 de cada uno contra su `registry.json`. Si falta un modelo o el hash no coincide, el build falla en vez de publicar un APK que no puede diagnosticar.
+
+1. Reúne los tres archivos con los nombres exactos de `model_file` en `app/src/ml/models/<cultivo>/registry.json` (`coffee_v0.1.0_fp16.tflite`, `cacao_v0.1.0_fp16.tflite` y `banana_v0.1.0_fp16.tflite`). El de café ya está publicado como *asset* del release `v0.2.0` con el mismo hash: `gh release download v0.2.0 --pattern "*.tflite"`.
+2. Comprueba cada hash antes de subirlo (debe coincidir con `model_sha256`):
+   ```powershell
+   Get-FileHash -Algorithm SHA256 cacao_v0.1.0_fp16.tflite
+   ```
+3. Crea el *pre-release* y sube los tres archivos (el tag no empieza con `v`, así que no dispara el flujo de release):
+   ```powershell
+   gh release create models-v0.1.0 coffee_v0.1.0_fp16.tflite cacao_v0.1.0_fp16.tflite banana_v0.1.0_fp16.tflite --prerelease --title "Model weights v0.1.0" --notes "TFLite float16 weights used by release builds. SHA-256 values are in each registry.json."
+   ```
+4. Cuando entrenes modelos nuevos: crea otro *pre-release* (por ejemplo `models-v0.2.0`), actualiza los `registry.json` y cambia `MODELS_RELEASE_TAG` en `.github/workflows/release.yml` en el mismo PR.
