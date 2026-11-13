@@ -360,6 +360,13 @@ This log documents what was built, key architectural decisions, and technical pr
 - Follow-up after the merge: `expo-router` `4.0.22` loads `query-string` at module level (`build/global-state/routeInfo.js` and `build/fork/getPathFromState.js`, `require("query-string")`) but does not list it in its `dependencies`; it used to arrive through React Navigation 6, and React Navigation 7 no longer depends on it. A clean hoisted install therefore has no `query-string`, and the release bundle cannot resolve it, so the app now declares `query-string` `^7.1.3` directly (`require.resolve` from `expo-router` finds the hoisted copy; lint, typecheck and the 267 app tests pass).
 - Not verified yet: the CI run needs the four secrets set by the repository owner; installing the APK and launching it offline on a phone remain for the device checks, so this PR is part of `#76`, not all of it.
 
+### Field Validation Analysis Tool (`#51`, preparation)
+- `ml/src/healthycropping_ml/field_validation.py` and `ml/scripts/analyze_field_validation.py` turn the per-photo CSV (`docs/field_validation/results_template.csv`) into the section 4 tables of `docs/FIELD_VALIDATION.md`, so the analysis is ready before the photos are taken.
+- Metrics per crop: top-1 agreement on in-scope photos (threshold ignored), coverage and accepted precision at the registry's `confidence_threshold` (the same pair used to calibrate it on validation data, so field and lab numbers compare directly), rejection rate for `other` photos, confusion matrix, recall per class, agreement per lighting, and nearest-rank latency p50/p95.
+- Acceptance is recomputed from `confidence` and the registry instead of trusting the recorded `status`; rows where they disagree are listed, because that means the phone is running a different registry than the repository.
+- Strict input checks (allowed values, labels from each crop's registry, confidence in 0-1, unique IDs) fail with the CSV line number. Pure standard library; 19 tests with synthetic rows.
+- `#51` stays open: the real analysis needs the field photos (`#38`).
+
 ## v1.1 — Maps, Hotspots & Weather Alerts
 
 ### Open-Meteo Microclimate Ingestion (`#42`)
