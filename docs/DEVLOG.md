@@ -363,6 +363,14 @@ This log documents what was built, key architectural decisions, and technical pr
 ### Doubled App Id in Docs (`#138`)
 - `docs/` wrote the app id as `com.keylorpineda.healthycropping` with the last syllable repeated, and the Python packages the same way, in 23 places. The real values come from `app/app.json` and the `ml/src/` and `api/src/` package folders. The case that mattered was `docs/SETUP_SERVICES_ES.md`, which told the reader to type the doubled package name when registering the Android app in Firebase; the downloaded `google-services.json` would then not match the build. Several DEVLOG links pointed to `ml/src/` paths that do not exist; all relative links in this file now resolve.
 
+### README Card (`#53`, partial)
+- The README is now one tall SVG "field notebook" card in light and dark variants (`<picture>` + `prefers-color-scheme`), with SVG tab buttons above it and the full text, tables, confusion matrices and Grad-CAMs in a `<details>` block below for screen readers and search. English only, per the language rule.
+- `ml/scripts/build_readme_card.py` generates the card from `ml/models/<crop>/registry.json` (accuracy, threshold, coverage, size, labels), so the numbers cannot drift from the exported models; test macro-F1 is not in the registries and is a constant taken from `docs/EXPERIMENTS.md`. `ml/tests/test_readme_card.py` fails when the committed SVGs are stale, contain a script or reference an external URL.
+- Animations are CSS `@keyframes` only, since GitHub serves README images without scripts: a scan line over a coffee leaf with rust spots and a detection box, a packet travelling the five-step pipeline, bars filling per crop, verdict stamps, a cycling result card and phase checkmarks. `prefers-reduced-motion: reduce` stops every animation; base styles are the final frame, so nothing is hidden without motion.
+- Honesty choices: coffee's macro-F1 (`0.72`) is shown with its gap to the `0.80` target, the result card is labelled as illustrative, and no disease-loss statistics appear because none with a verified source are in `docs/`. The card draws no app screens, so the coming app redesign does not make it stale.
+- Checked by rendering both variants in a browser; the old `hero-light.svg` / `hero-dark.svg` were only used by the README and are removed.
+- `#53` stays open: Android screenshots or a demo GIF (after the redesign) and the field metrics (`#38`) are still missing.
+
 ## v1.1 — Maps, Hotspots & Weather Alerts
 
 ### Open-Meteo Microclimate Ingestion (`#42`)
