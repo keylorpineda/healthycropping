@@ -360,6 +360,14 @@ This log documents what was built, key architectural decisions, and technical pr
 - Follow-up after the merge: `expo-router` `4.0.22` loads `query-string` at module level (`build/global-state/routeInfo.js` and `build/fork/getPathFromState.js`, `require("query-string")`) but does not list it in its `dependencies`; it used to arrive through React Navigation 6, and React Navigation 7 no longer depends on it. A clean hoisted install therefore has no `query-string`, and the release bundle cannot resolve it, so the app now declares `query-string` `^7.1.3` directly (`require.resolve` from `expo-router` finds the hoisted copy; lint, typecheck and the 267 app tests pass).
 - Not verified yet: the CI run needs the four secrets set by the repository owner; installing the APK and launching it offline on a phone remain for the device checks, so this PR is part of `#76`, not all of it.
 
+### README Card (`#53`, partial)
+- The README is now one tall SVG "field notebook" card in light and dark variants (`<picture>` + `prefers-color-scheme`), with SVG tab buttons above it and the full text, tables, confusion matrices and Grad-CAMs in a `<details>` block below for screen readers and search. English only, per the language rule.
+- `ml/scripts/build_readme_card.py` generates the card from `ml/models/<crop>/registry.json` (accuracy, threshold, coverage, size, labels), so the numbers cannot drift from the exported models; test macro-F1 is not in the registries and is a constant taken from `docs/EXPERIMENTS.md`. `ml/tests/test_readme_card.py` fails when the committed SVGs are stale, contain a script or reference an external URL.
+- Animations are CSS `@keyframes` only, since GitHub serves README images without scripts: a scan line over a coffee leaf with rust spots and a detection box, a packet travelling the five-step pipeline, bars filling per crop, verdict stamps, a cycling result card and phase checkmarks. `prefers-reduced-motion: reduce` stops every animation; base styles are the final frame, so nothing is hidden without motion.
+- Honesty choices: coffee's macro-F1 (`0.72`) is shown with its gap to the `0.80` target, the result card is labelled as illustrative, and no disease-loss statistics appear because none with a verified source are in `docs/`. The card draws no app screens, so the coming app redesign does not make it stale.
+- Checked by rendering both variants in a browser; the old `hero-light.svg` / `hero-dark.svg` were only used by the README and are removed.
+- `#53` stays open: Android screenshots or a demo GIF (after the redesign) and the field metrics (`#38`) are still missing.
+
 ## v1.1 — Maps, Hotspots & Weather Alerts
 
 ### Open-Meteo Microclimate Ingestion (`#42`)
