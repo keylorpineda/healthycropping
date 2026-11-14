@@ -39,13 +39,15 @@ export class PlotsRepository {
     const now = new Date().toISOString();
 
     db.runSync(
-      `INSERT INTO plots (id, farm_id, name, crop, area_ha, created_at, updated_at, deleted_at, sync_status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO plots (id, farm_id, name, crop, area_ha, latitude, longitude, created_at, updated_at, deleted_at, sync_status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       id,
       input.farm_id,
       input.name.trim(),
       input.crop,
       input.area_ha ?? null,
+      input.latitude ?? null,
+      input.longitude ?? null,
       now,
       now,
       null,
@@ -67,13 +69,17 @@ export class PlotsRepository {
     const name = input.name !== undefined ? input.name.trim() : current.name;
     const crop = input.crop !== undefined ? input.crop : current.crop;
     const area_ha = input.area_ha !== undefined ? input.area_ha : current.area_ha;
+    const latitude = input.latitude !== undefined ? input.latitude : (current.latitude ?? null);
+    const longitude = input.longitude !== undefined ? input.longitude : (current.longitude ?? null);
     const now = new Date().toISOString();
 
     db.runSync(
-      `UPDATE plots SET name = ?, crop = ?, area_ha = ?, updated_at = ?, sync_status = ? WHERE id = ?`,
+      `UPDATE plots SET name = ?, crop = ?, area_ha = ?, latitude = ?, longitude = ?, updated_at = ?, sync_status = ? WHERE id = ?`,
       name,
       crop,
       area_ha,
+      latitude,
+      longitude,
       now,
       'pending',
       id,
