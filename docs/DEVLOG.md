@@ -382,3 +382,11 @@ This log documents what was built, key architectural decisions, and technical pr
 - Plots do not have coordinates yet (the map editor is `#41`), so the app sends `latitude`/`longitude`; the plot supplies the crop and ownership (`404` for other users' or deleted plots). Coordinates are rounded to 2 decimals by the `#42` service before reaching Open-Meteo.
 - Live sanity check (not a validation): for 2026-11-08, San José (1,160 m) gave low moniliasis risk and Guápiles (Caribbean lowlands, a cacao region) high, with 6 of the last 7 days favourable; coffee in San José was moderate.
 - Not done: Sigatoka thresholds (needs CORBANA/agronomist input), black pod (CATIE describes intense rain and waterlogging without numbers), field validation of the provisional choices.
+
+### Plot Location Point (`#136`)
+- One optional point per plot instead of waiting for polygons (`#41`, blocked by `#39`): it unblocks the weather risk card (`#79`), and the point can later become the polygon's reference point.
+- API: `PlotCreate` / `PlotUpdate` take `latitude` (-90..90) and `longitude` (-180..180). A shared validator rejects one coordinate sent alone, and one set while the other is `null`, with `422`; a `PATCH` that omits both keeps the stored point, and sending both as `null` clears it. `PlotResponse` defaults both to `null`, so documents written to Firestore before this change still read.
+- App: `CREATE TABLE IF NOT EXISTS` never changes an existing table, so `schema.ts` now lists `ADDED_COLUMNS` and `initDatabase` adds any that `PRAGMA table_info` does not report (nullable `REAL`, so existing plots read as `null`). This keeps upgrades idempotent without a schema version table; a version table can replace it if a migration ever needs more than adding columns.
+- The plot form has two optional fields. `parsePlotLocation` mirrors the API rules, accepts a decimal comma (common on Spanish keyboards), and its error is shown under the fields in place of the hint.
+- Sync: `toPlotPayload` sends both fields, and the shared `sync_contract.json` fixture now includes them, so the app and API contract tests both check the round trip.
+- Not done: picking the point on a map or from GPS (`#41`), and the weather risk card (`#79`). Plots cannot be edited in the app yet, so a point is set when the plot is created.
