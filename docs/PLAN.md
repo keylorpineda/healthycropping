@@ -186,6 +186,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 - [ ] **Spatial Disease Hotspot Markers (`#77`)**: Render clustered disease markers color-coded by status badge (`healthy` / `watch` / `act now`) inside plot polygons.
 - [x] **Open-Meteo Microclimate Ingestion (`#42`)**: Query historical and forecast humidity, precipitation, and temperature per plot from Open-Meteo (`CC BY 4.0`).
 - [ ] **Rule-Based Disease Risk Engine (`#78`)**: Deterministic agronomic risk thresholds (`low` / `moderate` / `high`) for coffee rust, cacao monilia, and banana sigatoka in `api/`.
+- [x] **Plot Location Point (`#136`)**: Optional `latitude` / `longitude` per plot in `api/` and the app's SQLite (migration for existing installs), synced through `/plots`, so `#79` can request a plot's weather risk before the polygon editor (`#41`).
 - [ ] **Weather Risk Alert Banner & Card (`#79`)**: Offline-cached weather risk alerts and plot microclimate forecast card with `CC BY 4.0` attribution in `app/`.
 
 ### Milestone `v1.2.0 — Earth Engine NDVI & Crop Expansion` (`#43`–`#44`, `#81`–`#85` — 7 issues, due `2027-01-25`)

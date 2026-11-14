@@ -95,7 +95,7 @@ To prevent train/serve skew between Python (`Pillow` / `TensorFlow`) and React N
 
 - **Local Tables**:
   - `farms`: `id` (client UUID v4), `name`, `region`, `altitude_m`, `created_at`, `updated_at`, `deleted_at`, `sync_status` (`pending` | `synced` | `failed`).
-  - `plots`: `id` (client UUID v4), `farm_id`, `name`, `crop`, `area_ha`, `created_at`, `updated_at`, `deleted_at`, `sync_status`.
+  - `plots`: `id` (client UUID v4), `farm_id`, `name`, `crop`, `area_ha`, `latitude`, `longitude` (optional WGS84 point, both or neither), `created_at`, `updated_at`, `deleted_at`, `sync_status`.
   - `scans`: `id` (client UUID v4), `farm_id` (nullable), `plot_id` (nullable), `crop`, `predicted_class`, `severity`, `confidence`, `status` (`healthy` | `watch` | `act_now`), `model_version`, `local_photo_uri`, `cloudinary_public_id` (nullable), `explanation_json` (nullable), `scanned_at`, `updated_at`, `deleted_at`, `sync_status`.
 - **Idempotent Sync**:
   - Every entity is assigned a deterministic client-generated UUID v4 at creation time.
