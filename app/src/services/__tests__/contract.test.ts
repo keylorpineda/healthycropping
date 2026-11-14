@@ -34,6 +34,8 @@ const PLOT: Plot = {
   name: 'Lote Norte',
   crop: 'coffee',
   area_ha: 2.5,
+  latitude: 9.6611,
+  longitude: -84.0225,
   created_at: '2026-10-30T08:05:00.000Z',
   updated_at: '2026-10-30T08:05:00.000Z',
   deleted_at: null,

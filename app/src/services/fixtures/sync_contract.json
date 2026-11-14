@@ -16,13 +16,17 @@
     "farm_id": "3f1c2a4e-5b6d-4e7f-8a9b-0c1d2e3f4a5b",
     "name": "Lote Norte",
     "crop": "coffee",
-    "area_ha": 2.5
+    "area_ha": 2.5,
+    "latitude": 9.6611,
+    "longitude": -84.0225
   },
   "plot_update": {
     "farm_id": "3f1c2a4e-5b6d-4e7f-8a9b-0c1d2e3f4a5b",
     "name": "Lote Norte",
     "crop": "coffee",
-    "area_ha": 2.5
+    "area_ha": 2.5,
+    "latitude": 9.6611,
+    "longitude": -84.0225
   },
   "scan_sync_request": {
     "scans": [
