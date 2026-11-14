@@ -4,7 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Badge, Button, Card, Chip, EmptyState, Sheet } from '@/components/ui';
-import { farmsRepository, plotsRepository, type Farm, type Plot } from '@/db';
+import {
+  farmsRepository,
+  parsePlotLocation,
+  plotsRepository,
+  type Farm,
+  type Plot,
+  type PlotLocationError,
+} from '@/db';
 import { useTheme } from '@/theme';
 import { type SupportedCrop } from '@/version';
 
@@ -35,6 +42,9 @@ export function FarmsScreen({
   const [newPlotName, setNewPlotName] = useState<string>('');
   const [newPlotCrop, setNewPlotCrop] = useState<SupportedCrop>('coffee');
   const [newPlotArea, setNewPlotArea] = useState<string>('');
+  const [newPlotLatitude, setNewPlotLatitude] = useState<string>('');
+  const [newPlotLongitude, setNewPlotLongitude] = useState<string>('');
+  const [plotLocationError, setPlotLocationError] = useState<PlotLocationError | null>(null);
 
   const loadFarmsAndPlots = () => {
     const loadedFarms = farmsRepository.getAll();
@@ -87,11 +97,20 @@ export function FarmsScreen({
     setNewPlotName('');
     setNewPlotCrop('coffee');
     setNewPlotArea('');
+    setNewPlotLatitude('');
+    setNewPlotLongitude('');
+    setPlotLocationError(null);
     setIsAddPlotVisible(true);
   };
 
   const handleCreatePlot = () => {
     if (!activeFarmForPlot || !newPlotName.trim()) return;
+
+    const location = parsePlotLocation(newPlotLatitude, newPlotLongitude);
+    if (!location.ok) {
+      setPlotLocationError(location.error);
+      return;
+    }
 
     const area = newPlotArea ? parseFloat(newPlotArea) : null;
     plotsRepository.create({
@@ -99,6 +118,8 @@ export function FarmsScreen({
       name: newPlotName,
       crop: newPlotCrop,
       area_ha: isNaN(area ?? NaN) ? null : area,
+      latitude: location.latitude,
+      longitude: location.longitude,
     });
 
     setIsAddPlotVisible(false);
@@ -439,6 +460,66 @@ export function FarmsScreen({
             testID="new-plot-area-input"
           />
 
+          <View style={styles.locationRow}>
+            {(
+              [
+                ['latitude', newPlotLatitude, setNewPlotLatitude, 'e.g. 9.6611'],
+                ['longitude', newPlotLongitude, setNewPlotLongitude, 'e.g. -84.0225'],
+              ] as const
+            ).map(([field, value, setValue, placeholder]) => (
+              <View key={field} style={styles.locationField}>
+                <Text
+                  style={[
+                    theme.typography.caption,
+                    {
+                      fontWeight: '700',
+                      color: theme.colors.textSecondary,
+                      marginTop: 12,
+                      marginBottom: 4,
+                    },
+                  ]}
+                >
+                  {t(`farms.${field}`)}
+                </Text>
+                <TextInput
+                  value={value}
+                  onChangeText={(text) => {
+                    setValue(text);
+                    setPlotLocationError(null);
+                  }}
+                  accessibilityLabel={t(`farms.${field}`)}
+                  placeholder={placeholder}
+                  keyboardType="numbers-and-punctuation"
+                  placeholderTextColor={theme.colors.textTertiary}
+                  style={[
+                    styles.input,
+                    {
+                      color: theme.colors.textPrimary,
+                      backgroundColor: theme.colors.surfaceSubtle,
+                      borderColor: theme.colors.controlBorder,
+                    },
+                  ]}
+                  testID={`new-plot-${field}-input`}
+                />
+              </View>
+            ))}
+          </View>
+          <Text
+            style={[
+              theme.typography.caption,
+              {
+                color: plotLocationError
+                  ? theme.colors.status.actNow.main
+                  : theme.colors.textTertiary,
+                marginTop: 4,
+              },
+            ]}
+            accessibilityLiveRegion={plotLocationError ? 'polite' : 'none'}
+            testID="new-plot-location-hint"
+          >
+            {t(plotLocationError ? `farms.${plotLocationError}` : 'farms.locationHint')}
+          </Text>
+
           <View style={{ marginTop: 20 }}>
             <Button
               title={t('farms.save')}
@@ -576,6 +657,13 @@ const styles = StyleSheet.create({
   },
   sheetForm: {
     paddingVertical: 12,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  locationField: {
+    flex: 1,
   },
   input: {
     minHeight: 48,
