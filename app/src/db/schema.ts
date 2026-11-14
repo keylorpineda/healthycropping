@@ -1,3 +1,12 @@
+/**
+ * Columns added after a table was first shipped. `CREATE TABLE IF NOT EXISTS` leaves
+ * existing tables alone, so `initDatabase` adds any of these that are missing.
+ */
+export const ADDED_COLUMNS: readonly { table: string; column: string; type: string }[] = [
+  { table: 'plots', column: 'latitude', type: 'REAL' },
+  { table: 'plots', column: 'longitude', type: 'REAL' },
+];
+
 export const SCHEMA_SQL = `
 PRAGMA journal_mode = WAL;
 
@@ -21,6 +30,8 @@ CREATE TABLE IF NOT EXISTS plots (
   name TEXT NOT NULL,
   crop TEXT NOT NULL,
   area_ha REAL,
+  latitude REAL,
+  longitude REAL,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   deleted_at TEXT,
