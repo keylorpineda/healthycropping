@@ -181,3 +181,56 @@ def test_routes_require_token(client: TestClient, method: str, path: str) -> Non
     response = client.request(method, path)
 
     assert response.status_code == 401
+
+
+def test_plot_location_round_trips_and_can_be_cleared(client: TestClient) -> None:
+    farm = create_farm(client)
+    plot = create_plot(client, farm["id"], latitude=9.6611, longitude=-84.0225)
+    assert (plot["latitude"], plot["longitude"]) == (9.6611, -84.0225)
+
+    renamed = client.patch(f"/plots/{plot['id']}", json={"name": "Lote 2"}, headers=bearer())
+    assert (renamed.json()["latitude"], renamed.json()["longitude"]) == (9.6611, -84.0225)
+
+    cleared = client.patch(
+        f"/plots/{plot['id']}", json={"latitude": None, "longitude": None}, headers=bearer()
+    )
+    assert cleared.status_code == 200
+    assert (cleared.json()["latitude"], cleared.json()["longitude"]) == (None, None)
+
+
+def test_plot_without_location_returns_nulls(client: TestClient) -> None:
+    plot = create_plot(client, create_farm(client)["id"])
+
+    assert (plot["latitude"], plot["longitude"]) == (None, None)
+
+
+def test_plot_stored_before_locations_reads_as_null(
+    client: TestClient, store: InMemoryDocumentStore
+) -> None:
+    plot = create_plot(client, create_farm(client)["id"])
+    for field in ("latitude", "longitude"):
+        del store.collections["plots"][plot["id"]][field]
+
+    response = client.get(f"/plots/{plot['id']}", headers=bearer())
+
+    assert response.status_code == 200
+    assert (response.json()["latitude"], response.json()["longitude"]) == (None, None)
+
+
+@pytest.mark.parametrize(
+    "location",
+    [
+        {"latitude": 9.66},
+        {"longitude": -84.02},
+        {"latitude": 9.66, "longitude": None},
+        {"latitude": 90.5, "longitude": -84.02},
+        {"latitude": 9.66, "longitude": -180.5},
+    ],
+)
+def test_invalid_plot_location_is_rejected(client: TestClient, location: dict[str, Any]) -> None:
+    farm = create_farm(client)
+    plot = create_plot(client, farm["id"])
+    body = {"id": new_id(), "farm_id": farm["id"], "name": "Lote 1", "crop": "coffee", **location}
+
+    assert client.post("/plots", json=body, headers=bearer()).status_code == 422
+    assert client.patch(f"/plots/{plot['id']}", json=location, headers=bearer()).status_code == 422

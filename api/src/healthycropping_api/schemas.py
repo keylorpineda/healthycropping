@@ -11,6 +11,9 @@ Crop = Literal["coffee", "cacao", "banana"]
 Name = Annotated[str, Field(min_length=1, max_length=120)]
 AltitudeM = Annotated[float, Field(ge=0, le=6000)]
 AreaHa = Annotated[float, Field(gt=0, le=100_000)]
+# WGS84 decimal degrees of one reference point inside the plot (#136).
+Latitude = Annotated[float, Field(ge=-90, le=90)]
+Longitude = Annotated[float, Field(ge=-180, le=180)]
 
 
 class HealthResponse(BaseModel):
@@ -52,6 +55,21 @@ class PatchModel(RequestModel):
         return self
 
 
+class PlotLocationMixin(BaseModel):
+    """A plot point is all or nothing: one coordinate alone cannot locate weather data."""
+
+    @model_validator(mode="after")
+    def _require_both_coordinates(self) -> Self:
+        sent = {"latitude", "longitude"} & self.model_fields_set
+        if len(sent) == 1:
+            raise ValueError("'latitude' and 'longitude' must be sent together")
+        latitude = getattr(self, "latitude", None)
+        longitude = getattr(self, "longitude", None)
+        if (latitude is None) != (longitude is None):
+            raise ValueError("'latitude' and 'longitude' must both be set or both be null")
+        return self
+
+
 class FarmCreate(RequestModel):
     id: UUID4
     name: Name
@@ -76,21 +94,25 @@ class FarmResponse(BaseModel):
     updated_at: datetime
 
 
-class PlotCreate(RequestModel):
+class PlotCreate(RequestModel, PlotLocationMixin):
     id: UUID4
     farm_id: UUID4
     name: Name
     crop: Crop
     area_ha: AreaHa | None = None
+    latitude: Latitude | None = None
+    longitude: Longitude | None = None
 
 
-class PlotUpdate(PatchModel):
+class PlotUpdate(PatchModel, PlotLocationMixin):
     required_fields = ("farm_id", "name", "crop")
 
     farm_id: UUID4 | None = None
     name: Name | None = None
     crop: Crop | None = None
     area_ha: AreaHa | None = None
+    latitude: Latitude | None = None
+    longitude: Longitude | None = None
 
 
 class PlotResponse(BaseModel):
@@ -99,6 +121,9 @@ class PlotResponse(BaseModel):
     name: str
     crop: Crop
     area_ha: float | None
+    # Plots stored before #136 have no coordinates.
+    latitude: float | None = None
+    longitude: float | None = None
     created_at: datetime
     updated_at: datetime
 
