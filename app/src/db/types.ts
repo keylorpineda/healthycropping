@@ -32,6 +32,9 @@ export interface Plot {
   name: string;
   crop: SupportedCrop;
   area_ha: number | null;
+  /** WGS84 reference point of the plot (#136); both set or both null. */
+  latitude: number | null;
+  longitude: number | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -43,12 +46,16 @@ export interface CreatePlotInput {
   name: string;
   crop: SupportedCrop;
   area_ha?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface UpdatePlotInput {
   name?: string;
   crop?: SupportedCrop;
   area_ha?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface Scan {

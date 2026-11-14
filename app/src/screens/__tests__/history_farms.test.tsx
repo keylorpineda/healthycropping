@@ -219,5 +219,27 @@ describe('History, ScanDetail, and Farms Screens', () => {
       fireEvent.press(deletePlotBtn);
       expect(plotsRepository.getByFarm(farmId).length).toBe(0);
     });
+
+    it('saves an optional plot location and rejects half a location', () => {
+      const farm = farmsRepository.create({ name: 'Finca Aquiares', region: 'Turrialba' });
+      renderWithTheme(<FarmsScreen />);
+
+      fireEvent.press(screen.getByTestId(`add-plot-btn-${farm.id}`));
+      fireEvent.changeText(screen.getByTestId('new-plot-name-input'), 'Lote Alto');
+      fireEvent.changeText(screen.getByTestId('new-plot-latitude-input'), '9.6611');
+      fireEvent.press(screen.getByTestId('submit-new-plot-btn'));
+
+      expect(plotsRepository.getByFarm(farm.id)).toHaveLength(0);
+      expect(screen.getByTestId('new-plot-location-hint')).toHaveTextContent(
+        'Ingrese latitud y longitud, o deje ambas vacías.',
+      );
+
+      fireEvent.changeText(screen.getByTestId('new-plot-longitude-input'), '-84,0225');
+      fireEvent.press(screen.getByTestId('submit-new-plot-btn'));
+
+      const [plot] = plotsRepository.getByFarm(farm.id);
+      expect(plot?.latitude).toBe(9.6611);
+      expect(plot?.longitude).toBe(-84.0225);
+    });
   });
 });
