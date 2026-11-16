@@ -196,6 +196,7 @@
     "addPlot": "New plot",
     "plotName": "Plot name",
     "areaHa": "Area (ha)",
+    "openPlotHint": "Opens the plot's location and weather risk.",
     "latitude": "Latitude",
     "longitude": "Longitude",
     "locationHint": "Optional: a point inside the plot, in decimal degrees, used for weather risk.",
@@ -284,6 +285,54 @@
     "languages": {
       "es": "Spanish",
       "en": "English"
+    }
+  },
+  "plotDetail": {
+    "title": "Plot",
+    "notFound": "Plot not found",
+    "notFoundDescription": "It may have been deleted.",
+    "location": "Location: {{latitude}}, {{longitude}}",
+    "noLocation": "No location saved.",
+    "setLocation": "Add location",
+    "editLocation": "Change location"
+  },
+  "weather": {
+    "title": "Weather disease risk",
+    "loading": "Loading the weather risk",
+    "levels": {
+      "low": "Low",
+      "moderate": "Moderate",
+      "high": "High"
+    },
+    "notEvaluated": "Not evaluated",
+    "recentDays": "Last {{days}} days: {{count}} with weather favourable to the disease.",
+    "upcomingDays": "Next {{days}} days: {{count}} with weather favourable to the disease.",
+    "insufficientEvidence": "There are no verified weather thresholds to estimate this risk yet.",
+    "sources": "Sources",
+    "provisional": "Some thresholds are provisional and await an agronomist's review.",
+    "disclaimer": "Estimated from weather data with published thresholds; it is not a diagnosis. Inspect the plot and consult an agronomist before applying agrochemicals.",
+    "stale": "Open-Meteo did not respond; showing the latest available data.",
+    "updatedAt": "Updated: {{date}}",
+    "savedAt": "Saved on this phone: {{date}}",
+    "refresh": "Refresh",
+    "attribution": "Weather data by Open-Meteo.com ({{license}})",
+    "attributionHint": "Opens the Open-Meteo website.",
+    "banner": "{{level}} risk of {{disease}} in {{plot}}",
+    "bannerLevels": {
+      "moderate": "Moderate",
+      "high": "High"
+    },
+    "bannerMore": "{{count}} more alert(s) in your plots.",
+    "bannerNote": "Estimated from the weather, not a diagnosis.",
+    "bannerHint": "Opens the plot detail.",
+    "errors": {
+      "noLocation": "Add the plot's location to estimate its weather risk.",
+      "notConfigured": "Weather risk is not available in this version of the app.",
+      "signedOut": "Sign in to see the plot's weather risk.",
+      "notSynced": "The plot has not synced yet. Connect and try again.",
+      "offline": "You are offline. Connect to load the risk; it will then be saved on this phone.",
+      "rateLimited": "You reached the hourly limit of requests. Try again later.",
+      "unavailable": "Weather risk is not available right now. Try again later."
     }
   }
 }
