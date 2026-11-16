@@ -6,5 +6,10 @@ import { FarmsScreen } from '@/screens';
 export default function FarmsRoute(): React.JSX.Element {
   const router = useRouter();
 
-  return <FarmsScreen onBack={() => router.back()} />;
+  return (
+    <FarmsScreen
+      onBack={() => router.back()}
+      onOpenPlot={(id) => router.push({ pathname: '/plot-detail', params: { id } })}
+    />
+  );
 }

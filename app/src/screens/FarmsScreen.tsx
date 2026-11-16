@@ -17,11 +17,14 @@ import { type SupportedCrop } from '@/version';
 
 export interface FarmsScreenProps {
   onBack?: () => void;
+  /** Opens Plot Detail (location and weather risk). */
+  onOpenPlot?: (plotId: string) => void;
   testID?: string;
 }
 
 export function FarmsScreen({
   onBack,
+  onOpenPlot,
   testID = 'farms-screen',
 }: FarmsScreenProps): React.JSX.Element {
   const { t } = useTranslation();
@@ -202,7 +205,14 @@ export function FarmsScreen({
               style={[styles.plotRow, { borderBottomColor: theme.colors.borderSubtle }]}
               testID={`plot-row-${p.id}`}
             >
-              <View style={styles.plotInfoCol}>
+              <Pressable
+                onPress={onOpenPlot ? () => onOpenPlot(p.id) : undefined}
+                disabled={!onOpenPlot}
+                accessibilityRole={onOpenPlot ? 'button' : undefined}
+                accessibilityHint={onOpenPlot ? t('farms.openPlotHint') : undefined}
+                style={styles.plotInfoCol}
+                testID={`open-plot-${p.id}`}
+              >
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Badge label={t(`crops.${p.crop}`)} variant={p.crop} size="sm" />
                   <Text
@@ -226,7 +236,7 @@ export function FarmsScreen({
                     {`${p.area_ha} ha`}
                   </Text>
                 )}
-              </View>
+              </Pressable>
 
               <Pressable
                 onPress={() => handleDeletePlot(p.id)}
@@ -648,6 +658,8 @@ const styles = StyleSheet.create({
   },
   plotInfoCol: {
     flex: 1,
+    minHeight: 48,
+    justifyContent: 'center',
   },
   smallDeleteBtn: {
     minWidth: 48,

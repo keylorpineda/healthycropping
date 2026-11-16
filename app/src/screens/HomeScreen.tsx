@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { SyncStatusPill } from '@/components/sync';
+import { WeatherAlertBanner } from '@/components/weather';
 import { Badge, Button, Card, Chip, EmptyState, Toast } from '@/components/ui';
 import { type Scan, scansRepository } from '@/db';
 import { isCropAvailable } from '@/ml/registry';
@@ -16,6 +17,8 @@ export interface HomeScreenProps {
   onOpenHistory?: () => void;
   onOpenFarms?: () => void;
   onOpenScanDetail?: (scanId: string) => void;
+  /** Opens Plot Detail from the weather alert banner. */
+  onOpenPlot?: (plotId: string) => void;
   testID?: string;
 }
 
@@ -25,6 +28,7 @@ export function HomeScreen({
   onOpenHistory,
   onOpenFarms,
   onOpenScanDetail,
+  onOpenPlot,
   testID = 'home-screen',
 }: HomeScreenProps): React.JSX.Element {
   const { t } = useTranslation();
@@ -139,6 +143,8 @@ export function HomeScreen({
             </Pressable>
           </View>
         </View>
+
+        <WeatherAlertBanner onOpenPlot={onOpenPlot} />
 
         {/* Crop Selection Section */}
         <View style={styles.section}>
