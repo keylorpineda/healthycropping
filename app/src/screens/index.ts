@@ -6,5 +6,6 @@ export * from './ResultScreen';
 export * from './HistoryScreen';
 export * from './ScanDetailScreen';
 export * from './FarmsScreen';
+export * from './PlotDetailScreen';
 export * from './AuthScreen';
 export * from './AccountScreen';

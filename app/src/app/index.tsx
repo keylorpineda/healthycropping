@@ -19,6 +19,7 @@ export default function IndexScreen(): React.JSX.Element {
       onOpenHistory={() => router.push('/history')}
       onOpenFarms={() => router.push('/farms')}
       onOpenScanDetail={(id) => router.push({ pathname: '/scan-detail', params: { id } })}
+      onOpenPlot={(id) => router.push({ pathname: '/plot-detail', params: { id } })}
     />
   );
 }
