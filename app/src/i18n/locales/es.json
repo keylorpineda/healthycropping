@@ -196,6 +196,7 @@
     "addPlot": "Nuevo lote",
     "plotName": "Nombre del lote",
     "areaHa": "Área (ha)",
+    "openPlotHint": "Abre la ubicación y el riesgo climático del lote.",
     "latitude": "Latitud",
     "longitude": "Longitud",
     "locationHint": "Opcional: un punto dentro del lote, en grados decimales, para el riesgo climático.",
@@ -284,6 +285,54 @@
     "languages": {
       "es": "español",
       "en": "inglés"
+    }
+  },
+  "plotDetail": {
+    "title": "Lote",
+    "notFound": "Lote no encontrado",
+    "notFoundDescription": "Puede haber sido eliminado.",
+    "location": "Ubicación: {{latitude}}, {{longitude}}",
+    "noLocation": "Sin ubicación registrada.",
+    "setLocation": "Agregar ubicación",
+    "editLocation": "Cambiar ubicación"
+  },
+  "weather": {
+    "title": "Riesgo de enfermedades por el clima",
+    "loading": "Cargando el riesgo climático",
+    "levels": {
+      "low": "Bajo",
+      "moderate": "Moderado",
+      "high": "Alto"
+    },
+    "notEvaluated": "Sin evaluar",
+    "recentDays": "Últimos {{days}} días: {{count}} con clima favorable a la enfermedad.",
+    "upcomingDays": "Próximos {{days}} días: {{count}} con clima favorable a la enfermedad.",
+    "insufficientEvidence": "Todavía no hay umbrales climáticos verificados para estimar este riesgo.",
+    "sources": "Fuentes",
+    "provisional": "Algunos umbrales son provisionales y esperan revisión de un agrónomo.",
+    "disclaimer": "Estimación con datos del clima y umbrales publicados; no es un diagnóstico. Revise el lote y consulte a un agrónomo antes de aplicar agroquímicos.",
+    "stale": "Open-Meteo no respondió; se muestran los últimos datos disponibles.",
+    "updatedAt": "Actualizado: {{date}}",
+    "savedAt": "Guardado en este teléfono: {{date}}",
+    "refresh": "Actualizar",
+    "attribution": "Datos del clima de Open-Meteo.com ({{license}})",
+    "attributionHint": "Abre el sitio de Open-Meteo.",
+    "banner": "Riesgo {{level}} de {{disease}} en {{plot}}",
+    "bannerLevels": {
+      "moderate": "moderado",
+      "high": "alto"
+    },
+    "bannerMore": "{{count}} alerta(s) más en sus lotes.",
+    "bannerNote": "Estimación por el clima, no un diagnóstico.",
+    "bannerHint": "Abre el detalle del lote.",
+    "errors": {
+      "noLocation": "Agregue la ubicación del lote para estimar el riesgo por el clima.",
+      "notConfigured": "El riesgo climático no está disponible en esta versión de la app.",
+      "signedOut": "Inicie sesión para ver el riesgo climático del lote.",
+      "notSynced": "El lote aún no se ha sincronizado. Conéctese y vuelva a intentarlo.",
+      "offline": "Sin conexión. Conéctese para cargar el riesgo; después quedará guardado en este teléfono.",
+      "rateLimited": "Alcanzó el límite de consultas por hora. Intente más tarde.",
+      "unavailable": "El riesgo climático no está disponible ahora. Intente más tarde."
     }
   }
 }
