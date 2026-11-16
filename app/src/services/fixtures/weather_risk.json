@@ -1,0 +1,54 @@
+{
+  "plot_id": "plot-1",
+  "latitude": 9.66,
+  "longitude": -84.02,
+  "stale": false,
+  "risks": [
+    {
+      "crop": "coffee",
+      "disease_class": "leaf_rust",
+      "status": "evaluated",
+      "level": "high",
+      "recent": {
+        "window": "recent",
+        "days": 7,
+        "favourable_days": 4,
+        "favourable_dates": ["2026-11-10"],
+        "level": "high"
+      },
+      "upcoming": {
+        "window": "upcoming",
+        "days": 7,
+        "favourable_days": 1,
+        "favourable_dates": [],
+        "level": "moderate"
+      },
+      "explanation": "Coffee leaf rust: ...",
+      "thresholds": [
+        {
+          "name": "mean_temperature",
+          "description": "21.6-23.6 C",
+          "basis": "source",
+          "source": {
+            "citation": "Capucho, A. S. et al. (2013).",
+            "url": "https://doi.org/x"
+          }
+        },
+        {
+          "name": "level_mapping",
+          "description": "...",
+          "basis": "provisional",
+          "source": null
+        }
+      ],
+      "disclaimer": "Estimated ..."
+    }
+  ],
+  "attribution": {
+    "provider": "Open-Meteo",
+    "text": "Weather data by Open-Meteo.com (CC BY 4.0)",
+    "url": "https://open-meteo.com/",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/"
+  }
+}
