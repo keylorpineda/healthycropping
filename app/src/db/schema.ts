@@ -93,4 +93,14 @@ CREATE TABLE IF NOT EXISTS scan_explanations (
   response_json TEXT NOT NULL,
   fetched_at TEXT NOT NULL
 );
+
+-- Latest GET /plots/{id}/weather-risk answer per plot, for offline viewing. The
+-- coordinates it was asked for are kept so a moved plot point refetches.
+CREATE TABLE IF NOT EXISTS weather_risks (
+  id TEXT PRIMARY KEY NOT NULL,
+  latitude REAL NOT NULL,
+  longitude REAL NOT NULL,
+  response_json TEXT NOT NULL,
+  fetched_at TEXT NOT NULL
+);
 `;
