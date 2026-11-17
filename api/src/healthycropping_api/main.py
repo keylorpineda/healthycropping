@@ -18,12 +18,14 @@ from healthycropping_api.routers import (
     farms,
     health,
     me,
+    ndvi,
     plots,
     scans,
     uploads,
     weather,
     weather_risk,
 )
+from healthycropping_api.services.ndvi import EarthEngineNdviProvider, NdviProvider
 from healthycropping_api.services.weather import WeatherService
 from healthycropping_api.store import DocumentStore, FirestoreDocumentStore
 
@@ -47,12 +49,20 @@ def _explanation_service(settings: Settings) -> ExplanationService | None:
     )
 
 
+def _ndvi_provider(settings: Settings) -> NdviProvider | None:
+    """Earth Engine provider, or None (endpoint answers 503) when not configured."""
+    if not settings.earthengine_project:
+        return None
+    return EarthEngineNdviProvider(settings.earthengine_project, settings.earthengine_credentials)
+
+
 def create_app(
     settings: Settings | None = None,
     token_verifier: TokenVerifier | None = None,
     document_store: DocumentStore | None = None,
     explanation_service: ExplanationService | None = None,
     weather_service: WeatherService | None = None,
+    ndvi_provider: NdviProvider | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     app = FastAPI(title="HealthyCropping API", version=__version__)
@@ -61,6 +71,7 @@ def create_app(
     app.state.document_store = document_store or _firestore_store(settings.firebase_project_id)
     app.state.explanation_service = explanation_service or _explanation_service(settings)
     app.state.weather_service = weather_service or WeatherService()
+    app.state.ndvi_provider = ndvi_provider or _ndvi_provider(settings)
 
     app.add_middleware(
         CORSMiddleware,
@@ -80,6 +91,7 @@ def create_app(
     app.include_router(explanations.router)
     app.include_router(weather.router)
     app.include_router(weather_risk.router)
+    app.include_router(ndvi.router)
     return app
 
 

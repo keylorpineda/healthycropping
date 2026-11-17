@@ -22,6 +22,8 @@ from healthycropping_api.errors import error_response
 EXPLANATIONS_LIMIT: Final = "20/hour"
 # Open-Meteo allows 10,000 calls/day for non-commercial use; the cache absorbs most requests.
 WEATHER_LIMIT: Final = "60/hour"
+# Earth Engine Community tier quota is shared by every user of the project (#43).
+NDVI_LIMIT: Final = "10/hour"
 _UID_STATE: Final = "rate_limit_uid"
 
 

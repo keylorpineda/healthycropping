@@ -34,5 +34,7 @@ services:
         sync: false
       - key: GEMINI_MODEL
         sync: false
+      - key: EARTHENGINE_PROJECT
+        sync: false
       - key: GOOGLE_APPLICATION_CREDENTIALS
         value: /etc/secrets/service-account.json
