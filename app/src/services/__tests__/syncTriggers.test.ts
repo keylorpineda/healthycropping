@@ -60,7 +60,10 @@ describe('sync triggers', () => {
   });
 
   it('claims local data, then syncs on sign-in, and resets on sign-out', async () => {
-    useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: null } });
+    useAuthStore.setState({
+      status: 'signedIn',
+      user: { uid: 'u1', email: null, providers: ['password'] },
+    });
     await Promise.resolve();
     await Promise.resolve();
     expect(claimLocalData).toHaveBeenCalledWith('u1');
