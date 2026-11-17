@@ -21,6 +21,7 @@ Copy-Item app/.env.example app/.env
 | **Firebase Admin** | `GOOGLE_APPLICATION_CREDENTIALS` | `api/.env` | Ruta local al JSON de cuenta de servicio (`./service-account.json`) |
 | **Firebase Android** | `google-services.json` | `app/google-services.json` | Archivo de configuración Android descargado de Firebase |
 | **Firebase Auth (App)** | `EXPO_PUBLIC_FIREBASE_API_KEY` (y demás `EXPO_PUBLIC_FIREBASE_*`) | `app/.env` | Credenciales públicas del cliente Firebase para iniciar sesión |
+| **Google Sign-In (App)** | `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | `app/.env` | ID de cliente OAuth *Web* del proyecto Firebase; vacío oculta el botón de Google |
 | **Google AI Studio** | `GEMINI_API_KEY` | `api/.env` | Clave de API de Gemini (nivel gratuito) |
 | **Google AI Studio** | `GEMINI_MODEL` | `api/.env` | Modelo Flash gratuito (ej. `gemini-2.5-flash`) |
 | **Cloudinary** | `CLOUDINARY_CLOUD_NAME` | `api/.env` | Nombre de tu nube en Cloudinary |
@@ -101,6 +102,17 @@ Usaremos el plan **Spark (Gratuito)** de Firebase.
 3. Ve a la pestaña **Sign-in method** (Método de acceso).
 4. En la lista de proveedores nativos, haz clic en **Email/Password** (Correo electrónico/contraseña).
 5. Activa el primer interruptor **Enable** (Habilitar) — deja desactivado *Email link (passwordless sign-in)* — y haz clic en **Save** (Guardar).
+
+### 2.2.1 Activar Inicio de Sesión con Google (`v1.1`, `#40` y `#80`)
+La app usa el inicio de sesión nativo de Google en Android y entrega el token a Firebase Auth. No hace falta configurar nada en `api/`: el backend verifica el token de Firebase igual que con correo y contraseña.
+
+1. En **Authentication** -> **Sign-in method**, haz clic en **Add new provider** -> **Google**, actívalo, elige el correo de soporte del proyecto y guarda.
+2. Abre de nuevo el proveedor **Google** y despliega **Web SDK configuration**. Copia el **Web client ID** (termina en `.apps.googleusercontent.com`) y pégalo en `app/.env` como `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`. Es un identificador público, no un secreto.
+3. Registra las huellas SHA-1 de las llaves con que se firma el APK en **Project settings** -> **Your apps** -> app Android `com.keylorpineda.healthycropping` -> **Add fingerprint**. Sin la huella correcta, Google responde con `DEVELOPER_ERROR`.
+   - Llave de depuración (emulador y `expo run:android`): `keytool -list -v -keystore android/app/debug.keystore -alias androiddebugkey -storepass android -keypass android` desde `app/` después de `expo prebuild`.
+   - Llave de release (sección 10.5): `keytool -list -v -keystore upload-keystore.jks -alias <tu-alias>`.
+4. Deja la opción por defecto de **Settings** -> **User account linking**: *Link accounts that use the same email*. Así, si un agricultor ya tenía cuenta con correo y contraseña y entra con Google con el mismo correo, la app le pide su contraseña una vez y vincula Google a la **misma** cuenta (mismo `uid`), por lo que conserva sus fincas, lotes y escaneos. También puede vincular Google desde **Cuenta** -> **Vincular cuenta de Google**.
+5. El teléfono o emulador necesita Google Play Services (las imágenes del emulador "Google APIs" o "Google Play" lo incluyen).
 
 ### 2.3 Crear Cloud Firestore y Desplegar Reglas de Seguridad
 > [!IMPORTANT]
