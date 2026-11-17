@@ -59,6 +59,15 @@ jest.mock('@maplibre/maplibre-react-native', () => {
   };
 });
 
+// Mock expo-location; tests override the resolved values per case.
+jest.mock('expo-location', () => ({
+  Accuracy: { Balanced: 3 },
+  requestForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ granted: false })),
+  getForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ granted: false })),
+  getLastKnownPositionAsync: jest.fn(() => Promise.resolve(null)),
+  getCurrentPositionAsync: jest.fn(() => Promise.reject(new Error('no fix'))),
+}));
+
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),

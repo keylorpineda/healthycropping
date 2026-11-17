@@ -37,6 +37,12 @@
         }
       ],
       "@maplibre/maplibre-react-native",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "HealthyCropping saves where each scan is taken, only if you turn it on in Settings, to show disease hotspots on your plot map."
+        }
+      ],
       "./plugins/withTfliteModels",
       "./plugins/withReleaseSigning"
     ],

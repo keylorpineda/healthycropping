@@ -48,6 +48,7 @@
     "expo-image-manipulator": "~13.0.6",
     "expo-image-picker": "~16.0.6",
     "expo-localization": "~16.0.1",
+    "expo-location": "18.0.10",
     "expo-router": "~4.0.22",
     "expo-sqlite": "~15.1.4",
     "expo-status-bar": "~2.0.1",
