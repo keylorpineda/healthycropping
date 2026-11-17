@@ -65,6 +65,8 @@ class NdviMonth(BaseModel):
     clear_fraction: float
     images: int
     status: Literal["ok", "cloudy", "no_data"]
+    # Served from the Firestore cache without an Earth Engine request (#81).
+    cached: bool = False
 
 
 class NdviResponse(BaseModel):
