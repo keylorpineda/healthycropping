@@ -356,5 +356,40 @@
       "rateLimited": "Alcanzó el límite de consultas por hora. Intente más tarde.",
       "unavailable": "El riesgo climático no está disponible ahora. Intente más tarde."
     }
+  },
+  "ndvi": {
+    "title": "Vigor del cultivo por satélite (NDVI)",
+    "loading": "Cargando el NDVI del lote",
+    "latest": "{{month}}: NDVI {{value}}",
+    "levels": {
+      "low": "Vigor bajo",
+      "moderate": "Vigor medio",
+      "high": "Vigor alto"
+    },
+    "trends": {
+      "below": "Por debajo de lo usual",
+      "normal": "Como de costumbre",
+      "above": "Por encima de lo usual"
+    },
+    "noClearMonth": "Ningún mes reciente tuvo imágenes despejadas sobre este lote.",
+    "monthValue": "{{month}}: NDVI {{value}}",
+    "monthStatus": {
+      "cloudy": "{{month}}: nublado, sin dato",
+      "noData": "{{month}}: sin imágenes"
+    },
+    "chartLabel": "NDVI de los últimos 12 meses. {{months}}",
+    "legend": "Barras: NDVI mensual de 0 a 1. Línea punteada: mes nublado o sin imágenes.",
+    "disclaimer": "El NDVI de Sentinel-2 (10 m) resume el verdor del dosel; la sombra de árboles y las malezas también cuentan. Úselo como señal para revisar el lote, no como diagnóstico.",
+    "errors": {
+      "noLocation": "Agregue la ubicación o dibuje el límite del lote para ver el NDVI.",
+      "notConfigured": "La app no tiene configurado el servidor.",
+      "serverNotConfigured": "El servidor todavía no tiene activado el NDVI satelital.",
+      "signedOut": "Inicie sesión para consultar el NDVI.",
+      "notSynced": "El lote aún no se ha sincronizado. Sincronice y vuelva a intentar.",
+      "offline": "Sin conexión y sin datos guardados de este lote.",
+      "rateLimited": "Demasiadas consultas. Intente de nuevo más tarde.",
+      "quotaExceeded": "Se agotó la cuota diaria de satélite. Intente mañana.",
+      "unavailable": "El NDVI no está disponible en este momento."
+    }
   }
 }

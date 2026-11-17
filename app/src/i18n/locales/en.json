@@ -356,5 +356,40 @@
       "rateLimited": "You reached the hourly limit of requests. Try again later.",
       "unavailable": "Weather risk is not available right now. Try again later."
     }
+  },
+  "ndvi": {
+    "title": "Satellite crop vigor (NDVI)",
+    "loading": "Loading the plot's NDVI",
+    "latest": "{{month}}: NDVI {{value}}",
+    "levels": {
+      "low": "Low vigor",
+      "moderate": "Moderate vigor",
+      "high": "High vigor"
+    },
+    "trends": {
+      "below": "Below usual",
+      "normal": "As usual",
+      "above": "Above usual"
+    },
+    "noClearMonth": "No recent month had clear images over this plot.",
+    "monthValue": "{{month}}: NDVI {{value}}",
+    "monthStatus": {
+      "cloudy": "{{month}}: cloudy, no value",
+      "noData": "{{month}}: no images"
+    },
+    "chartLabel": "NDVI for the last 12 months. {{months}}",
+    "legend": "Bars: monthly NDVI from 0 to 1. Dashed line: cloudy month or no images.",
+    "disclaimer": "Sentinel-2 NDVI (10 m) summarizes canopy greenness; shade trees and weeds count too. Use it as a signal to check the plot, not as a diagnosis.",
+    "errors": {
+      "noLocation": "Add the plot location or draw its boundary to see NDVI.",
+      "notConfigured": "The app has no server configured.",
+      "serverNotConfigured": "The server does not have satellite NDVI enabled yet.",
+      "signedOut": "Sign in to check NDVI.",
+      "notSynced": "The plot has not synced yet. Sync and try again.",
+      "offline": "Offline and no saved data for this plot.",
+      "rateLimited": "Too many requests. Try again later.",
+      "quotaExceeded": "The daily satellite quota is used up. Try tomorrow.",
+      "unavailable": "NDVI is not available right now."
+    }
   }
 }
