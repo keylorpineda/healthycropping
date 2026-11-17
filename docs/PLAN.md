@@ -182,7 +182,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 ### Milestone `v1.1.0 — Maps, Hotspots & Weather Alerts` (`#40`–`#42`, `#77`–`#80` — 7 issues, due `2027-01-08`)
 - [ ] **Google Sign-In Integration (`#40`)**: Add native Google OAuth sign-in alongside email/password in Firebase Auth and the Android client.
 - [ ] **Google Account Linking & Offline Claiming (`#80`)**: Link Google OAuth accounts with existing email/password credentials and pre-existing local SQLite data.
-- [ ] **OpenStreetMap Plot Boundary Editor (`#41`)**: Interactive plot boundary polygon editor and offline map tile caching using OpenStreetMap tiles.
+- [x] **OpenStreetMap Plot Boundary Editor (`#41`)**: Interactive plot boundary polygon editor and offline map tile caching using OpenStreetMap tiles.
 - [ ] **Spatial Disease Hotspot Markers (`#77`)**: Render clustered disease markers color-coded by status badge (`healthy` / `watch` / `act now`) inside plot polygons.
 - [x] **Open-Meteo Microclimate Ingestion (`#42`)**: Query historical and forecast humidity, precipitation, and temperature per plot from Open-Meteo (`CC BY 4.0`).
 - [ ] **Rule-Based Disease Risk Engine (`#78`)**: Deterministic agronomic risk thresholds (`low` / `moderate` / `high`) for coffee rust, cacao monilia, and banana sigatoka in `api/`.
