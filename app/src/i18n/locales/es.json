@@ -155,7 +155,12 @@
     "lastSynced": "Última sincronización: {{time}}",
     "neverSynced": "Aún no se ha sincronizado",
     "nothingPending": "Todo está sincronizado",
-    "syncNow": "Sincronizar ahora"
+    "syncNow": "Sincronizar ahora",
+    "scanLocation": "Ubicación de los escaneos",
+    "scanLocationDescription": "Guarda dónde se tomó cada foto para ubicar focos de enfermedad en el mapa del lote. Solo se guarda el punto, nunca la foto con sus metadatos.",
+    "scanLocationOff": "Desactivada",
+    "scanLocationOn": "Activada",
+    "scanLocationDenied": "Sin permiso de ubicación. Puede darlo en los ajustes de Android."
   },
   "history": {
     "title": "Historial de diagnósticos",
@@ -316,6 +321,16 @@
       "tooFewPoints": "Marque al menos 3 puntos distintos.",
       "tooManyPoints": "Use como máximo 100 puntos.",
       "outOfRange": "Hay un punto fuera del rango de coordenadas válido."
+    }
+  },
+  "hotspots": {
+    "allCrops": "Todos los cultivos",
+    "allDiseases": "Todas",
+    "ranges": {
+      "30d": "30 días",
+      "90d": "90 días",
+      "365d": "1 año",
+      "all": "Todo"
     }
   },
   "weather": {

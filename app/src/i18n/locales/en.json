@@ -155,7 +155,12 @@
     "lastSynced": "Last synced: {{time}}",
     "neverSynced": "Not synced yet",
     "nothingPending": "Everything is synced",
-    "syncNow": "Sync now"
+    "syncNow": "Sync now",
+    "scanLocation": "Scan location",
+    "scanLocationDescription": "Saves where each photo was taken to place disease hotspots on the plot map. Only the point is stored, never the photo's metadata.",
+    "scanLocationOff": "Off",
+    "scanLocationOn": "On",
+    "scanLocationDenied": "Location permission denied. You can grant it in Android settings."
   },
   "history": {
     "title": "Diagnosis History",
@@ -316,6 +321,16 @@
       "tooFewPoints": "Mark at least 3 distinct points.",
       "tooManyPoints": "Use at most 100 points.",
       "outOfRange": "A point is outside the valid coordinate range."
+    }
+  },
+  "hotspots": {
+    "allCrops": "All crops",
+    "allDiseases": "All",
+    "ranges": {
+      "30d": "30 days",
+      "90d": "90 days",
+      "365d": "1 year",
+      "all": "All time"
     }
   },
   "weather": {

@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Badge, Button, Card, Chip } from '@/components/ui';
 import { type SupportedLanguage } from '@/i18n';
 import { toAuthError } from '@/services/auth';
+import { isScanLocationEnabled, setScanLocationEnabled } from '@/services/scanLocation';
 import { useAuthStore } from '@/stores/auth';
 import { type ThemePreference, usePreferencesStore } from '@/stores/preferences';
 import { useSyncStore } from '@/stores/sync';
@@ -45,10 +46,32 @@ export function SettingsScreen({
   const requestSync = useSyncStore((state) => state.requestSync);
   const refreshPending = useSyncStore((state) => state.refreshPending);
   const [signOutError, setSignOutError] = useState<string | null>(null);
+  const [scanLocation, setScanLocation] = useState<boolean>(false);
+  const [locationDenied, setLocationDenied] = useState<boolean>(false);
 
   useEffect(() => {
     refreshPending();
   }, [refreshPending]);
+
+  useEffect(() => {
+    let active = true;
+    void isScanLocationEnabled().then((enabled) => {
+      if (active) setScanLocation(enabled);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const toggleScanLocation = (enabled: boolean) => {
+    setLocationDenied(false);
+    setScanLocationEnabled(enabled)
+      .then((result) => {
+        setScanLocation(result);
+        setLocationDenied(enabled && !result);
+      })
+      .catch(() => setLocationDenied(enabled));
+  };
 
   const handleSignOut = () =>
     confirmSignOut(t, () => {
@@ -164,6 +187,53 @@ export function SettingsScreen({
               />
             ))}
           </View>
+        </View>
+
+        {/* Scan location (#77) */}
+        <View style={styles.section}>
+          <Text
+            style={[
+              theme.typography.headline,
+              { color: theme.colors.textPrimary, marginBottom: theme.spacing.sm },
+            ]}
+          >
+            {t('settings.scanLocation')}
+          </Text>
+          <Text
+            style={[
+              theme.typography.subhead,
+              { color: theme.colors.textSecondary, marginBottom: theme.spacing.sm },
+            ]}
+          >
+            {t('settings.scanLocationDescription')}
+          </Text>
+          <View style={styles.chipsRow} testID="scan-location-row">
+            <Chip
+              label={t('settings.scanLocationOff')}
+              selected={!scanLocation}
+              onPress={() => toggleScanLocation(false)}
+              style={{ marginRight: theme.spacing.sm }}
+              testID="scan-location-chip-off"
+            />
+            <Chip
+              label={t('settings.scanLocationOn')}
+              selected={scanLocation}
+              onPress={() => toggleScanLocation(true)}
+              testID="scan-location-chip-on"
+            />
+          </View>
+          {locationDenied && (
+            <Text
+              style={[
+                theme.typography.caption,
+                { color: theme.colors.status.actNow.main, marginTop: theme.spacing.sm },
+              ]}
+              accessibilityLiveRegion="polite"
+              testID="scan-location-denied"
+            >
+              {t('settings.scanLocationDenied')}
+            </Text>
+          )}
         </View>
 
         {/* Account & Sync Section */}
