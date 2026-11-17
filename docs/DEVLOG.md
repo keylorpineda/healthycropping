@@ -452,3 +452,12 @@ This log documents what was built, key architectural decisions, and technical pr
 - Vigor bands are general NDVI ranges (under 0.3 sparse or stressed, over 0.6 dense) and are labelled as such; shaded coffee and cacao mix tree canopy into the pixel, so the trend badge compares the latest clear month with the plot's own average of earlier clear months (at least 3) and calls a difference of 0.1 or more "below" or "above usual". Both are constants in `components/ndvi/vigor.ts` for agronomist review.
 - Data comes from `services/ndvi.ts` (`#81`): offline the stored answer is shown with its saved time; errors explain quota, server not configured, not synced and missing location.
 - Not done: checking the chart on a device.
+
+### Spatial Disease Hotspot Markers (`#77`)
+- Scans had no location, and the issue assumes "geolocated scans are stored", so this adds it. It is opt-in (Settings, off by default) because a scan location is personal data about a farm; turning it on asks for foreground location permission and stays off if refused. Only the point is kept; photos still go to Cloudinary without EXIF (`#114`). The flag lives in AsyncStorage (`healthycropping.scanLocationEnabled`), so it survives restarts.
+- Capture runs in parallel with inference and never fails a scan: the last known fix is used if it is at most 5 minutes old and 100 m accurate, otherwise one balanced-accuracy fix with a 10 s cap; a worse fix is dropped rather than stored, since it could put the scan in the neighbouring plot.
+- A located scan inside exactly one boundary of its crop is filed under that plot (ray-casting point-in-polygon). Overlapping boundaries are ambiguous, so the farmer assigns those by hand as before.
+- API: `ScanIn` reuses the plot location validator (both or neither, in range); `ScanResponse` defaults both to `null` for documents written before.
+- Map: one `ShapeSource` with native clustering (`clusterRadius` 40, up to zoom 18) and a `max` cluster property over a severity rank, so a cluster is red if any scan in it is `act now`. Clusters grow with their size instead of printing a count, because the OSM raster style has no glyph server for text; the legend under the map gives the counts for the current filters.
+- Low-confidence scans are not drawn: the app already tells the farmer not to rely on them. Filters: crop (only shown when the plot's scans span more than one crop), disease class (labels from `diseases.<crop>.<class>`), and date range, defaulting to 90 days.
+- Not done: running on a device (needs a development build).
