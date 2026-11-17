@@ -1,7 +1,12 @@
 import * as Crypto from 'expo-crypto';
 
 import { getDatabase } from '../database';
+import { type BoundaryPoint, boundaryToGeoJson } from '../plotBoundary';
 import { type CreatePlotInput, type Plot, type UpdatePlotInput } from '../types';
+
+function toGeoJson(boundary: BoundaryPoint[] | null | undefined): string | null {
+  return boundary && boundary.length > 0 ? boundaryToGeoJson(boundary) : null;
+}
 
 export class PlotsRepository {
   getAll(includeDeleted = false): Plot[] {
@@ -39,8 +44,8 @@ export class PlotsRepository {
     const now = new Date().toISOString();
 
     db.runSync(
-      `INSERT INTO plots (id, farm_id, name, crop, area_ha, latitude, longitude, created_at, updated_at, deleted_at, sync_status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO plots (id, farm_id, name, crop, area_ha, latitude, longitude, boundary_geojson, created_at, updated_at, deleted_at, sync_status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       id,
       input.farm_id,
       input.name.trim(),
@@ -48,6 +53,7 @@ export class PlotsRepository {
       input.area_ha ?? null,
       input.latitude ?? null,
       input.longitude ?? null,
+      toGeoJson(input.boundary),
       now,
       now,
       null,
@@ -71,15 +77,18 @@ export class PlotsRepository {
     const area_ha = input.area_ha !== undefined ? input.area_ha : current.area_ha;
     const latitude = input.latitude !== undefined ? input.latitude : (current.latitude ?? null);
     const longitude = input.longitude !== undefined ? input.longitude : (current.longitude ?? null);
+    const boundary_geojson =
+      input.boundary !== undefined ? toGeoJson(input.boundary) : (current.boundary_geojson ?? null);
     const now = new Date().toISOString();
 
     db.runSync(
-      `UPDATE plots SET name = ?, crop = ?, area_ha = ?, latitude = ?, longitude = ?, updated_at = ?, sync_status = ? WHERE id = ?`,
+      `UPDATE plots SET name = ?, crop = ?, area_ha = ?, latitude = ?, longitude = ?, boundary_geojson = ?, updated_at = ?, sync_status = ? WHERE id = ?`,
       name,
       crop,
       area_ha,
       latitude,
       longitude,
+      boundary_geojson,
       now,
       'pending',
       id,

@@ -1,5 +1,7 @@
 import { type SupportedCrop } from '@/version';
 
+import { type BoundaryPoint } from './plotBoundary';
+
 export type SyncStatus = 'pending' | 'synced' | 'failed';
 export type DiagnosisSeverity = 'healthy' | 'watch' | 'actNow';
 
@@ -35,6 +37,8 @@ export interface Plot {
   /** WGS84 reference point of the plot (#136); both set or both null. */
   latitude: number | null;
   longitude: number | null;
+  /** GeoJSON Polygon drawn on the plot map (#41); `null` until a boundary is saved. */
+  boundary_geojson: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -48,6 +52,7 @@ export interface CreatePlotInput {
   area_ha?: number | null;
   latitude?: number | null;
   longitude?: number | null;
+  boundary?: BoundaryPoint[] | null;
 }
 
 export interface UpdatePlotInput {
@@ -56,6 +61,7 @@ export interface UpdatePlotInput {
   area_ha?: number | null;
   latitude?: number | null;
   longitude?: number | null;
+  boundary?: BoundaryPoint[] | null;
 }
 
 export interface Scan {
