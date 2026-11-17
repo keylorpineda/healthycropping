@@ -18,7 +18,13 @@
     "crop": "coffee",
     "area_ha": 2.5,
     "latitude": 9.6611,
-    "longitude": -84.0225
+    "longitude": -84.0225,
+    "boundary": [
+      { "latitude": 9.6606, "longitude": -84.023 },
+      { "latitude": 9.6606, "longitude": -84.022 },
+      { "latitude": 9.6616, "longitude": -84.022 },
+      { "latitude": 9.6616, "longitude": -84.023 }
+    ]
   },
   "plot_update": {
     "farm_id": "3f1c2a4e-5b6d-4e7f-8a9b-0c1d2e3f4a5b",
@@ -26,7 +32,13 @@
     "crop": "coffee",
     "area_ha": 2.5,
     "latitude": 9.6611,
-    "longitude": -84.0225
+    "longitude": -84.0225,
+    "boundary": [
+      { "latitude": 9.6606, "longitude": -84.023 },
+      { "latitude": 9.6606, "longitude": -84.022 },
+      { "latitude": 9.6616, "longitude": -84.022 },
+      { "latitude": 9.6616, "longitude": -84.023 }
+    ]
   },
   "scan_sync_request": {
     "scans": [

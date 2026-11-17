@@ -1,10 +1,12 @@
 import {
   attachCloudinaryPublicId,
+  type BoundaryPoint,
   type Farm,
   getPendingFarms,
   getPendingPlots,
   getPendingScans,
   markSyncResult,
+  parseBoundaryGeoJson,
   type Plot,
   type Scan,
   type SyncTable,
@@ -46,6 +48,8 @@ export interface PlotPayload {
   area_ha: number | null;
   latitude: number | null;
   longitude: number | null;
+  /** Open ring of the GeoJSON boundary (#41); Firestore cannot store nested arrays. */
+  boundary: BoundaryPoint[] | null;
 }
 
 /** One item of `POST /scans/sync`; mirrors `ScanIn` (no device-only columns). */
@@ -89,6 +93,7 @@ export function toPlotPayload(plot: Plot): PlotPayload {
     area_ha: plot.area_ha,
     latitude: plot.latitude ?? null,
     longitude: plot.longitude ?? null,
+    boundary: parseBoundaryGeoJson(plot.boundary_geojson),
   };
 }
 
