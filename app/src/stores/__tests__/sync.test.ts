@@ -19,7 +19,10 @@ describe('useSyncStore', () => {
   beforeEach(() => {
     syncAll.mockReset();
     useSyncStore.getState().reset();
-    useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'a@b.cr' } });
+    useAuthStore.setState({
+      status: 'signedIn',
+      user: { uid: 'u1', email: 'a@b.cr', providers: ['password'] },
+    });
   });
 
   it('does nothing while signed out, but still counts pending changes', async () => {

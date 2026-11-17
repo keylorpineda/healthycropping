@@ -348,7 +348,10 @@ describe('Accessibility Suite', () => {
     auditInteractive(screen.UNSAFE_root);
     unmountSignIn();
 
-    useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'ana@finca.cr' } });
+    useAuthStore.setState({
+      status: 'signedIn',
+      user: { uid: 'u1', email: 'ana@finca.cr', providers: ['password'] },
+    });
     renderWithTheme(<AccountScreen onBack={jest.fn()} onSignedOut={jest.fn()} />);
     auditInteractive(screen.UNSAFE_root);
   });

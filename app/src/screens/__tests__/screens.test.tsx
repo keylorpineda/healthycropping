@@ -209,7 +209,10 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
         });
 
       beforeEach(() => {
-        useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'ana@finca.cr' } });
+        useAuthStore.setState({
+          status: 'signedIn',
+          user: { uid: 'u1', email: 'ana@finca.cr', providers: ['password'] },
+        });
         useSyncStore.setState({
           phase: 'synced',
           pendingCount: 2,
@@ -264,7 +267,10 @@ describe('Screen Suite: Onboarding, Home & Settings', () => {
     });
 
     it('shows the signed-in email and links to account management', () => {
-      useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'ana@finca.cr' } });
+      useAuthStore.setState({
+        status: 'signedIn',
+        user: { uid: 'u1', email: 'ana@finca.cr', providers: ['password'] },
+      });
       const onManageAccount = jest.fn();
       renderWithTheme(<SettingsScreen onSignIn={jest.fn()} onManageAccount={onManageAccount} />);
 

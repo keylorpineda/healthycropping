@@ -25,7 +25,10 @@ describe('SyncStatusPill', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('es');
     useSyncStore.getState().reset();
-    useAuthStore.setState({ status: 'signedIn', user: { uid: 'u1', email: 'a@b.cr' } });
+    useAuthStore.setState({
+      status: 'signedIn',
+      user: { uid: 'u1', email: 'a@b.cr', providers: ['password'] },
+    });
   });
 
   it('keeps the offline badge while signed out', () => {
