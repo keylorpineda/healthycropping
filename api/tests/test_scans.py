@@ -218,3 +218,36 @@ def test_accepts_a_full_batch(client: TestClient) -> None:
 def test_scans_require_auth(client: TestClient) -> None:
     assert client.get("/scans").status_code == 401
     assert client.post("/scans/sync", json={"scans": [scan_body()]}).status_code == 401
+
+
+def test_scan_location_round_trips(client: TestClient) -> None:
+    located = scan_body(latitude=9.6611, longitude=-84.0225)
+    plain = scan_body(scanned_at=T1, updated_at=T1)
+
+    assert statuses(sync(client, located, plain)) == ["created", "created"]
+
+    by_id = {scan["id"]: scan for scan in list_scans(client)}
+    assert (by_id[located["id"]]["latitude"], by_id[located["id"]]["longitude"]) == (
+        9.6611,
+        -84.0225,
+    )
+    assert (by_id[plain["id"]]["latitude"], by_id[plain["id"]]["longitude"]) == (None, None)
+
+
+def test_scan_stored_before_locations_reads_as_null(
+    client: TestClient, store: InMemoryDocumentStore
+) -> None:
+    scan = scan_body()
+    sync(client, scan)
+    for field in ("latitude", "longitude"):
+        store.collections["scans"][scan["id"]].pop(field, None)
+
+    assert list_scans(client)[0]["latitude"] is None
+
+
+@pytest.mark.parametrize(
+    "location",
+    [{"latitude": 9.66}, {"latitude": 9.66, "longitude": None}, {"latitude": 91, "longitude": 0}],
+)
+def test_invalid_scan_location_is_rejected(client: TestClient, location: dict[str, Any]) -> None:
+    assert sync(client, scan_body(**location)).status_code == 422

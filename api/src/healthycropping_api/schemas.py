@@ -182,7 +182,7 @@ SyncStatus = Literal["created", "updated", "unchanged", "rejected"]
 MAX_SYNC_BATCH = 100
 
 
-class ScanIn(RequestModel):
+class ScanIn(RequestModel, PlotLocationMixin):
     """A scan as stored on the device, minus device-only columns (photo URI, sync status)."""
 
     id: UUID4
@@ -196,6 +196,9 @@ class ScanIn(RequestModel):
     is_low_confidence: bool
     model_version: Label
     cloudinary_public_id: CloudinaryPublicId | None = None
+    # Where the photo was taken, only when the farmer opted in (#77); both or neither.
+    latitude: Latitude | None = None
+    longitude: Longitude | None = None
     scanned_at: AwareDatetime
     updated_at: AwareDatetime
     deleted_at: AwareDatetime | None = None
@@ -234,6 +237,9 @@ class ScanResponse(BaseModel):
     is_low_confidence: bool
     model_version: str
     cloudinary_public_id: str | None
+    # Scans stored before #77, or taken without location consent, have no coordinates.
+    latitude: float | None = None
+    longitude: float | None = None
     scanned_at: datetime
     updated_at: datetime
     created_at: datetime
