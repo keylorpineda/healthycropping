@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button, TextField } from '@/components/ui';
-import { toAuthError } from '@/services/auth';
+import { isGoogleSignInConfigured, pendingGoogleLinkEmail, toAuthError } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth';
 import { useTheme } from '@/theme';
 
@@ -67,6 +67,8 @@ export function AuthScreen({
   const theme = useTheme();
   const signIn = useAuthStore((state) => state.signIn);
   const signUp = useAuthStore((state) => state.signUp);
+  const signInWithGoogle = useAuthStore((state) => state.signInWithGoogle);
+  const googleAvailable = isGoogleSignInConfigured();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -90,6 +92,24 @@ export function AuthScreen({
       onSuccess?.();
     } catch (error) {
       setSubmitError(`auth.errors.${toAuthError(error).code}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      if (await signInWithGoogle()) {
+        onSuccess?.();
+      }
+    } catch (error) {
+      const authError = toAuthError(error);
+      // The Google account's email already has a password: sign in with it to link both.
+      const pendingEmail = authError.code === 'account-exists' ? pendingGoogleLinkEmail() : null;
+      if (pendingEmail) setEmail(pendingEmail);
+      setSubmitError(`auth.errors.${authError.code}`);
     } finally {
       setSubmitting(false);
     }
@@ -197,6 +217,21 @@ export function AuthScreen({
             size="lg"
             testID="auth-submit-btn"
           />
+
+          {googleAvailable ? (
+            <View style={{ marginTop: theme.spacing.md }}>
+              <Button
+                title={t('auth.continueWithGoogle')}
+                onPress={() => void handleGoogle()}
+                variant="outline"
+                loading={submitting}
+                disabled={submitting}
+                fullWidth
+                size="lg"
+                testID="auth-google-btn"
+              />
+            </View>
+          ) : null}
 
           {onSwitchMode ? (
             <Pressable

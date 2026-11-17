@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button, Card } from '@/components/ui';
-import { toAuthError } from '@/services/auth';
+import { GOOGLE_PROVIDER_ID, isGoogleSignInConfigured, toAuthError } from '@/services/auth';
 import { useAuthStore } from '@/stores/auth';
 import { useTheme } from '@/theme';
 
@@ -26,6 +26,8 @@ export function AccountScreen({
   const theme = useTheme();
   const user = useAuthStore((state) => state.user);
   const signOut = useAuthStore((state) => state.signOut);
+  const linkGoogle = useAuthStore((state) => state.linkGoogle);
+  const googleLinked = user?.providers.includes(GOOGLE_PROVIDER_ID) ?? false;
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +38,18 @@ export function AccountScreen({
     try {
       await signOut();
       onSignedOut?.();
+    } catch (err) {
+      setError(`auth.errors.${toAuthError(err).code}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleLinkGoogle = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await linkGoogle();
     } catch (err) {
       setError(`auth.errors.${toAuthError(err).code}`);
     } finally {
@@ -99,6 +113,28 @@ export function AccountScreen({
           >
             {t('auth.accountNote')}
           </Text>
+          {googleLinked ? (
+            <Text
+              style={[
+                theme.typography.subhead,
+                { color: theme.colors.textSecondary, marginTop: theme.spacing.md },
+              ]}
+              testID="account-google-linked"
+            >
+              {t('auth.googleLinked')}
+            </Text>
+          ) : isGoogleSignInConfigured() ? (
+            <Button
+              title={t('auth.linkGoogle')}
+              onPress={() => void handleLinkGoogle()}
+              variant="outline"
+              loading={busy}
+              disabled={busy}
+              fullWidth
+              style={{ marginTop: theme.spacing.md }}
+              testID="account-link-google-btn"
+            />
+          ) : null}
         </Card>
 
         {error ? (
