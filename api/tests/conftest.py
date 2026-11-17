@@ -16,6 +16,8 @@ from healthycropping_api.store import DocumentAlreadyExistsError
 
 VALID_TOKEN = "valid-token"
 USER_B_TOKEN = "user-b-token"
+# A Google-authenticated user (#80): its own uid, provider "google.com".
+GOOGLE_TOKEN = "google-token"
 EXPIRED_TOKEN = "expired-token"
 UNAVAILABLE_TOKEN = "unavailable-token"
 TEST_ORIGIN = "http://localhost:8081"
@@ -26,7 +28,13 @@ class FakeTokenVerifier:
 
     def verify(self, id_token: str) -> AuthenticatedUser:
         if id_token == VALID_TOKEN:
-            return AuthenticatedUser(uid="user-a", email="a@example.com")
+            return AuthenticatedUser(
+                uid="user-a", email="a@example.com", sign_in_provider="password"
+            )
+        if id_token == GOOGLE_TOKEN:
+            return AuthenticatedUser(
+                uid="user-g", email="g@gmail.com", sign_in_provider="google.com"
+            )
         if id_token == USER_B_TOKEN:
             return AuthenticatedUser(uid="user-b", email="b@example.com")
         if id_token == EXPIRED_TOKEN:
