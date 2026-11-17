@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { PlotMap } from '@/components/map';
+import {
+  DEFAULT_HOTSPOT_FILTERS,
+  filterHotspots,
+  HotspotControls,
+  type HotspotFilters,
+  HotspotLayer,
+  mappableScans,
+  PlotMap,
+} from '@/components/map';
 import { Badge, Button, Card, EmptyState, TextField } from '@/components/ui';
 import { NdviCard } from '@/components/ndvi';
 import { WeatherRiskCard } from '@/components/weather';
@@ -12,6 +20,7 @@ import {
   parseBoundaryGeoJson,
   parsePlotLocation,
   plotsRepository,
+  scansRepository,
   type Plot,
   type PlotLocationError,
 } from '@/db';
@@ -46,6 +55,15 @@ export function PlotDetailScreen({
   const [latitude, setLatitude] = useState<string>(coordinateText(plot?.latitude ?? null));
   const [longitude, setLongitude] = useState<string>(coordinateText(plot?.longitude ?? null));
   const [locationError, setLocationError] = useState<PlotLocationError | null>(null);
+  const [hotspotFilters, setHotspotFilters] = useState<HotspotFilters>(DEFAULT_HOTSPOT_FILTERS);
+  const locatedScans = useMemo(
+    () => (plot ? mappableScans(scansRepository.getAll({ plot_id: plot.id })) : []),
+    [plot],
+  );
+  const hotspots = useMemo(
+    () => filterHotspots(locatedScans, hotspotFilters),
+    [locatedScans, hotspotFilters],
+  );
 
   const startEditing = () => {
     setLatitude(coordinateText(plot?.latitude ?? null));
@@ -230,11 +248,22 @@ export function PlotDetailScreen({
               accessibilityLabel={t(boundary ? 'plotMap.previewLabel' : 'plotMap.pointLabel')}
               style={styles.mapPreview}
               testID="plot-detail-map"
-            />
+            >
+              {locatedScans.length > 0 && <HotspotLayer scans={hotspots} />}
+            </PlotMap>
           ) : (
             <Text style={[muted, styles.line]} testID="plot-detail-no-boundary">
               {t('plotMap.noBoundary')}
             </Text>
+          )}
+          {locatedScans.length > 0 && (boundary || located) && (
+            <HotspotControls
+              scans={locatedScans}
+              visible={hotspots}
+              filters={hotspotFilters}
+              onChange={setHotspotFilters}
+              testID="plot-detail-hotspots"
+            />
           )}
           {onOpenMap && (
             <View style={styles.buttons}>
