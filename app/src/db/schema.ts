@@ -5,6 +5,7 @@
 export const ADDED_COLUMNS: readonly { table: string; column: string; type: string }[] = [
   { table: 'plots', column: 'latitude', type: 'REAL' },
   { table: 'plots', column: 'longitude', type: 'REAL' },
+  { table: 'plots', column: 'boundary_geojson', type: 'TEXT' },
 ];
 
 export const SCHEMA_SQL = `
@@ -32,6 +33,7 @@ CREATE TABLE IF NOT EXISTS plots (
   area_ha REAL,
   latitude REAL,
   longitude REAL,
+  boundary_geojson TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   deleted_at TEXT,

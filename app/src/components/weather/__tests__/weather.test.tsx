@@ -33,6 +33,7 @@ const PLOT: Plot = {
   area_ha: null,
   latitude: 9.6611,
   longitude: -84.0225,
+  boundary_geojson: null,
   created_at: '2026-11-01T00:00:00.000Z',
   updated_at: '2026-11-01T00:00:00.000Z',
   deleted_at: null,

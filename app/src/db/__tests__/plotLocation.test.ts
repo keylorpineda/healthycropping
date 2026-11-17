@@ -50,8 +50,17 @@ describe('initDatabase column upgrades', () => {
     expect(execSync).toHaveBeenCalledWith('ALTER TABLE plots ADD COLUMN longitude REAL;');
   });
 
-  it('leaves an up-to-date plots table alone', () => {
+  it('adds only the boundary column to a plots table created before #41', () => {
     const { db, execSync } = fakeDb(['id', 'area_ha', 'latitude', 'longitude']);
+
+    initDatabase(db);
+
+    const alters = execSync.mock.calls.filter(([sql]) => String(sql).startsWith('ALTER TABLE'));
+    expect(alters).toEqual([['ALTER TABLE plots ADD COLUMN boundary_geojson TEXT;']]);
+  });
+
+  it('leaves an up-to-date plots table alone', () => {
+    const { db, execSync } = fakeDb(['id', 'area_ha', 'latitude', 'longitude', 'boundary_geojson']);
 
     initDatabase(db);
 
