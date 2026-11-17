@@ -26,6 +26,7 @@ from healthycropping_api.routers import (
     weather_risk,
 )
 from healthycropping_api.services.ndvi import EarthEngineNdviProvider, NdviProvider
+from healthycropping_api.services.ndvi_cache import DailyQuota
 from healthycropping_api.services.weather import WeatherService
 from healthycropping_api.store import DocumentStore, FirestoreDocumentStore
 
@@ -63,6 +64,7 @@ def create_app(
     explanation_service: ExplanationService | None = None,
     weather_service: WeatherService | None = None,
     ndvi_provider: NdviProvider | None = None,
+    ndvi_quota: DailyQuota | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     app = FastAPI(title="HealthyCropping API", version=__version__)
@@ -72,6 +74,7 @@ def create_app(
     app.state.explanation_service = explanation_service or _explanation_service(settings)
     app.state.weather_service = weather_service or WeatherService()
     app.state.ndvi_provider = ndvi_provider or _ndvi_provider(settings)
+    app.state.ndvi_quota = ndvi_quota or DailyQuota()
 
     app.add_middleware(
         CORSMiddleware,
