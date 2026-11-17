@@ -28,8 +28,29 @@ jest.mock('firebase/auth', () => ({
   getReactNativePersistence: jest.fn(),
   createUserWithEmailAndPassword: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
+  signInWithCredential: jest.fn(),
+  linkWithCredential: jest.fn(),
+  GoogleAuthProvider: { credential: jest.fn((idToken: string) => ({ idToken })) },
   signOut: jest.fn(),
   onAuthStateChanged: jest.fn(() => jest.fn()),
+}));
+
+// Mock native Google Sign-In; tests set the resolved responses per case.
+jest.mock('@react-native-google-signin/google-signin', () => ({
+  GoogleSignin: {
+    configure: jest.fn(),
+    hasPlayServices: jest.fn(() => Promise.resolve(true)),
+    signIn: jest.fn(() => Promise.resolve({ type: 'cancelled', data: null })),
+    signOut: jest.fn(() => Promise.resolve(null)),
+  },
+  statusCodes: {
+    SIGN_IN_CANCELLED: 'SIGN_IN_CANCELLED',
+    IN_PROGRESS: 'IN_PROGRESS',
+    PLAY_SERVICES_NOT_AVAILABLE: 'PLAY_SERVICES_NOT_AVAILABLE',
+  },
+  isCancelledResponse: (response: { type: string }) => response.type === 'cancelled',
+  isErrorWithCode: (error: unknown) =>
+    typeof error === 'object' && error !== null && 'code' in error,
 }));
 
 // Mock NetInfo (native connectivity module)
