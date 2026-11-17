@@ -6,6 +6,8 @@ export const ADDED_COLUMNS: readonly { table: string; column: string; type: stri
   { table: 'plots', column: 'latitude', type: 'REAL' },
   { table: 'plots', column: 'longitude', type: 'REAL' },
   { table: 'plots', column: 'boundary_geojson', type: 'TEXT' },
+  { table: 'scans', column: 'latitude', type: 'REAL' },
+  { table: 'scans', column: 'longitude', type: 'REAL' },
 ];
 
 export const SCHEMA_SQL = `
@@ -59,6 +61,8 @@ CREATE TABLE IF NOT EXISTS scans (
   local_photo_uri TEXT NOT NULL,
   cloudinary_public_id TEXT,
   explanation_json TEXT,
+  latitude REAL,
+  longitude REAL,
   scanned_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   deleted_at TEXT,

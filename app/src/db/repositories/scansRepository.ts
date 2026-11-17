@@ -56,9 +56,9 @@ export class ScansRepository {
       `INSERT INTO scans (
         id, farm_id, plot_id, crop, predicted_class, severity,
         confidence, threshold, is_low_confidence, model_version,
-        local_photo_uri, cloudinary_public_id, explanation_json,
+        local_photo_uri, cloudinary_public_id, explanation_json, latitude, longitude,
         scanned_at, updated_at, deleted_at, sync_status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       id,
       input.farm_id ?? null,
       input.plot_id ?? null,
@@ -72,6 +72,8 @@ export class ScansRepository {
       input.local_photo_uri,
       null,
       input.explanation_json ?? null,
+      input.latitude ?? null,
+      input.longitude ?? null,
       now,
       now,
       null,

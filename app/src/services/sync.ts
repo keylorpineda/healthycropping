@@ -65,6 +65,8 @@ export interface ScanPayload {
   is_low_confidence: boolean;
   model_version: string;
   cloudinary_public_id: string | null;
+  latitude: number | null;
+  longitude: number | null;
   scanned_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -117,6 +119,8 @@ export function toScanPayload(scan: Scan): ScanPayload {
     is_low_confidence: scan.is_low_confidence === 1,
     model_version: scan.model_version,
     cloudinary_public_id: scan.cloudinary_public_id,
+    latitude: scan.latitude ?? null,
+    longitude: scan.longitude ?? null,
     scanned_at: scan.scanned_at,
     updated_at: scan.updated_at,
     deleted_at: scan.deleted_at,

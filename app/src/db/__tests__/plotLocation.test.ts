@@ -33,11 +33,15 @@ describe('parsePlotLocation', () => {
 });
 
 describe('initDatabase column upgrades', () => {
-  function fakeDb(plotColumns: string[]) {
+  const CURRENT_SCAN_COLUMNS = ['id', 'latitude', 'longitude'];
+
+  function fakeDb(plotColumns: string[], scanColumns: string[] = CURRENT_SCAN_COLUMNS) {
     const execSync = jest.fn();
-    const getAllSync = jest.fn((sql: string) =>
-      sql.includes('table_info(plots)') ? plotColumns.map((name) => ({ name })) : [],
-    );
+    const getAllSync = jest.fn((sql: string) => {
+      if (sql.includes('table_info(plots)')) return plotColumns.map((name) => ({ name }));
+      if (sql.includes('table_info(scans)')) return scanColumns.map((name) => ({ name }));
+      return [];
+    });
     return { db: { execSync, getAllSync } as unknown as SQLite.SQLiteDatabase, execSync };
   }
 
@@ -66,5 +70,20 @@ describe('initDatabase column upgrades', () => {
 
     const alters = execSync.mock.calls.filter(([sql]) => String(sql).startsWith('ALTER TABLE'));
     expect(alters).toEqual([]);
+  });
+
+  it('adds the location columns to a scans table created before #77', () => {
+    const { db, execSync } = fakeDb(
+      ['id', 'latitude', 'longitude', 'boundary_geojson'],
+      ['id', 'crop', 'severity'],
+    );
+
+    initDatabase(db);
+
+    const alters = execSync.mock.calls.filter(([sql]) => String(sql).startsWith('ALTER TABLE'));
+    expect(alters).toEqual([
+      ['ALTER TABLE scans ADD COLUMN latitude REAL;'],
+      ['ALTER TABLE scans ADD COLUMN longitude REAL;'],
+    ]);
   });
 });

@@ -54,6 +54,8 @@
         "is_low_confidence": false,
         "model_version": "coffee-v0.1.0",
         "cloudinary_public_id": "users/user-a/scans/c0ffee00-1234-4abc-8def-0123456789ab",
+        "latitude": 9.6611,
+        "longitude": -84.0225,
         "scanned_at": "2026-11-01T14:05:00.000Z",
         "updated_at": "2026-11-01T14:06:30.000Z",
         "deleted_at": null
@@ -70,6 +72,8 @@
         "is_low_confidence": true,
         "model_version": "cacao-v0.1.0",
         "cloudinary_public_id": null,
+        "latitude": null,
+        "longitude": null,
         "scanned_at": "2026-11-02T09:00:00.000Z",
         "updated_at": "2026-11-03T10:00:00.000Z",
         "deleted_at": "2026-11-03T10:00:00.000Z"
