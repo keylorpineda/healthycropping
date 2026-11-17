@@ -9,6 +9,7 @@ authors = [
 ]
 dependencies = [
     "cloudinary>=1.46.3",
+    "earthengine-api>=1.7.52",
     "fastapi>=0.115.0",
     "firebase-admin>=6.6.0",
     "google-cloud-firestore>=2.19.0",
