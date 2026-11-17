@@ -34,6 +34,7 @@ function NavigationStack(): React.JSX.Element {
         <Stack.Screen name="scan-detail" options={{ title: 'Scan Detail' }} />
         <Stack.Screen name="farms" options={{ title: 'Farms' }} />
         <Stack.Screen name="plot-detail" options={{ title: 'Plot Detail' }} />
+        <Stack.Screen name="plot-map" options={{ title: 'Plot Map' }} />
         <Stack.Screen name="sign-in" options={{ title: 'Sign In' }} />
         <Stack.Screen name="sign-up" options={{ title: 'Sign Up' }} />
         <Stack.Screen name="account" options={{ title: 'Account' }} />

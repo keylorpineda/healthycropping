@@ -296,6 +296,28 @@
     "setLocation": "Agregar ubicación",
     "editLocation": "Cambiar ubicación"
   },
+  "plotMap": {
+    "title": "Mapa del lote",
+    "hint": "Toque el mapa para marcar cada esquina del lote.",
+    "area": "Área dibujada: {{area}} ha",
+    "points_one": "{{count}} punto",
+    "points_other": "{{count}} puntos",
+    "undo": "Deshacer",
+    "clear": "Borrar",
+    "remove": "Quitar el límite",
+    "draw": "Dibujar el límite",
+    "edit": "Editar el límite",
+    "noBoundary": "Este lote no tiene límite ni ubicación en el mapa.",
+    "mapLabel_one": "Mapa del lote con {{count}} punto marcado",
+    "mapLabel_other": "Mapa del lote con {{count}} puntos marcados",
+    "previewLabel": "Mapa con el límite del lote",
+    "pointLabel": "Mapa centrado en la ubicación del lote",
+    "errors": {
+      "tooFewPoints": "Marque al menos 3 puntos distintos.",
+      "tooManyPoints": "Use como máximo 100 puntos.",
+      "outOfRange": "Hay un punto fuera del rango de coordenadas válido."
+    }
+  },
   "weather": {
     "title": "Riesgo de enfermedades por el clima",
     "loading": "Cargando el riesgo climático",

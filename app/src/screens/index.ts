@@ -9,3 +9,4 @@ export * from './FarmsScreen';
 export * from './PlotDetailScreen';
 export * from './AuthScreen';
 export * from './AccountScreen';
+export * from './PlotMapScreen';
