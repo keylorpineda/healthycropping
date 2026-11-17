@@ -10,4 +10,4 @@ router = APIRouter(tags=["account"], responses={401: {"model": ErrorResponse}})
 
 @router.get("/me")
 def read_me(user: CurrentUser) -> UserResponse:
-    return UserResponse(uid=user.uid, email=user.email)
+    return UserResponse(uid=user.uid, email=user.email, sign_in_provider=user.sign_in_provider)

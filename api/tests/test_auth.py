@@ -27,7 +27,11 @@ def test_valid_token_returns_caller_identity(client: TestClient) -> None:
     response = client.get("/me", headers=_bearer(VALID_TOKEN))
 
     assert response.status_code == 200
-    assert response.json() == {"uid": "user-a", "email": "a@example.com"}
+    assert response.json() == {
+        "uid": "user-a",
+        "email": "a@example.com",
+        "sign_in_provider": "password",
+    }
 
 
 @pytest.mark.parametrize(
@@ -72,6 +76,33 @@ def test_firebase_verifier_returns_user_from_claims(monkeypatch: pytest.MonkeyPa
     user = FirebaseTokenVerifier("demo-project").verify("token")
 
     assert (user.uid, user.email) == ("user-b", "b@example.com")
+    assert user.sign_in_provider is None
+
+
+def test_firebase_verifier_reads_the_google_sign_in_provider(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _stub_verify(
+        monkeypatch,
+        {
+            "uid": "user-g",
+            "email": "g@gmail.com",
+            "firebase": {"sign_in_provider": "google.com", "identities": {"google.com": ["1"]}},
+        },
+    )
+
+    user = FirebaseTokenVerifier("demo-project").verify("token")
+
+    assert (user.uid, user.email, user.sign_in_provider) == ("user-g", "g@gmail.com", "google.com")
+
+
+@pytest.mark.parametrize("firebase_claim", ["google.com", {"sign_in_provider": 3}, None])
+def test_firebase_verifier_ignores_malformed_provider_claims(
+    monkeypatch: pytest.MonkeyPatch, firebase_claim: object
+) -> None:
+    _stub_verify(monkeypatch, {"uid": "user-g", "firebase": firebase_claim})
+
+    assert FirebaseTokenVerifier("demo-project").verify("token").sign_in_provider is None
 
 
 @pytest.mark.parametrize(

@@ -44,6 +44,7 @@ class ErrorResponse(BaseModel):
 class UserResponse(BaseModel):
     uid: str
     email: str | None
+    sign_in_provider: str | None = None
 
 
 class RequestModel(BaseModel):

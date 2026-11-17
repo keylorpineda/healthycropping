@@ -17,6 +17,8 @@ _BEARER_CHALLENGE = {"WWW-Authenticate": "Bearer"}
 class AuthenticatedUser:
     uid: str
     email: str | None
+    # `firebase.sign_in_provider` claim, e.g. "password" or "google.com" (#40).
+    sign_in_provider: str | None = None
 
 
 class InvalidTokenError(Exception):
@@ -60,7 +62,15 @@ class FirebaseTokenVerifier:
         if not isinstance(uid, str) or not uid:
             raise InvalidTokenError("invalid")
         email = claims.get("email")
-        return AuthenticatedUser(uid=uid, email=email if isinstance(email, str) else None)
+        firebase_claims = claims.get("firebase")
+        provider = (
+            firebase_claims.get("sign_in_provider") if isinstance(firebase_claims, dict) else None
+        )
+        return AuthenticatedUser(
+            uid=uid,
+            email=email if isinstance(email, str) else None,
+            sign_in_provider=provider if isinstance(provider, str) else None,
+        )
 
 
 _bearer_scheme = HTTPBearer(auto_error=False, description="Firebase ID token")
