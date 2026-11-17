@@ -5,10 +5,11 @@ import { useTranslation } from 'react-i18next';
 
 import { AnalyzingOverlay } from '@/components/camera';
 import { Toast } from '@/components/ui';
-import { persistScanPhoto, scansRepository } from '@/db';
+import { persistScanPhoto, plotsRepository, scansRepository } from '@/db';
 import { getModelVersion, runInference } from '@/ml';
 import { type InferencePrediction } from '@/ml/types';
 import { CameraScreen, ResultScreen } from '@/screens';
+import { captureScanLocation, plotContaining } from '@/services/scanLocation';
 import { type SupportedCrop } from '@/version';
 
 export default function ScanScreen(): React.JSX.Element {
@@ -26,6 +27,8 @@ export default function ScanScreen(): React.JSX.Element {
   const handlePhotoCaptured = async (uri: string) => {
     setImageUri(uri);
     setStatus('analyzing');
+    // Started alongside inference so a GPS fix does not delay the result (#77).
+    const locating = captureScanLocation();
 
     try {
       const result = await runInference(uri, crop);
@@ -40,8 +43,16 @@ export default function ScanScreen(): React.JSX.Element {
         console.error('Failed to persist scan photo', error);
       }
 
+      // Opt-in point; a scan inside exactly one boundary of this crop is filed under that plot.
+      const location = await locating;
+      const plot = location ? plotContaining(location, crop, plotsRepository.getAll()) : null;
+
       // Persist scan to SQLite offline database
       const scan = scansRepository.create({
+        farm_id: plot?.farm_id ?? null,
+        plot_id: plot?.id ?? null,
+        latitude: location?.latitude ?? null,
+        longitude: location?.longitude ?? null,
         crop,
         predicted_class: result.predictedClass,
         severity: result.severity,
