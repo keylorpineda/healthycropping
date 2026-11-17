@@ -190,7 +190,7 @@ This document tracks the phased delivery of **HealthyCropping** (`com.keylorpine
 - [x] **Weather Risk Alert Banner & Card (`#79`)**: Offline-cached weather risk alerts and plot microclimate forecast card with `CC BY 4.0` attribution in `app/`.
 
 ### Milestone `v1.2.0 — Earth Engine NDVI & Crop Expansion` (`#43`–`#44`, `#81`–`#85` — 7 issues, due `2027-01-25`)
-- [ ] **Earth Engine Sentinel-2 NDVI Endpoint (`#43`)**: Monthly cloud-masked Sentinel-2 NDVI time series per plot via Google Earth Engine noncommercial Community tier in `api/`.
+- [x] **Earth Engine Sentinel-2 NDVI Endpoint (`#43`)**: Monthly cloud-masked Sentinel-2 NDVI time series per plot via Google Earth Engine noncommercial Community tier in `api/`.
 - [ ] **NDVI Caching & Quota Guardrails (`#81`)**: Firestore and SQLite caching per `(plot_id, year_month)` with cloud-cover fallback and Community-tier quota protection.
 - [ ] **Plot Detail NDVI Time-Series Chart (`#82`)**: Accessible 12-month NDVI canopy vigor chart and anomaly indicator on the Plot Detail screen in `app/`.
 - [ ] **Additional Crop Dataset Curation & Split (`#44`)**: Verify open dataset license, pHash deduplicate, and create grouped `70/15/15` split (`seed=42`) for an additional Costa Rican crop.
