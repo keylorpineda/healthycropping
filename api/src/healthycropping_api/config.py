@@ -18,6 +18,10 @@ class Settings:
     gemini_api_key: str | None = field(default=None, repr=False)
     gemini_model: str | None = None
     rag_index_path: str | None = None
+    # Google Cloud project registered for noncommercial Earth Engine use (#43).
+    earthengine_project: str | None = None
+    # Service account JSON path; defaults to GOOGLE_APPLICATION_CREDENTIALS.
+    earthengine_credentials: str | None = None
 
     @classmethod
     def from_env(cls, environ: Mapping[str, str] | None = None) -> "Settings":
@@ -35,4 +39,10 @@ class Settings:
             gemini_api_key=source.get("GEMINI_API_KEY") or None,
             gemini_model=source.get("GEMINI_MODEL") or None,
             rag_index_path=source.get("RAG_INDEX_PATH") or None,
+            earthengine_project=source.get("EARTHENGINE_PROJECT") or None,
+            earthengine_credentials=(
+                source.get("EARTHENGINE_CREDENTIALS")
+                or source.get("GOOGLE_APPLICATION_CREDENTIALS")
+                or None
+            ),
         )
