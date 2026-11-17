@@ -77,6 +77,9 @@ export interface Scan {
   model_version: string;
   local_photo_uri: string;
   cloudinary_public_id: string | null;
+  /** Where the photo was taken, only when the farmer opted in (#77); both or neither. */
+  latitude: number | null;
+  longitude: number | null;
   explanation_json: string | null;
   scanned_at: string;
   updated_at: string;
@@ -96,6 +99,8 @@ export interface CreateScanInput {
   model_version: string;
   local_photo_uri: string;
   explanation_json?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface ScanFilters {
