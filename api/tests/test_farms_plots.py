@@ -234,3 +234,67 @@ def test_invalid_plot_location_is_rejected(client: TestClient, location: dict[st
 
     assert client.post("/plots", json=body, headers=bearer()).status_code == 422
     assert client.patch(f"/plots/{plot['id']}", json=location, headers=bearer()).status_code == 422
+
+
+def square(size: float = 0.001) -> list[dict[str, float]]:
+    lat, lon = 9.6611, -84.0225
+    return [
+        {"latitude": lat, "longitude": lon},
+        {"latitude": lat, "longitude": lon + size},
+        {"latitude": lat + size, "longitude": lon + size},
+        {"latitude": lat + size, "longitude": lon},
+    ]
+
+
+def test_plot_boundary_round_trips_and_can_be_cleared(client: TestClient) -> None:
+    plot = create_plot(client, create_farm(client)["id"], boundary=square())
+    assert plot["boundary"] == square()
+
+    renamed = client.patch(f"/plots/{plot['id']}", json={"name": "Lote 2"}, headers=bearer())
+    assert renamed.json()["boundary"] == square()
+
+    redrawn = client.patch(
+        f"/plots/{plot['id']}", json={"boundary": square(0.002)}, headers=bearer()
+    )
+    assert redrawn.json()["boundary"] == square(0.002)
+
+    cleared = client.patch(f"/plots/{plot['id']}", json={"boundary": None}, headers=bearer())
+    assert cleared.status_code == 200
+    assert cleared.json()["boundary"] is None
+
+
+def test_plot_stored_before_boundaries_reads_as_null(
+    client: TestClient, store: InMemoryDocumentStore
+) -> None:
+    plot = create_plot(client, create_farm(client)["id"])
+    del store.collections["plots"][plot["id"]]["boundary"]
+
+    response = client.get(f"/plots/{plot['id']}", headers=bearer())
+
+    assert response.status_code == 200
+    assert response.json()["boundary"] is None
+
+
+@pytest.mark.parametrize(
+    "boundary",
+    [
+        square()[:2],
+        [*square(), square()[0]],
+        [square()[0], square()[0], square()[1], square()[1]],
+        [{"latitude": 91, "longitude": -84.0}, *square()[1:]],
+        [{"latitude": 9.66, "longitude": -84.0, "altitude": 3}, *square()[1:]],
+        [{"latitude": 9.0 + i / 1000, "longitude": -84.0 + i / 1000} for i in range(101)],
+    ],
+    ids=["too-few", "closed-ring", "duplicates", "out-of-range", "extra-field", "too-many"],
+)
+def test_invalid_plot_boundary_is_rejected(
+    client: TestClient, boundary: list[dict[str, float]]
+) -> None:
+    farm = create_farm(client)
+    plot = create_plot(client, farm["id"])
+    body = {"id": new_id(), "farm_id": farm["id"], "name": "Lote 1", "crop": "coffee"}
+
+    response = client.post("/plots", json={**body, "boundary": boundary}, headers=bearer())
+    assert response.status_code == 422
+    patch = client.patch(f"/plots/{plot['id']}", json={"boundary": boundary}, headers=bearer())
+    assert patch.status_code == 422

@@ -3,7 +3,15 @@
 from datetime import datetime
 from typing import Annotated, Any, ClassVar, Literal, Self
 
-from pydantic import UUID4, AwareDatetime, BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    UUID4,
+    AfterValidator,
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    model_validator,
+)
 
 # Mirrors SUPPORTED_CROPS in app/src/version.ts.
 Crop = Literal["coffee", "cacao", "banana"]
@@ -14,6 +22,8 @@ AreaHa = Annotated[float, Field(gt=0, le=100_000)]
 # WGS84 decimal degrees of one reference point inside the plot (#136).
 Latitude = Annotated[float, Field(ge=-90, le=90)]
 Longitude = Annotated[float, Field(ge=-180, le=180)]
+# Polygon vertices a farmer can draw by hand; keeps Firestore documents small.
+MAX_BOUNDARY_POINTS = 100
 
 
 class HealthResponse(BaseModel):
@@ -70,6 +80,36 @@ class PlotLocationMixin(BaseModel):
         return self
 
 
+class BoundaryPoint(RequestModel):
+    """One WGS84 vertex of a plot boundary polygon (#41)."""
+
+    latitude: Latitude
+    longitude: Longitude
+
+
+def _validate_boundary(boundary: list[BoundaryPoint] | None) -> list[BoundaryPoint] | None:
+    """Open ring: the closing vertex is implied, so the first point is not repeated at the end.
+
+    Firestore cannot store nested arrays, so the API keeps a list of points instead of the
+    GeoJSON `[[[lon, lat], ...]]` the app writes to SQLite.
+    """
+    if boundary is None:
+        return None
+    pairs = [(point.latitude, point.longitude) for point in boundary]
+    if pairs[0] == pairs[-1]:
+        raise ValueError("boundary must not repeat its first point; the ring closes implicitly")
+    if len(set(pairs)) < 3:
+        raise ValueError("boundary needs at least 3 distinct points")
+    return boundary
+
+
+Boundary = Annotated[
+    list[BoundaryPoint],
+    Field(min_length=3, max_length=MAX_BOUNDARY_POINTS),
+    AfterValidator(_validate_boundary),
+]
+
+
 class FarmCreate(RequestModel):
     id: UUID4
     name: Name
@@ -102,6 +142,7 @@ class PlotCreate(RequestModel, PlotLocationMixin):
     area_ha: AreaHa | None = None
     latitude: Latitude | None = None
     longitude: Longitude | None = None
+    boundary: Boundary | None = None
 
 
 class PlotUpdate(PatchModel, PlotLocationMixin):
@@ -113,6 +154,7 @@ class PlotUpdate(PatchModel, PlotLocationMixin):
     area_ha: AreaHa | None = None
     latitude: Latitude | None = None
     longitude: Longitude | None = None
+    boundary: Boundary | None = None
 
 
 class PlotResponse(BaseModel):
@@ -124,6 +166,8 @@ class PlotResponse(BaseModel):
     # Plots stored before #136 have no coordinates.
     latitude: float | None = None
     longitude: float | None = None
+    # Plots stored before #41 have no boundary.
+    boundary: list[BoundaryPoint] | None = None
     created_at: datetime
     updated_at: datetime
 
