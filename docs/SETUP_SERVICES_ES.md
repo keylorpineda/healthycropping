@@ -202,8 +202,18 @@ Para el cálculo mensual de NDVI con Sentinel-2 en la versión `v1.2`, utilizamo
 4. En *Project type*, selecciona **Community / Open Source / Education / Research** y haz clic en **Next**.
 5. Elige tu proyecto de Google Cloud (`healthycropping-cr`), acepta los términos y completa el registro.
 6. En [Google Cloud Console -> IAM & Admin -> Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts), otorga a tu cuenta de servicio el rol **Earth Engine Resource Viewer** (`roles/earthengine.viewer`) cuando comience la fase `v1.2`.
-7. **Cómo verificar que funciona**:
-   Abre [https://code.earthengine.google.com/](https://code.earthengine.google.com/); si carga el editor de código sin errores de permisos en tu proyecto, el registro está activo.
+7. En **APIs & Services** -> **Library**, busca **Google Earth Engine API** y haz clic en **Enable** (Habilitar) en el mismo proyecto.
+8. Otorga además a la cuenta de servicio el rol **Service Usage Consumer** (`roles/serviceusage.serviceUsageConsumer`), necesario para que las llamadas se cobren a la cuota del proyecto.
+9. Configura el backend (`api/.env` en local, *Environment* en Render):
+   ```env
+   EARTHENGINE_PROJECT=healthycropping-cr
+   # Opcional: otra cuenta de servicio solo para Earth Engine.
+   # Si se deja vacío se usa GOOGLE_APPLICATION_CREDENTIALS (la misma de Firebase).
+   EARTHENGINE_CREDENTIALS=
+   ```
+   Sin `EARTHENGINE_PROJECT`, `GET /plots/{id}/ndvi` responde `503 ndvi_not_configured` y el resto de la API funciona igual.
+10. **Cómo verificar que funciona**:
+   Abre [https://code.earthengine.google.com/](https://code.earthengine.google.com/); si carga el editor de código sin errores de permisos en tu proyecto, el registro está activo. Con la API en marcha y un lote con límite o ubicación sincronizado, `GET /plots/{id}/ndvi` debe devolver 12 meses con `status` `ok`, `cloudy` o `no_data`.
 
 ---
 
