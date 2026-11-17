@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PlotMap } from '@/components/map';
 import { Badge, Button, Card, EmptyState, TextField } from '@/components/ui';
+import { NdviCard } from '@/components/ndvi';
 import { WeatherRiskCard } from '@/components/weather';
 import {
   farmsRepository,
@@ -249,6 +250,8 @@ export function PlotDetailScreen({
         </Card>
 
         <WeatherRiskCard plot={plot} />
+
+        <NdviCard plot={plot} />
       </ScrollView>
     </SafeAreaView>
   );
