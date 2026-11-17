@@ -296,6 +296,28 @@
     "setLocation": "Add location",
     "editLocation": "Change location"
   },
+  "plotMap": {
+    "title": "Plot map",
+    "hint": "Tap the map to mark each corner of the plot.",
+    "area": "Drawn area: {{area}} ha",
+    "points_one": "{{count}} point",
+    "points_other": "{{count}} points",
+    "undo": "Undo",
+    "clear": "Clear",
+    "remove": "Remove boundary",
+    "draw": "Draw boundary",
+    "edit": "Edit boundary",
+    "noBoundary": "This plot has no boundary or location on the map.",
+    "mapLabel_one": "Plot map with {{count}} marked point",
+    "mapLabel_other": "Plot map with {{count}} marked points",
+    "previewLabel": "Map with the plot boundary",
+    "pointLabel": "Map centered on the plot location",
+    "errors": {
+      "tooFewPoints": "Mark at least 3 distinct points.",
+      "tooManyPoints": "Use at most 100 points.",
+      "outOfRange": "A point is outside the valid coordinate range."
+    }
+  },
   "weather": {
     "title": "Weather disease risk",
     "loading": "Loading the weather risk",
