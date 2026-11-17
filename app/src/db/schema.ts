@@ -105,4 +105,12 @@ CREATE TABLE IF NOT EXISTS weather_risks (
   response_json TEXT NOT NULL,
   fetched_at TEXT NOT NULL
 );
+
+-- Latest GET /plots/{id}/ndvi answer per plot (#81), for offline viewing.
+CREATE TABLE IF NOT EXISTS plot_ndvi (
+  id TEXT PRIMARY KEY NOT NULL,
+  geometry_key TEXT NOT NULL,
+  response_json TEXT NOT NULL,
+  fetched_at TEXT NOT NULL
+);
 `;
