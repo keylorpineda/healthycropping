@@ -3,10 +3,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PlotMap } from '@/components/map';
 import { Badge, Button, Card, EmptyState, TextField } from '@/components/ui';
 import { WeatherRiskCard } from '@/components/weather';
 import {
   farmsRepository,
+  parseBoundaryGeoJson,
   parsePlotLocation,
   plotsRepository,
   type Plot,
@@ -17,6 +19,8 @@ import { useTheme } from '@/theme';
 export interface PlotDetailScreenProps {
   plotId: string;
   onBack?: () => void;
+  /** Opens the boundary editor (#41). */
+  onOpenMap?: () => void;
   testID?: string;
 }
 
@@ -28,6 +32,7 @@ function coordinateText(value: number | null): string {
 export function PlotDetailScreen({
   plotId,
   onBack,
+  onOpenMap,
   testID = 'plot-detail-screen',
 }: PlotDetailScreenProps): React.JSX.Element {
   const { t } = useTranslation();
@@ -109,7 +114,12 @@ export function PlotDetailScreen({
     );
   }
 
-  const located = plot.latitude !== null && plot.longitude !== null;
+  const point =
+    plot.latitude !== null && plot.longitude !== null
+      ? { latitude: plot.latitude, longitude: plot.longitude }
+      : null;
+  const located = point !== null;
+  const boundary = parseBoundaryGeoJson(plot.boundary_geojson);
   const muted = [theme.typography.subhead, { color: theme.colors.textSecondary }];
 
   return (
@@ -208,6 +218,36 @@ export function PlotDetailScreen({
           )}
         </Card>
 
+        <Card variant="outlined" style={styles.card} testID="plot-detail-map-card">
+          <Text style={[theme.typography.headline, { color: theme.colors.textPrimary }]}>
+            {t('plotMap.title')}
+          </Text>
+          {boundary || located ? (
+            <PlotMap
+              boundary={boundary}
+              center={point}
+              accessibilityLabel={t(boundary ? 'plotMap.previewLabel' : 'plotMap.pointLabel')}
+              style={styles.mapPreview}
+              testID="plot-detail-map"
+            />
+          ) : (
+            <Text style={[muted, styles.line]} testID="plot-detail-no-boundary">
+              {t('plotMap.noBoundary')}
+            </Text>
+          )}
+          {onOpenMap && (
+            <View style={styles.buttons}>
+              <Button
+                title={t(boundary ? 'plotMap.edit' : 'plotMap.draw')}
+                onPress={onOpenMap}
+                variant="outline"
+                size="sm"
+                testID="plot-detail-open-map-btn"
+              />
+            </View>
+          )}
+        </Card>
+
         <WeatherRiskCard plot={plot} />
       </ScrollView>
     </SafeAreaView>
@@ -267,5 +307,9 @@ const styles = StyleSheet.create({
   },
   buttonGap: {
     width: 8,
+  },
+  mapPreview: {
+    height: 200,
+    marginTop: 12,
   },
 });
