@@ -36,6 +36,7 @@
           "root": "./src/app"
         }
       ],
+      "@maplibre/maplibre-react-native",
       "./plugins/withTfliteModels",
       "./plugins/withReleaseSigning"
     ],

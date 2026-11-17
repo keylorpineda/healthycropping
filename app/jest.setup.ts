@@ -37,6 +37,28 @@ jest.mock('@react-native-community/netinfo', () =>
   require('@react-native-community/netinfo/jest/netinfo-mock.js'),
 );
 
+// Mock MapLibre (native map views); MapView forwards props so tests can fire map presses.
+jest.mock('@maplibre/maplibre-react-native', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const passThrough = (name: string) => {
+    const Component = ({ children, ...props }: { children?: unknown }) =>
+      React.createElement(View, { ...props, testID: props.testID ?? `maplibre-${name}` }, children);
+    Component.displayName = name;
+    return Component;
+  };
+  return {
+    MapView: passThrough('MapView'),
+    Camera: passThrough('Camera'),
+    ShapeSource: passThrough('ShapeSource'),
+    FillLayer: passThrough('FillLayer'),
+    LineLayer: passThrough('LineLayer'),
+    CircleLayer: passThrough('CircleLayer'),
+    SymbolLayer: passThrough('SymbolLayer'),
+    OfflineManager: { setMaximumAmbientCacheSize: jest.fn(() => Promise.resolve()) },
+  };
+});
+
 // Mock expo-haptics
 jest.mock('expo-haptics', () => ({
   impactAsync: jest.fn(),
