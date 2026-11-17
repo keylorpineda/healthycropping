@@ -2,7 +2,9 @@ import { create } from 'zustand';
 
 import {
   type AuthUser,
+  linkGoogleAccount,
   signIn as authSignIn,
+  signInWithGoogle as authSignInWithGoogle,
   signOut as authSignOut,
   signUp as authSignUp,
   subscribeToAuthChanges,
@@ -17,6 +19,10 @@ export interface AuthState {
   start: () => () => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
+  /** Resolves `false` when the farmer closes the Google picker. */
+  signInWithGoogle: () => Promise<boolean>;
+  /** Adds Google to the signed-in account; resolves `false` when cancelled. */
+  linkGoogle: () => Promise<boolean>;
   signOut: () => Promise<void>;
 }
 
@@ -41,6 +47,18 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signUp: async (email, password) => {
     set(signedIn(await authSignUp(email, password)));
+  },
+
+  signInWithGoogle: async () => {
+    const user = await authSignInWithGoogle();
+    if (user) set(signedIn(user));
+    return user !== null;
+  },
+
+  linkGoogle: async () => {
+    const user = await linkGoogleAccount();
+    if (user) set(signedIn(user));
+    return user !== null;
   },
 
   signOut: async () => {

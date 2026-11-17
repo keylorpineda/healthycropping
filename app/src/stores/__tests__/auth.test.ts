@@ -9,7 +9,7 @@ jest.mock('@/services/auth', () => ({
 }));
 
 const mocked = authService as jest.Mocked<typeof authService>;
-const USER = { uid: 'u1', email: 'a@b.cr' };
+const USER = { uid: 'u1', email: 'a@b.cr', providers: ['password'] };
 
 describe('useAuthStore', () => {
   beforeEach(() => {

@@ -248,10 +248,17 @@
       "too-many-requests": "Too many attempts. Wait a few minutes and try again.",
       "network": "No connection. Check your internet and try again.",
       "not-configured": "Accounts are not configured in this build of the app.",
-      "unknown": "Something went wrong. Please try again."
+      "unknown": "Something went wrong. Please try again.",
+      "account-exists": "That email already has a password account. Sign in with your password and Google will be linked.",
+      "google-in-use": "That Google account already belongs to another user.",
+      "play-services": "Google Play Services is unavailable or needs an update.",
+      "in-progress": "A sign-in is already in progress."
     },
     "signOutConfirmTitle": "Sign out?",
-    "signOutConfirmBody": "Your farms and diagnoses stay on this phone. Pending changes will sync the next time you sign in."
+    "signOutConfirmBody": "Your farms and diagnoses stay on this phone. Pending changes will sync the next time you sign in.",
+    "continueWithGoogle": "Continue with Google",
+    "linkGoogle": "Link Google account",
+    "googleLinked": "Google account linked. You can sign in with Google or your password."
   },
   "sync": {
     "ready": "Account connected",

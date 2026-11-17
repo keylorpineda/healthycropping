@@ -248,10 +248,17 @@
       "too-many-requests": "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.",
       "network": "Sin conexión. Revisa tu internet e inténtalo de nuevo.",
       "not-configured": "Las cuentas no están configuradas en esta versión de la app.",
-      "unknown": "Algo salió mal. Inténtalo de nuevo."
+      "unknown": "Algo salió mal. Inténtalo de nuevo.",
+      "account-exists": "Ese correo ya tiene una cuenta con contraseña. Entre con su contraseña y Google quedará vinculado.",
+      "google-in-use": "Esa cuenta de Google ya pertenece a otro usuario.",
+      "play-services": "Google Play Services no está disponible o necesita actualizarse.",
+      "in-progress": "Ya hay un inicio de sesión en curso."
     },
     "signOutConfirmTitle": "¿Cerrar sesión?",
-    "signOutConfirmBody": "Tus fincas y diagnósticos se quedan en este teléfono. Los cambios pendientes se sincronizarán cuando vuelvas a iniciar sesión."
+    "signOutConfirmBody": "Tus fincas y diagnósticos se quedan en este teléfono. Los cambios pendientes se sincronizarán cuando vuelvas a iniciar sesión.",
+    "continueWithGoogle": "Continuar con Google",
+    "linkGoogle": "Vincular cuenta de Google",
+    "googleLinked": "Cuenta de Google vinculada. Puede entrar con Google o con su contraseña."
   },
   "sync": {
     "ready": "Cuenta conectada",

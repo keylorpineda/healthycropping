@@ -14,10 +14,15 @@ jest.mock('@/services/auth', () => ({
   signOut: jest.fn(),
   subscribeToAuthChanges: jest.fn(() => () => undefined),
   toAuthError: (error: { code?: string }) => ({ code: error?.code ?? 'unknown' }),
+  isGoogleSignInConfigured: jest.fn(() => false),
+  pendingGoogleLinkEmail: jest.fn(() => null),
+  signInWithGoogle: jest.fn(),
+  linkGoogleAccount: jest.fn(),
+  GOOGLE_PROVIDER_ID: 'google.com',
 }));
 
 const mocked = authService as jest.Mocked<typeof authService>;
-const USER = { uid: 'u1', email: 'ana@finca.cr' };
+const USER = { uid: 'u1', email: 'ana@finca.cr', providers: ['password'] };
 
 function renderWithTheme(ui: React.ReactElement) {
   return render(<ThemeProvider>{ui}</ThemeProvider>);
