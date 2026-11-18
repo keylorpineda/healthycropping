@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Plot NDVI (`#43`): months without Sentinel-2 scenes keep a masked NDVI band, returning `no_data` instead of failing the entire yearly series with a missing-band error.
+
 - Docs (`#138`): the app id and the Python package paths were written with a repeated syllable in 23 places, including the Android package name that `docs/SETUP_SERVICES_ES.md` tells the reader to register in Firebase.
 - Release bundling on a clean install (`#76`): the app now declares `query-string`, which `expo-router` `4.0.22` requires at load time without listing it as a dependency.
 

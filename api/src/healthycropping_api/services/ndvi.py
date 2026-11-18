@@ -171,7 +171,15 @@ class EarthEngineNdviProvider:
                 .filterBounds(region)
                 .filterDate(start, start.advance(1, "month"))
             )
-            composite = scenes.map(clear_ndvi).median()
+            # An empty collection reduces to an image without bands. Keep a masked
+            # NDVI band so missing scenes become no_data instead of failing the year.
+            composite = ee.Image(
+                ee.Algorithms.If(
+                    scenes.size(),
+                    scenes.map(clear_ndvi).median(),
+                    ee.Image.constant(0).rename("ndvi").selfMask(),
+                )
+            )
             mean = composite.reduceRegion(
                 reducer=ee.Reducer.mean(), geometry=region, scale=SCALE_M, maxPixels=MAX_PIXELS
             ).get("ndvi")
