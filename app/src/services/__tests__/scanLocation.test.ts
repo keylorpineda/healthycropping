@@ -181,6 +181,24 @@ describe('scanLocation service', () => {
       expect(point).toBeNull();
     });
 
+    it.each([null, NaN, Infinity, -1])(
+      'rejects a location whose accuracy cannot be verified (%p)',
+      async (accuracy) => {
+        await AsyncStorage.setItem(SCAN_LOCATION_KEY, 'true');
+        jest
+          .mocked(Location.getForegroundPermissionsAsync)
+          .mockResolvedValueOnce(permissionResult(true));
+        jest
+          .mocked(Location.getLastKnownPositionAsync)
+          .mockResolvedValueOnce(makeFix(9.662, -84.022, accuracy));
+        jest
+          .mocked(Location.getCurrentPositionAsync)
+          .mockResolvedValueOnce(makeFix(9.662, -84.022, accuracy));
+
+        await expect(captureScanLocation()).resolves.toBeNull();
+      },
+    );
+
     it('returns null without throwing when getCurrentPositionAsync rejects', async () => {
       await AsyncStorage.setItem(SCAN_LOCATION_KEY, 'true');
       jest

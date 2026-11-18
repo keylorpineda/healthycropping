@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Scan geotagging (`#77`): locations with unknown or invalid accuracy are rejected, and a late GPS response from an earlier photo cannot replace the current result's scan identifier after a retake.
+
 - Plot NDVI (`#43`): months without Sentinel-2 scenes keep a masked NDVI band, returning `no_data` instead of failing the entire yearly series with a missing-band error.
 
 - Docs (`#138`): the app id and the Python package paths were written with a repeated syllable in 23 places, including the Android package name that `docs/SETUP_SERVICES_ES.md` tells the reader to register in Firebase.

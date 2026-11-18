@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -23,8 +23,10 @@ export default function ScanScreen(): React.JSX.Element {
   const [prediction, setPrediction] = useState<InferencePrediction | null>(null);
   const [scanId, setScanId] = useState<string | null>(null);
   const [errorVisible, setErrorVisible] = useState<boolean>(false);
+  const captureVersion = useRef(0);
 
   const handlePhotoCaptured = async (uri: string) => {
+    const version = ++captureVersion.current;
     setImageUri(uri);
     setStatus('analyzing');
     // Started alongside inference so a GPS fix does not delay the result (#77).
@@ -66,15 +68,20 @@ export default function ScanScreen(): React.JSX.Element {
           inferenceTimeMs: result.inferenceTimeMs,
         }),
       });
-      setScanId(scan.id);
+      // A GPS fix can finish after a retake. Keep the saved scan, but never attach
+      // its id to a newer result that is currently being shown.
+      if (version === captureVersion.current) setScanId(scan.id);
     } catch (error) {
       console.error('On-device inference failed', error);
-      setErrorVisible(true);
-      setStatus('camera');
+      if (version === captureVersion.current) {
+        setErrorVisible(true);
+        setStatus('camera');
+      }
     }
   };
 
   const handleRetake = () => {
+    captureVersion.current += 1;
     setImageUri(null);
     setPrediction(null);
     setScanId(null);
@@ -82,6 +89,7 @@ export default function ScanScreen(): React.JSX.Element {
   };
 
   const handleDone = () => {
+    captureVersion.current += 1;
     router.back();
   };
 
