@@ -54,7 +54,14 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
 function usable(fix: Location.LocationObject | null): BoundaryPoint | null {
   if (!fix) return null;
   const accuracy = fix.coords.accuracy;
-  if (accuracy !== null && accuracy > MAX_ACCURACY_M) return null;
+  if (
+    accuracy === null ||
+    !Number.isFinite(accuracy) ||
+    accuracy < 0 ||
+    accuracy > MAX_ACCURACY_M
+  ) {
+    return null;
+  }
   return { latitude: fix.coords.latitude, longitude: fix.coords.longitude };
 }
 
