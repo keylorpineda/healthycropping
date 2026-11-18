@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Scan geotagging (`#77`): locations with unknown or invalid accuracy are rejected, and a late GPS response from an earlier photo cannot replace the current result's scan identifier after a retake.
 
 - Plot NDVI (`#43`): months without Sentinel-2 scenes keep a masked NDVI band, returning `no_data` instead of failing the entire yearly series with a missing-band error.
+- Release APK (`#76`): the app showed a blank screen on start with `Cannot find native module 'ExpoLinking'`. `expo-router` needs `expo-linking` but the app did not declare it, so Android autolinking left its native module out; it is now a direct dependency (`~7.0.5`). Checked on an Android 15 emulator: the release APK installs, opens offline without Metro (cold start 881 ms) and shows onboarding.
 
 - Docs (`#138`): the app id and the Python package paths were written with a repeated syllable in 23 places, including the Android package name that `docs/SETUP_SERVICES_ES.md` tells the reader to register in Firebase.
 - Release bundling on a clean install (`#76`): the app now declares `query-string`, which `expo-router` `4.0.22` requires at load time without listing it as a dependency.
