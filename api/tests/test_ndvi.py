@@ -8,6 +8,7 @@ import types
 import uuid
 from datetime import UTC, date, datetime
 from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -332,3 +333,53 @@ def test_earthengine_provider_wraps_initialize_failure(
     provider = EarthEngineNdviProvider(project="demo-proj", credentials_path=None)
     with pytest.raises(NdviUnavailableError, match="not registered"):
         provider.monthly(PlotGeometry(point=(-84.1, 9.9)), ["2026-01"])
+
+
+def test_provider_reports_empty_month_without_a_missing_band_error() -> None:
+    """Exercise the provider graph, not the endpoint's fake NDVI provider."""
+    empty_collection = MagicMock()
+    empty_collection.filterBounds.return_value = empty_collection
+    empty_collection.filterDate.return_value = empty_collection
+    empty_collection.map.return_value = empty_collection
+    empty_collection.size.return_value = 0
+    # Earth Engine's median of zero scenes has no bands: reducing it has no ndvi key.
+    empty_collection.median.return_value.reduceRegion.return_value = {}
+    masked_image = MagicMock()
+    masked_image.reduceRegion.return_value = {"ndvi": None}
+    zero = MagicMock()
+    zero.rename.return_value.selfMask.return_value = masked_image
+    one = MagicMock()
+    one.rename.return_value.reduceRegion.return_value = {"ndvi": 100}
+    image_factory = MagicMock(side_effect=lambda image: image)
+    image_factory.constant.side_effect = lambda value: zero if value == 0 else one
+    request_count = 0
+
+    class EvaluatedList:
+        def __init__(self, values: list[Any]) -> None:
+            self.values = values
+
+        def map(self, callback: Any) -> EvaluatedList:
+            return EvaluatedList([callback(value) for value in self.values])
+
+        def getInfo(self) -> list[Any]:  # noqa: N802 - mirrors the Earth Engine API
+            nonlocal request_count
+            request_count += 1
+            return self.values
+
+    ee = MagicMock()
+    ee.ImageCollection.return_value = empty_collection
+    ee.Image = image_factory
+    ee.Algorithms.If.side_effect = lambda condition, yes, no: yes if condition else no
+    ee.Dictionary.side_effect = lambda value: value
+    ee.List.side_effect = EvaluatedList
+    provider = EarthEngineNdviProvider(project="test", credentials_path=None)
+    provider._ee = ee
+
+    result = provider.monthly(PlotGeometry(point=(-84.1, 9.9)), ["2026-01", "2026-02"])
+
+    assert result == [
+        MonthlyNdvi(month=month, ndvi=None, clear_fraction=0.0, images=0)
+        for month in ("2026-01", "2026-02")
+    ]
+    assert all(month_status(entry, MIN_CLEAR_FRACTION) == "no_data" for entry in result)
+    assert request_count == 1

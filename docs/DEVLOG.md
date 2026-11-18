@@ -436,3 +436,5 @@ This log documents what was built, key architectural decisions, and technical pr
 - Credentials stay outside Git: `EARTHENGINE_PROJECT` enables the feature and the service account file comes from `EARTHENGINE_CREDENTIALS` or, by default, the existing `GOOGLE_APPLICATION_CREDENTIALS` (Render secret file). `ee` is imported lazily inside `EarthEngineNdviProvider`, behind an `NdviProvider` protocol, so the API starts without Earth Engine and tests use a fake provider.
 - Values are rounded to 4 decimals and clamped to [-1, 1]; months missing from the answer are filled as `no_data` so the series always has 12 entries.
 - Not done: a live run against Earth Engine (needs the owner's registered project), caching (`#81`) and the app chart (`#82`).
+
+- Review follow-up (#43): an empty monthly image collection produces a bandless median. The provider now selects a masked NDVI image for that month, so its reducers return missing observations instead of a missing-band error that fails the complete year. A provider-level regression exercises two empty months and verifies a single request and no_data results without Earth Engine credentials.
