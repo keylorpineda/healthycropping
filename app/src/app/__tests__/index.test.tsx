@@ -22,6 +22,7 @@ function renderWithTheme(ui: React.ReactElement) {
 describe('IndexScreen (App Entrypoint / Router Dispatcher)', () => {
   beforeEach(async () => {
     usePreferencesStore.getState().resetPreferences();
+    usePreferencesStore.setState({ hydrated: true });
     await i18n.changeLanguage('es');
   });
 
@@ -57,5 +58,13 @@ describe('IndexScreen (App Entrypoint / Router Dispatcher)', () => {
     expect(screen.getByTestId('home-disclaimer-box')).toHaveTextContent(
       /does not replace the judgment/i,
     );
+  });
+
+  it('renders neither onboarding nor home before preferences are hydrated', () => {
+    usePreferencesStore.setState({ hydrated: false, hasCompletedOnboarding: false });
+    renderWithTheme(<IndexScreen />);
+
+    expect(screen.queryByTestId('onboarding-screen')).toBeNull();
+    expect(screen.queryByTestId('home-screen')).toBeNull();
   });
 });
