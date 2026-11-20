@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Preferences (`#154`): onboarding, the agronomic disclaimer, and the chosen language and theme were kept only in memory, so every restart showed onboarding again in Spanish. They are now saved in AsyncStorage and restored before the first screen; a missing or corrupted entry falls back to the defaults.
+
 - Scan geotagging (`#77`): locations with unknown or invalid accuracy are rejected, and a late GPS response from an earlier photo cannot replace the current result's scan identifier after a retake.
 
 - Plot NDVI (`#43`): months without Sentinel-2 scenes keep a masked NDVI band, returning `no_data` instead of failing the entire yearly series with a missing-band error.
